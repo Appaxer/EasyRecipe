@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/app_padding"
+    tools:context=".features.createrecipe.CreateRecipeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRecipeImage"
+                style="@style/icon_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:icon="@drawable/ic_image"
+                app:iconSize="120dp" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/recipeImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtRecipeName"
+            style="@style/fullWidthTextInputLayout"
+            android:hint="@string/recipe_name">
+
+            <com.google.android.material.textfield.TextInputEditText style="@style/textInputEditText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtRecipeDescription"
+            style="@style/fullWidthTextInputLayout"
+            android:hint="@string/recipe_description">
+
+            <com.google.android.material.textfield.TextInputEditText
+                style="@style/textInputEditText"
+                android:maxLines="4" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtTime"
+            style="@style/fullWidthTextInputLayout"
+            android:hint="@string/recipe_time"
+            app:suffixText="@string/recipe_time_suffix">
+
+            <com.google.android.material.textfield.TextInputEditText
+                style="@style/textInputEditText"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding_more" />
+
+        <TextView
+            style="@style/section_title"
+            android:text="@string/recipe_types" />
+
+        <View style="@style/divider" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/recipeTypes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding_more" />
+
+        <TextView
+            style="@style/section_title"
+            android:text="@string/recipe_ingredients" />
+
+        <View style="@style/divider" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtSearchIngredients"
+                    style="@style/full_width_exposed_menu"
+                    android:hint="@string/recipe_ingredient_name">
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        tools:ignore="LabelFor" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtIngredientQuantity"
+                    style="@style/fullWidthTextInputLayout"
+                    android:hint="@string/recipe_ingredient_quantity">
+
+                    <com.google.android.material.textfield.TextInputEditText style="@style/textInputEditText" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddIngredient"
+                style="@style/icon_button"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/app_padding_half"
+                android:layout_marginEnd="@dimen/app_padding_half"
+                app:icon="@drawable/ic_add" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ingredientsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding_more" />
+
+        <TextView
+            style="@style/section_title"
+            android:text="@string/recipe_steps" />
+
+        <View style="@style/divider" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtStep"
+                style="@style/fullWidthTextInputLayout"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:hint="@string/recipe_step_title"
+                android:maxLines="4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/textInputEditText"
+                    android:maxLines="4" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddStep"
+                style="@style/icon_button"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/app_padding_half"
+                android:layout_marginEnd="@dimen/app_padding_half"
+                app:icon="@drawable/ic_add" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stepsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding_more" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCreateRecipe"
+            style="@style/fullWidthButton"
+            android:text="@string/recipe_create" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="@dimen/app_padding" />
+
+    </LinearLayout>
+
+</ScrollView>

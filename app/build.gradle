@@ -1,0 +1,171 @@
+/*
+ * Copyright (C) 2021 Appaxer
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'org.jetbrains.dokka'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id "org.sonarqube" version "3.3"
+}
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "Appaxer_EasyRecipe"
+        property "sonar.organization", "appaxer"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "org.easyrecipe"
+        minSdkVersion 24
+        targetSdkVersion 30
+        versionCode 2
+        versionName "1.0.1"
+
+        testInstrumentationRunner "org.easyrecipe.HiltTestRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "EDAMAM_KEY", "\"" + localProperties['edamam.apiKey'] + "\"")
+            buildConfigField("String", "EDAMAM_ID", "\"" + localProperties['edamam.appId'] + "\"")
+        }
+
+        debug {
+            testCoverageEnabled true
+            buildConfigField("String", "EDAMAM_KEY", "\"" + localProperties['edamam.apiKey'] + "\"")
+            buildConfigField("String", "EDAMAM_ID", "\"" + localProperties['edamam.appId'] + "\"")
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
+hilt {
+    enableTransformForLocalTests = true
+}
+
+dependencies {
+    implementation libs.kotlin_std
+    implementation libs.kotlin_reflect
+    implementation libs.core
+    implementation libs.appCompat
+    implementation libs.constraint_layout
+    implementation libs.legacy
+    implementation libs.recycler_view
+    implementation libs.preference
+
+    // Activity and fragment extensions for kotlin
+    implementation libs.activity
+    implementation libs.fragment
+
+    // Material design
+    implementation libs.material
+
+    // Lifecycle
+    implementation libs.lifecycle_viewmodel
+    implementation libs.lifecycle_livedata
+    implementation libs.lifecycle_runtime
+    implementation libs.lifecycle_extensions
+    implementation libs.lifecycle_vm_state
+
+    // Coroutines
+    implementation libs.coroutines_core
+    implementation libs.coroutines_services
+
+    // Navigation
+    implementation libs.nav_fragment
+    implementation libs.nav_ui
+    implementation libs.nav_syn_fragment
+
+    // Dagger Hilt
+    implementation libs.hilt
+    kapt libs.hilt_compiler_kapt
+    implementation libs.hilt_lifecycle
+
+    // Room
+    implementation libs.room_runtime
+    kapt libs.room_compiler_kapt
+    implementation libs.room_kotlin
+
+    // Glide
+    implementation libs.glide
+
+    // Internet connection
+    implementation libs.result
+    implementation libs.result_coroutines
+    implementation libs.gson
+    implementation libs.fuel
+    implementation libs.fuel_android
+    implementation libs.fuel_coroutines
+    implementation libs.fuel_gson
+
+    // Unit testing
+    testImplementation libs.junit
+    testImplementation libs.core_testing
+    testImplementation libs.hamcrest
+    testImplementation libs.coroutines_test
+    testImplementation libs.mockk_test
+    testImplementation libs.hilt_test
+    kaptTest libs.hilt_kapt_test
+    testImplementation libs.room_test
+
+    // Android testing
+    androidTestImplementation libs.junit_android_test
+    androidTestImplementation libs.espresso_android_test
+    androidTestImplementation libs.mockk_android_test
+    androidTestImplementation libs.nav_android_test
+    debugImplementation libs.fragment_debug
+    androidTestImplementation libs.hilt_android_test
+    kaptAndroidTest libs.hilt_kapt_android_test
+}

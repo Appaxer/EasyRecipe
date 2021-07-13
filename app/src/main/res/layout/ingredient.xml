@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/app_padding_half"
+    android:layout_marginBottom="@dimen/app_padding_half"
+    android:gravity="center_vertical|top"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_padding_half"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtIngredientName"
+            style="@style/ingredient_info"
+            android:textStyle="bold"
+            tools:text="Potato" />
+
+        <TextView
+            android:id="@+id/txtIngredientQuantity"
+            style="@style/ingredient_info"
+            tools:text="2 kg" />
+
+    </LinearLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/btnEditIngredient"
+        style="@style/icon_button"
+        android:layout_width="@dimen/delete_ingredient_min_size"
+        android:layout_height="@dimen/delete_ingredient_min_size"
+        android:layout_gravity="top"
+        app:srcCompat="@drawable/ic_edit" />
+
+    <Space
+        android:layout_width="@dimen/app_padding"
+        android:layout_height="0dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/btnDeleteIngredient"
+        style="@style/icon_button"
+        android:layout_width="@dimen/delete_ingredient_min_size"
+        android:layout_height="@dimen/delete_ingredient_min_size"
+        android:layout_gravity="top"
+        app:srcCompat="@drawable/ic_delete"
+        app:tint="@color/red" />
+
+</LinearLayout>

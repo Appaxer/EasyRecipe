@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="no_internet_title">Sin internet</string>
+    <string name="no_internet_message">Ha habido un problema al conectarse a la red.\nPor favor, revisa tu conexión a internet.</string>
+    <string name="other_error_title">Error inesperado</string>
+    <string name="other_error_message">Ha habido un error inesperado.\nPor favor, contacta con el servicio de soporte.</string>
+
+    <!-- Fragment names -->
+    <string name="recipes_fragment">Mis Recetas</string>
+    <string name="search_fragment">Explorar</string>
+    <string name="settings_fragment">Ajustes</string>
+    <string name="create_recipe_fragment">Crear receta</string>
+    <string name="favorite_fragment">Favoritas</string>
+
+    <!-- Recipes fragment -->
+    <string name="content_description_create_recipe">Crear receta</string>
+    <string name="search">Buscar</string>
+    <string name="recipes_not_found">Recetas no encontradas</string>
+
+    <!-- Create recipe fragment -->
+    <string name="recipe_name">Nombre</string>
+    <string name="recipe_description">Descripción</string>
+    <string name="recipe_time">Tiempo</string>
+    <string name="recipe_time_suffix">Minutos</string>
+    <string name="recipe_types">Tipos</string>
+    <string name="recipe_ingredients">Ingredientes</string>
+    <string name="recipe_ingredient_name">Nombre</string>
+    <string name="recipe_ingredient_quantity">Cantidad</string>
+    <string name="recipe_steps">Pasos</string>
+    <string name="recipe_step_title">Paso</string>
+    <string name="recipe_step_modifying">Modificando paso %d</string>
+    <string name="recipe_create">Crear receta</string>
+    <string name="recipe_edit">Editar receta</string>
+
+    <!-- Recipe Types -->
+    <string name="recipe_type_meat">Carne</string>
+    <string name="recipe_type_cold">Frio</string>
+    <string name="recipe_type_vegan">Vegano</string>
+    <string name="recipe_type_spicy">Picante</string>
+    <string name="recipe_type_sweet">Dulce</string>
+    <string name="recipe_type_vegetarian">Vegetariano</string>
+    <string name="recipe_type_gluten_free">Sin gluten</string>
+    <string name="recipe_type_sweet_and_sour">Agridulce</string>
+
+    <!-- Meal Types -->
+    <string name="lunch">Comida</string>
+    <string name="dinner">Cena</string>
+    <string name="breakfast">Desayuno</string>
+    <string name="snack">Aperitivo</string>
+    <string name="tea_time">Merienda</string>
+
+    <!-- Recipe details -->
+    <string name="recipe_detail_time">Tiempo: %d minutos</string>
+    <string name="check_steps">Ver pasos</string>
+    <string name="favorite_recipe">Favorito</string>
+    <string name="delete_recipe">Eliminar</string>
+    <string name="edit_recipe">Editar receta</string>
+    <string name="editing_recipe">Editando %s</string>
+    <string name="favorite">Favorito</string>
+    <string name="recipe_type_hot">Caliente</string>
+    <string name="recipe_type_fish">Pescado</string>
+
+    <!-- Favorites fragment -->
+    <string name="no_favorites">No se han encontrado recetas favoritas</string>
+
+    <!-- Settings -->
+    <string name="language_settings">Idiomas</string>
+    <string name="select_app_language_title">Idioma de la aplicación</string>
+    <string name="select_remote_recipes_language_title">Idioma del navegador</string>
+    <string name="dark_theme">Tema</string>
+    <string name="dark_theme_title">Habilita el tema oscuro</string>
+    <string name="select_app_language_summary">Selecciona el idioma de la aplicación</string>
+    <string name="select_remote_recipes_language_summary">Selecciona el idioma del navegador de recetas</string>
+    <string name="about">Sobre la aplicación</string>
+    <string name="current_version">Versión actual</string>
+
+</resources>
+

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/app_padding"
+    tools:context=".features.recipedetail.RecipeDetailFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/typeDetailList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:orientation="horizontal" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/recipeDetailImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@color/primaryColor" />
+
+    </FrameLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/edamamImage"
+        android:layout_width="@dimen/edamam_image"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        app:srcCompat="@drawable/edamam" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="@dimen/app_padding_more" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/recipeDetailDescription"
+                style="@style/text_full_width"
+                android:layout_marginBottom="@dimen/app_padding_more"
+                tools:text="This is the description" />
+
+            <TextView
+                android:id="@+id/recipeDetailTime"
+                style="@style/section_title"
+                android:textSize="@dimen/default_text_size"
+                tools:text="Time: 20 minutes" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="@dimen/app_padding_more" />
+
+            <TextView
+                style="@style/section_title"
+                android:text="@string/recipe_ingredients" />
+
+            <View style="@style/divider" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="@dimen/app_padding" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ingredientDetailList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="@dimen/app_padding_more" />
+
+            <TextView
+                style="@style/section_title"
+                android:text="@string/recipe_steps" />
+
+            <View style="@style/divider" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="@dimen/app_padding" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCheckSteps"
+                style="@style/fullWidthButton"
+                android:text="@string/check_steps"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/stepsDetailList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

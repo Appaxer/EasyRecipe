@@ -1,0 +1,94 @@
+<!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name" translatable="false">Easy Recipe</string>
+    <string name="no_internet_title">No internet</string>
+    <string name="no_internet_message">There has been a problem when connecting to the network.\nPlease check your internet connection.</string>
+    <string name="other_error_title">Unexpected error</string>
+    <string name="other_error_message">There has been an unexpected error.\nPlease contact the support service.</string>
+
+    <!-- Fragment names -->
+    <string name="recipes_fragment">My Recipes</string>
+    <string name="search_fragment">Browse</string>
+    <string name="settings_fragment">Settings</string>
+    <string name="create_recipe_fragment">Create recipe</string>
+    <string name="favorite_fragment">Favorites</string>
+
+    <!-- Recipes fragment -->
+    <string name="content_description_create_recipe">Create recipe</string>
+    <string name="search">Search</string>
+    <string name="recipes_not_found">Recipes not found</string>
+
+    <!-- Create recipe fragment -->
+    <string name="recipe_name">Name</string>
+    <string name="recipe_description">Description</string>
+    <string name="recipe_time">Time</string>
+    <string name="recipe_time_suffix">Minutes</string>
+    <string name="recipe_types">Types</string>
+    <string name="recipe_ingredients">Ingredients</string>
+    <string name="recipe_ingredient_name">Name</string>
+    <string name="recipe_ingredient_quantity">Quantity</string>
+    <string name="recipe_steps">Steps</string>
+    <string name="recipe_step_title">Step</string>
+    <string name="recipe_step_modifying">Modifying step %d</string>
+    <string name="recipe_create">Create recipe</string>
+    <string name="recipe_edit">Edit recipe</string>
+
+    <!-- Recipe Types -->
+    <string name="recipe_type_hot">Hot</string>
+    <string name="recipe_type_meat">Meat</string>
+    <string name="recipe_type_fish">Fish</string>
+    <string name="recipe_type_cold">Cold</string>
+    <string name="recipe_type_vegan">Vegan</string>
+    <string name="recipe_type_spicy">Spicy</string>
+    <string name="recipe_type_sweet">Sweet</string>
+    <string name="recipe_type_vegetarian">Vegetarian</string>
+    <string name="recipe_type_gluten_free">Gluten free</string>
+    <string name="recipe_type_sweet_and_sour">Sweet and sour</string>
+
+    <!-- Meal Types -->
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Dinner</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="snack">Snack</string>
+    <string name="tea_time">Teatime</string>
+
+    <!-- Recipe details -->
+    <string name="recipe_detail_time">Time: %d minutes</string>
+    <string name="check_steps">Check recipe steps</string>
+    <string name="favorite_recipe">Favorite</string>
+    <string name="delete_recipe">Delete</string>
+    <string name="edit_recipe">Edit recipe</string>
+    <string name="editing_recipe">Editing %s</string>
+    <string name="favorite">Favorite</string>
+
+    <!-- Favorites fragment -->
+    <string name="no_favorites">No favorites recipes found</string>
+
+    <!-- Settings -->
+    <string name="language_settings">Languages</string>
+    <string name="select_app_language_title">App language</string>
+    <string name="select_remote_recipes_language_title">Browser recipe language</string>
+    <string name="dark_theme">Theme</string>
+    <string name="dark_theme_title">Enable dark theme</string>
+    <string name="select_app_language_summary">Select app language</string>
+    <string name="select_remote_recipes_language_summary">Select recipe browser language</string>
+    <string name="about">About application</string>
+    <string name="current_version">Current version</string>
+
+</resources>

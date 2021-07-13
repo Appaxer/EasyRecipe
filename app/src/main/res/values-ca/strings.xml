@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="no_internet_title">Sense internet</string>
+    <string name="no_internet_message">Hi ha hagut un error inesperat al conectar-se a la rarxa.\nSi us plau, revisa la teva conexió a internet.</string>
+    <string name="other_error_title">Error inesperat</string>
+    <string name="other_error_message">Hi ha hagut un error inesperat.\nSi us plau, contacta amb el servei de suport.</string>
+
+    <!-- Fragment names -->
+    <string name="recipes_fragment">Receptes</string>
+    <string name="search_fragment">Explorar</string>
+    <string name="create_recipe_fragment">Crear recepta</string>
+    <string name="favorite_fragment">Favorites</string>
+
+    <!-- Recipes fragment -->
+    <string name="content_description_create_recipe">Crear recepta</string>
+    <string name="recipes_not_found">Receptes no trobades</string>
+
+    <!-- Create recipe fragment -->
+    <string name="recipe_name">Nom</string>
+    <string name="recipe_description">Descripció</string>
+    <string name="recipe_time">Temps</string>
+    <string name="recipe_time_suffix">Minuts</string>
+    <string name="recipe_types">Tipus</string>
+    <string name="recipe_ingredients">Ingredients</string>
+    <string name="recipe_ingredient_name">Nom</string>
+    <string name="recipe_ingredient_quantity">Quantitat</string>
+    <string name="recipe_steps">Passos</string>
+    <string name="recipe_step_title">Pas</string>
+    <string name="recipe_step_modifying">Modificant pas %d</string>
+    <string name="recipe_create">Crear recepta</string>
+    <string name="recipe_edit">Editar recepta</string>
+
+    <!-- Recipe Types -->
+    <string name="recipe_type_hot">Calent</string>
+    <string name="recipe_type_meat">Carn</string>
+    <string name="recipe_type_fish">Peix</string>
+    <string name="recipe_type_cold">Fred</string>
+    <string name="recipe_type_vegan">Vegà</string>
+    <string name="recipe_type_vegetarian">Vegetarià</string>
+    <string name="recipe_type_gluten_free">Sense gluten</string>
+
+    <!-- Meal Types -->
+    <string name="lunch">Dinar</string>
+    <string name="dinner">Sopar</string>
+    <string name="breakfast">Esmorçar</string>
+    <string name="snack">Aperitiu</string>
+    <string name="tea_time">Berenar</string>
+
+    <!-- Recipe details -->
+    <string name="recipe_detail_time">Temps: %d minuts</string>
+    <string name="check_steps">Veure passos</string>
+    <string name="favorite_recipe">Favorit</string>
+    <string name="delete_recipe">Eliminar</string>
+    <string name="edit_recipe">Editar recepta</string>
+    <string name="editing_recipe">Editant %s</string>
+    <string name="favorite">Favorit</string>
+    <string name="settings_fragment">Configuració</string>
+    <string name="search">Cercar</string>
+    <string name="recipe_type_spicy">Picant</string>
+    <string name="recipe_type_sweet">Dolç</string>
+    <string name="recipe_type_sweet_and_sour">Agredolç</string>
+
+    <!-- Favorites fragment -->
+    <string name="no_favorites">No s\'han trobat recipes preferides</string>
+
+    <!-- Settings -->
+    <string name="language_settings">Idiomes</string>
+    <string name="select_app_language_title">Idioma de l\'aplicació</string>
+    <string name="select_remote_recipes_language_title">Idioma del navegador</string>
+    <string name="dark_theme">Tema</string>
+    <string name="dark_theme_title">Habilita el tema fosc</string>
+    <string name="select_app_language_summary">Selecciona l\'idioma de l\'aplicació</string>
+    <string name="select_remote_recipes_language_summary">Selecciona l\'idioma del navegador de receptes</string>
+    <string name="about">Sobre l\'aplicació</string>
+    <string name="current_version">Versió actual</string>
+
+</resources>
+

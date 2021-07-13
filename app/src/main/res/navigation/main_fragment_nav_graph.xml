@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_fragment_nav_fragment"
+    app:startDestination="@id/recipesFragment">
+
+    <fragment
+        android:id="@+id/recipesFragment"
+        android:name="org.easyrecipe.features.recipes.RecipesFragment"
+        android:label="@string/recipes_fragment"
+        tools:layout="@layout/fragment_recipes">
+        <action
+            android:id="@+id/action_recipesFragment_to_createRecipeFragment"
+            app:destination="@id/createRecipeFragment" />
+        <action
+            android:id="@+id/action_recipesFragment_to_recipeDetail"
+            app:destination="@id/recipeDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="org.easyrecipe.features.search.SearchFragment"
+        android:label="@string/search_fragment"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_recipeDetail"
+            app:destination="@id/recipeDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="org.easyrecipe.features.favorites.FavoriteFragment"
+        android:label="@string/favorite_fragment"
+        tools:layout="@layout/fragment_favorite">
+        <action
+            android:id="@+id/action_favoriteFragment_to_recipeDetail"
+            app:destination="@id/recipeDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="org.easyrecipe.features.settings.SettingsFragment"
+        android:label="@string/settings_fragment"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/createRecipeFragment"
+        android:name="org.easyrecipe.features.createrecipe.CreateRecipeFragment"
+        android:label="{title}"
+        tools:layout="@layout/fragment_create_recipe">
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="isEditing"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="recipe"
+            android:defaultValue="@null"
+            app:argType="org.easyrecipe.model.LocalRecipe"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_createRecipeFragment_to_recipeDetail"
+            app:destination="@id/recipeDetail"
+            app:popUpTo="@id/recipeDetail"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/recipeDetail"
+        android:name="org.easyrecipe.features.recipedetail.RecipeDetailFragment"
+        android:label="{recipeName}"
+        tools:layout="@layout/fragment_recipe_detail">
+        <argument
+            android:name="recipeName"
+            app:argType="string" />
+        <argument
+            android:name="recipe"
+            app:argType="org.easyrecipe.model.Recipe" />
+        <action
+            android:id="@+id/action_recipeDetail_to_createRecipeFragment"
+            app:destination="@id/createRecipeFragment" />
+    </fragment>
+</navigation>

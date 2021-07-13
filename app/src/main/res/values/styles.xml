@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <style name="dialog" parent="Base.Theme.MaterialComponents.Light.Dialog">
+        <item name="buttonBarPositiveButtonStyle">@style/materialAlertPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/materialAlertNegativeButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/materialAlertNeutralButton</item>
+    </style>
+
+    <style name="materialAlertPositiveButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primaryColor</item>
+    </style>
+
+    <style name="materialAlertNegativeButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <style name="materialAlertNeutralButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primaryColor</item>
+    </style>
+
+    <style name="button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="backgroundTint">@color/primaryColor</item>
+    </style>
+
+    <style name="fullWidthButton" parent="button">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="textInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="fullWidthTextInputLayout" parent="textInputLayout">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="textInputEditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">textCapSentences</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="exposed_menu" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="full_width_exposed_menu" parent="exposed_menu">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="chip" parent="@style/Widget.MaterialComponents.Chip.Filter">
+
+    </style>
+
+    <style name="icon_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
+    <style name="section_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/sectionColor</item>
+        <item name="android:textSize">@dimen/section</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ingredient_info">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/sectionColor</item>
+        <item name="android:textSize">@dimen/ingredient_info</item>
+    </style>
+
+    <style name="divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
+    <style name="recipe_name">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:shadowColor">@android:color/black</item>
+        <item name="android:shadowDx">@dimen/shadow</item>
+        <item name="android:shadowDy">@dimen/shadow</item>
+        <item name="android:shadowRadius">@dimen/shadow_radius</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/recipe_name_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textSize">@dimen/default_text_size</item>
+    </style>
+
+    <style name="text_full_width" parent="text">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+</resources>

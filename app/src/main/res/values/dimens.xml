@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <dimen name="app_padding">20dp</dimen>
+    <dimen name="app_padding_half">10dp</dimen>
+    <dimen name="app_padding_more">30dp</dimen>
+    <dimen name="indicator_padding">10dp</dimen>
+    <dimen name="indicator_size">75dp</dimen>
+    <dimen name="section">18sp</dimen>
+    <dimen name="ingredient_info">16sp</dimen>
+    <dimen name="delete_ingredient_min_size">30dp</dimen>
+    <dimen name="not_found">100dp</dimen>
+    <dimen name="shadow">5</dimen>
+    <dimen name="shadow_radius">1</dimen>
+    <dimen name="recipe_name_size">24sp</dimen>
+    <dimen name="edamam_image">150dp</dimen>
+    <dimen name="default_text_size">16sp</dimen>
+</resources>

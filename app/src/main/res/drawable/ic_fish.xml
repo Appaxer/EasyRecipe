@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:fillColor="#66b3ff"
+        android:pathData="m295.695,40.651c-21.363,12.371 -42.711,28.305 -63.157,48.752 -121.21,121.21 -84.03,274.09 -84.03,274.09l260.624,-204.619z" />
+    <path
+        android:fillColor="#4d88ff"
+        android:pathData="m148.508,363.492s152.88,37.18 274.09,-84.03c20.447,-20.446 36.381,-41.794 48.752,-63.157l-87.827,-87.827z" />
+    <path
+        android:fillColor="#f9f9f9"
+        android:pathData="m295.695,40.651c9.595,41.374 30.512,80.655 62.756,112.898l93.873,-42.71 54.303,-105.466s-105.652,-25.689 -210.932,35.278z" />
+    <path
+        android:fillColor="#e2dff4"
+        android:pathData="m506.627,5.373 l-148.176,148.176c32.244,32.244 71.525,53.161 112.899,62.756 60.966,-105.28 35.277,-210.932 35.277,-210.932z" />
+    <path
+        android:fillColor="#4d88ff"
+        android:pathData="m8.609,379.259 l-8.609,-8.609 23.212,-23.212c34.278,-34.278 89.853,-34.278 124.131,0l8.609,8.609 -3.447,19.522 -19.765,3.69c-34.277,34.278 -89.853,34.278 -124.131,0z" />
+    <path
+        android:fillColor="#005edf"
+        android:pathData="m132.741,503.391 l8.609,8.609 23.212,-23.212c34.278,-34.278 34.278,-89.853 0,-124.131l-8.609,-8.609 -23.212,23.212c-34.278,34.277 -34.278,89.853 0,124.131z" />
+    <path
+        android:fillColor="#08475e"
+        android:pathData="m376.29,77.655l21.202,-21.202l21.202,21.202l-21.202,21.202z" />
+</vector>

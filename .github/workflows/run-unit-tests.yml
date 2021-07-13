@@ -1,0 +1,38 @@
+name: Run unit tests
+
+on:
+  push:
+    branches-ignore: [ main, develop ]
+
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  unit-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: grant execution to gradlew
+        run: chmod +x ./gradlew
+
+      - name: create local.properties
+        shell: bash
+        run: |
+          echo "edamam.appId=$EDAMAM_APP_ID" > local.properties
+          echo "edamam.apiKey=$EDAMAM_API_KEY" >> local.properties
+        env:
+          EDAMAM_APP_ID: ${{ secrets.EDAMAM_APP_ID }}
+          EDAMAM_API_KEY: ${{ secrets.EDAMAM_API_KEY }}
+
+      - name: run unit tests
+        run: ./gradlew test

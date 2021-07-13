@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (C) 2021 Appaxer
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:fillColor="#ff7c48"
+        android:pathData="m376.41,258.05 l-20.69,69.76 20.69,46.63v122.56c0,8.28 -6.72,15 -15,15h-210.82c-8.28,0 -15,-6.72 -15,-15v-122.56l29.5,-51.4 -29.5,-64.99v-62.3c0,-24.82 20.19,-45.01 45,-45.01 8.09,0 15.69,-3.15 21.4,-8.87 5.74,-5.73 8.89,-13.33 8.89,-21.43v-45.19c0,-8.29 6.71,-15 15,-15h60.24c8.28,0 15,6.71 15,15v45.19c0,16.71 13.59,30.3 30.29,30.3 12.03,0 23.33,4.69 31.83,13.2 8.49,8.49 13.17,19.79 13.17,31.81z" />
+    <path
+        android:fillColor="#ff415b"
+        android:pathData="m376.41,258.05 l-20.69,69.76 20.69,46.63v122.56c0,8.28 -6.72,15 -15,15h-105.41v-451.75h30.12c8.28,0 15,6.71 15,15v45.19c0,16.71 13.59,30.3 30.29,30.3 12.03,0 23.33,4.69 31.83,13.2 8.49,8.49 13.17,19.79 13.17,31.81z" />
+    <path
+        android:fillColor="#90776f"
+        android:pathData="m331.24,15v45.24c0,8.28 -6.72,15 -15,15h-120.48c-8.28,0 -15,-6.72 -15,-15v-45.24c0,-8.28 6.72,-15 15,-15h120.48c8.28,0 15,6.72 15,15z" />
+    <path
+        android:fillColor="#674d55"
+        android:pathData="m331.24,15v45.24c0,8.28 -6.72,15 -15,15h-60.24v-75.24h60.24c8.28,0 15,6.72 15,15z" />
+    <path
+        android:fillColor="#674d55"
+        android:pathData="m241,0h30v75.24h-30z" />
+    <path
+        android:fillColor="#52374c"
+        android:pathData="m256,0h15v75.24h-15z" />
+    <path
+        android:fillColor="#fff0dc"
+        android:pathData="m376.41,258.05v116.39l-112.08,74.79c-2.52,1.68 -5.43,2.53 -8.33,2.53s-5.8,-0.85 -8.32,-2.53l-112.09,-74.79v-116.39l112.09,-74.78c2.52,-1.69 5.42,-2.53 8.32,-2.53 2.91,0 5.81,0.84 8.33,2.53z" />
+    <path
+        android:fillColor="#ffe3c0"
+        android:pathData="m376.41,258.05v116.39l-112.08,74.79c-2.52,1.68 -5.43,2.53 -8.33,2.53v-271.02c2.91,0 5.81,0.84 8.33,2.53z" />
+    <path
+        android:fillColor="#ff415b"
+        android:pathData="m301.12,323.78c0,24.88 -20.24,45.13 -45.12,45.13s-45.12,-20.25 -45.12,-45.13c0,-6.44 1.83,-17.7 17.65,-41.02 7.86,-11.58 15.63,-20.92 15.96,-21.31 2.85,-3.41 7.06,-5.39 11.51,-5.39s8.67,1.98 11.52,5.39c0.32,0.39 8.1,9.73 15.95,21.31 15.82,23.32 17.65,34.58 17.65,41.02z" />
+    <path
+        android:fillColor="#e50058"
+        android:pathData="m301.12,323.78c0,24.88 -20.24,45.13 -45.12,45.13v-112.85c4.45,0 8.67,1.98 11.52,5.39 0.32,0.39 8.1,9.73 15.95,21.31 15.82,23.32 17.65,34.58 17.65,41.02z" />
+</vector>
