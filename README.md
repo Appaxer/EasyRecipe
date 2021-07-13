@@ -72,4 +72,4 @@ This application uses icons made by:
 - [Nhor Phai](https://www.flaticon.com/authors/nhor-phai "Nhor Phai") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")
 
 ## License
-Easy Recipe is licensed under Apache-2.0. See the [LICENSE](LICENSE) file.
+Easy Recipe is licensed under GPL. See the [LICENSE](LICENSE) file.
