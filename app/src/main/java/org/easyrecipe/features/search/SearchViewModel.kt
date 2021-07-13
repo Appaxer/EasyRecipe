@@ -22,10 +22,13 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.easyrecipe.R
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.NavManager
+import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
@@ -34,6 +37,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
+    private val navManager: NavManager,
+    private val searchNavigation: SearchNavigation,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val mealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
@@ -58,7 +63,10 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onShowRecipeDetail(recipe: Recipe) {
-        loadState(SearchState.ShowRecipeDetail(recipe))
+        //loadState(SearchState.ShowRecipeDetail(recipe))
+
+        val action = searchNavigation.navigateToRecipeDetail(recipe)
+        navManager.navigate(R.id.mainFragmentNavGraph, action)
     }
 
     fun onAddMealType(type: MealType) {

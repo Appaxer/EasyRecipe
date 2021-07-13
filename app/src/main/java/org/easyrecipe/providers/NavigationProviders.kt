@@ -15,16 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.managers
+package org.easyrecipe.providers
 
-import androidx.annotation.IdRes
-import androidx.navigation.NavDirections
-import kotlinx.coroutines.flow.SharedFlow
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import org.easyrecipe.features.search.navigation.SearchNavigation
+import org.easyrecipe.features.search.navigation.SearchNavigationImpl
 
-interface NavManager {
-    val action: SharedFlow<NavState>
+@InstallIn(SingletonComponent::class)
+class NavigationProviders {
 
-    fun navigate(@IdRes navHostFragment: Int, action: NavDirections)
-
-    fun navigateUp(@IdRes navHostFragment: Int)
+    @Provides
+    fun provideSearchNavigation(): SearchNavigation = SearchNavigationImpl()
 }

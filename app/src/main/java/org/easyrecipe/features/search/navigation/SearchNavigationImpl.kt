@@ -15,16 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.managers
+package org.easyrecipe.features.search.navigation
 
-import androidx.annotation.IdRes
-import androidx.navigation.NavDirections
-import kotlinx.coroutines.flow.SharedFlow
+import org.easyrecipe.features.search.SearchFragmentDirections
+import org.easyrecipe.model.Recipe
 
-interface NavManager {
-    val action: SharedFlow<NavState>
-
-    fun navigate(@IdRes navHostFragment: Int, action: NavDirections)
-
-    fun navigateUp(@IdRes navHostFragment: Int)
+class SearchNavigationImpl : SearchNavigation {
+    override fun navigateToRecipeDetail(recipe: Recipe) =
+        SearchFragmentDirections.actionSearchFragmentToRecipeDetail(recipe.name, recipe)
 }

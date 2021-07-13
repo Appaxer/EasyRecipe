@@ -26,22 +26,38 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.easyrecipe.common.extensions.enableDarkTheme
+import org.easyrecipe.common.managers.NavManager
+import org.easyrecipe.common.managers.NavState
 import org.easyrecipe.databinding.ActivityMainBinding
 import org.easyrecipe.features.settings.SettingsFragment.Companion.APP_LANGUAGE
 import org.easyrecipe.features.settings.SettingsFragment.Companion.ENABLE_DARK_THEME
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    @Inject
+    lateinit var navManager: NavManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        navManager.action.asLiveData().observe(this) { navState ->
+            val navController = findNavController(navState.navHostFragment)
+            when (navState) {
+                is NavState.Navigate -> navController.navigate(navState.action)
+                else -> navController.navigateUp()
+            }
+        }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

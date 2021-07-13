@@ -17,16 +17,18 @@
 
 package org.easyrecipe.common.managers
 
-import androidx.annotation.NavigationRes
+import androidx.annotation.IdRes
 import androidx.navigation.NavDirections
 
-sealed class NavState {
+sealed class NavState(
+    @IdRes val navHostFragment: Int,
+) {
     class Navigate(
-        @NavigationRes navGraph: Int,
+        @IdRes navHostFragment: Int,
         val action: NavDirections,
-    ) : NavState()
+    ) : NavState(navHostFragment)
 
     class NavigateUp(
-        @NavigationRes navGraph: Int,
-    ) : NavState()
+        @IdRes navHostFragment: Int,
+    ) : NavState(navHostFragment)
 }
