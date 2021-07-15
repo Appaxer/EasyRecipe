@@ -23,6 +23,7 @@ buildscript {
     ext.googleServicesVersion = "4.3.5"
     ext.dokkaVersion = "0.10.1"
     ext.daggerHiltVersion = "2.35"
+    ext.jacocoVersion = "0.8.5"
 
     repositories {
         google()
@@ -35,6 +36,7 @@ buildscript {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerHiltVersion"
+        classpath "org.jacoco:org.jacoco.core:$jacocoVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

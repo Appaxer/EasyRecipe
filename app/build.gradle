@@ -25,6 +25,8 @@ plugins {
     id "org.sonarqube" version "3.3"
 }
 
+apply from: "jacoco.gradle"
+
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
