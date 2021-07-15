@@ -41,6 +41,7 @@ import org.easyrecipe.common.extensions.showLoadingDialog
  * @property action The action that has to be performed depending of the [ScreenState]
  */
 @Suppress("UNCHECKED_CAST")
+@Deprecated("The use of states is deprecated, you should use managers instead")
 class ScreenStateHandler<T : ScreenState>(
     var context: Context? = null,
     private val onLoading: (Context) -> Unit = {},

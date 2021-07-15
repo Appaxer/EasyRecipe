@@ -25,5 +25,5 @@ import androidx.lifecycle.MutableLiveData
  * @param T The type of the [MutableLiveData]
  */
 fun <T> MutableLiveData<T>.notify() {
-    value = value
+    this.value = value
 }

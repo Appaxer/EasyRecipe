@@ -40,7 +40,7 @@ import org.easyrecipe.common.handlers.ScreenStateHandler
 abstract class BaseFragment : Fragment() {
     abstract val viewModel: BaseViewModel
 
-    @Deprecated("The use of states is deprecated, you should use handlers instead")
+    @Deprecated("The use of states is deprecated, you should use managers instead")
     open val screenStateHandler: ScreenStateHandler<*>? = null
 
     protected val imagePermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
