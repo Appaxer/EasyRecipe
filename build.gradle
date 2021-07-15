@@ -23,7 +23,7 @@ buildscript {
     ext.googleServicesVersion = "4.3.5"
     ext.dokkaVersion = "0.10.1"
     ext.daggerHiltVersion = "2.35"
-    ext.jacocoVersion = "0.8.5"
+    ext.jacocoVersion = "0.8.7"
 
     repositories {
         google()
