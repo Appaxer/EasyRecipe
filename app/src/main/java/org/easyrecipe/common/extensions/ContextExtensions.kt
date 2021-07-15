@@ -104,6 +104,30 @@ fun Context.showDialog(
     )
 }
 
+fun Context.showIntDialog(
+    @StringRes title: Int,
+    @StringRes message: Int,
+    positiveButtonText: Int? = R.string.ok,
+    positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    negativeButtonText: Int? = null,
+    negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    neutralButtonText: Int? = null,
+    neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    isCancelable: Boolean = true,
+) {
+    showDialog(
+        getString(title),
+        getString(message),
+        positiveButtonText?.let { textId -> getString(textId) },
+        positiveButtonAction,
+        negativeButtonText?.let { textId -> getString(textId) },
+        negativeButtonAction,
+        neutralButtonText?.let { textId -> getString(textId) },
+        neutralButtonAction,
+        isCancelable
+    )
+}
+
 private var loadingDialog: Dialog? = null
 
 /**

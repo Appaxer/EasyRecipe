@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.managers
+package org.easyrecipe.common.managers.navigation
 
 import androidx.annotation.IdRes
 import androidx.navigation.NavDirections

@@ -27,7 +27,7 @@ import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateMainFragment
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
-import org.easyrecipe.common.managers.NavManager
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe

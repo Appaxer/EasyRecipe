@@ -25,7 +25,7 @@ import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateUpMainFragment
 import org.easyrecipe.common.handlers.UseCaseResultHandler
-import org.easyrecipe.common.managers.NavManager
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import javax.inject.Inject

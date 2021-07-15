@@ -26,15 +26,17 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.easyrecipe.common.extensions.enableDarkTheme
-import org.easyrecipe.common.managers.NavManager
-import org.easyrecipe.common.managers.NavState
+import org.easyrecipe.common.extensions.*
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.dialog.DialogState
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.common.managers.navigation.NavState
 import org.easyrecipe.databinding.ActivityMainBinding
 import org.easyrecipe.features.settings.SettingsFragment.Companion.APP_LANGUAGE
 import org.easyrecipe.features.settings.SettingsFragment.Companion.ENABLE_DARK_THEME
@@ -48,17 +50,74 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var navManager: NavManager
 
+    @Inject
+    lateinit var dialogManager: DialogManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         lifecycleScope.launch {
-            navManager.action.collect { navState ->
-                val navController = findNavController(navState.navHostFragment)
-                when (navState) {
-                    is NavState.Navigate -> navController.navigate(navState.action)
-                    else -> navController.navigateUp()
+            setUpNavManager()
+            setUpDialogManager()
+        }
+    }
+
+    private suspend fun setUpNavManager() {
+        navManager.action.asLiveData().observe(this) { navState ->
+            val navController = findNavController(navState.navHostFragment)
+            when (navState) {
+                is NavState.Navigate -> navController.navigate(navState.action)
+                else -> navController.navigateUp()
+            }
+        }
+    }
+
+    private suspend fun setUpDialogManager() {
+        dialogManager.dialog.asLiveData().observe(this) { dialogState ->
+            when (dialogState) {
+                is DialogState.ShowIntDialog -> {
+                    with(dialogState.data) {
+                        showIntDialog(
+                            title,
+                            message,
+                            positiveButtonText,
+                            positiveButtonAction,
+                            negativeButtonText,
+                            negativeButtonAction,
+                            neutralButtonText,
+                            neutralButtonAction,
+                            isCancelable
+                        )
+                    }
+                }
+                is DialogState.ShowLambdaDialog -> {
+                    with(dialogState.data) {
+                        showDialog(
+                            title(this@MainActivity),
+                            message(this@MainActivity),
+                            positiveButtonText(this@MainActivity),
+                            positiveButtonAction,
+                            negativeButtonText(this@MainActivity),
+                            negativeButtonAction,
+                            neutralButtonText(this@MainActivity),
+                            neutralButtonAction,
+                            isCancelable
+                        )
+                    }
+                }
+                DialogState.ShowLoadingDialog -> {
+                    showLoadingDialog()
+                }
+                DialogState.CancelLoadingDialog -> {
+                    cancelLoadingDialog()
+                }
+                is DialogState.ShowStringToast -> {
+                    toast(dialogState.data, dialogState.duration)
+                }
+                is DialogState.ShowIntToast -> {
+                    toast(dialogState.data, dialogState.duration)
                 }
             }
         }

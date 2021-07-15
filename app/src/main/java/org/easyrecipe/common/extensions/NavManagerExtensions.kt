@@ -19,7 +19,7 @@ package org.easyrecipe.common.extensions
 
 import androidx.navigation.NavDirections
 import org.easyrecipe.R
-import org.easyrecipe.common.managers.NavManager
+import org.easyrecipe.common.managers.navigation.NavManager
 
 private const val NAV_HOST_FRAGMENT = R.id.nav_host_fragment
 private const val MAIN_FRAGMENT_NAV_GRAPH = R.id.mainFragmentNavGraph

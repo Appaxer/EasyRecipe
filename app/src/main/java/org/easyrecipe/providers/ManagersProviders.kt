@@ -21,8 +21,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.easyrecipe.common.managers.NavManager
-import org.easyrecipe.common.managers.NavManagerImpl
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.dialog.DialogManagerImpl
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.common.managers.navigation.NavManagerImpl
 import javax.inject.Singleton
 
 @Module
@@ -32,4 +34,8 @@ class ManagersProviders {
     @Provides
     @Singleton
     fun provideNavManager(): NavManager = NavManagerImpl()
+
+    @Provides
+    @Singleton
+    fun provideDialogManager(): DialogManager = DialogManagerImpl()
 }

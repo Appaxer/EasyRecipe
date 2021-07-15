@@ -21,7 +21,7 @@ import android.content.Context
 import org.easyrecipe.R
 import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.cancelLoadingDialog
-import org.easyrecipe.common.extensions.showDialog
+import org.easyrecipe.common.extensions.showIntDialog
 import org.easyrecipe.common.extensions.showLoadingDialog
 
 /**
@@ -45,13 +45,13 @@ class ScreenStateHandler<T : ScreenState>(
     var context: Context? = null,
     private val onLoading: (Context) -> Unit = {},
     private val onNoInternet: (Context) -> Unit = {
-        it.showDialog(
+        it.showIntDialog(
             R.string.no_internet_title,
             R.string.no_internet_message
         )
     },
     private val onOtherError: (Context) -> Unit = {
-        it.showDialog(
+        it.showIntDialog(
             R.string.other_error_title,
             R.string.other_error_message
         )
