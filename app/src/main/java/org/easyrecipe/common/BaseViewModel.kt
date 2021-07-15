@@ -123,7 +123,6 @@ abstract class BaseViewModel : ViewModel() {
         (result as? UseCaseResult.Error)?.let { error ->
             if (error.exception.isCommonError()) {
                 _displayCommonError.value = error.exception
-                _displayCommonError.value = null
             }
         }
 
