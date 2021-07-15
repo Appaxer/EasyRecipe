@@ -26,7 +26,6 @@ import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.model.RecipeType
-import java.util.*
 import javax.inject.Inject
 
 class LocalDataSourceImpl @Inject constructor(
@@ -85,7 +84,7 @@ class LocalDataSourceImpl @Inject constructor(
         ingredients: Map<String, String>,
     ) {
         ingredients.forEach { (name, quantity) ->
-            val ingredientName = name.toLowerCase(Locale.getDefault())
+            val ingredientName = name.lowercase()
             var ingredientEntity = recipeDao.getIngredient(ingredientName)
             if (ingredientEntity == null) {
                 ingredientEntity = IngredientEntity(ingredientName)
