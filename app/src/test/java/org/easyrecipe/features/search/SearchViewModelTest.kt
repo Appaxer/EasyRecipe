@@ -18,14 +18,19 @@
 package org.easyrecipe.features.search
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.navigation.NavDirections
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
+import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.getAfterLoading
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
@@ -33,7 +38,7 @@ import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import org.hamcrest.CoreMatchers
-import org.junit.Assert.assertThat
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,6 +62,15 @@ class SearchViewModelTest {
     @MockK
     private lateinit var searchRecipes: SearchRecipes
 
+    @MockK
+    private lateinit var navManager: NavManager
+
+    @MockK
+    private lateinit var searchNavigation: SearchNavigation
+
+    @MockK
+    private lateinit var navDirections: NavDirections
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -66,7 +80,14 @@ class SearchViewModelTest {
     @Before
     fun setUp() {
         searchRecipes = mockk()
-        viewModel = SearchViewModel(searchRecipes)
+        navManager = mockk()
+        every { navManager.navigate(any(), any()) } returns Unit
+
+        navDirections = mockk()
+        searchNavigation = mockk()
+        every { searchNavigation.navigateToRecipeDetail(any()) } returns navDirections
+
+        viewModel = SearchViewModel(searchRecipes, navManager, searchNavigation)
     }
 
     @Test
@@ -102,5 +123,16 @@ class SearchViewModelTest {
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)
         )
+    }
+
+    @Test
+    fun `when loading recipe then we navigate to RecipeDetail`() {
+        val recipe = recipes.first()
+        viewModel.onShowRecipeDetail(recipe)
+
+        verify {
+            searchNavigation.navigateToRecipeDetail(recipe)
+            navManager.navigate(any(), navDirections)
+        }
     }
 }

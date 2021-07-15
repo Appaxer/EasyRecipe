@@ -19,12 +19,14 @@ package org.easyrecipe.features.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.getAfterLoading
 import org.easyrecipe.getOrAwaitValueExceptDefault
@@ -57,6 +59,9 @@ class MainViewModelTest {
     @MockK
     private lateinit var searchRecipes: SearchRecipes
 
+    @MockK
+    private lateinit var navManager: NavManager
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -66,7 +71,10 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         searchRecipes = mockk()
-        viewModel = MainViewModel(searchRecipes)
+        navManager = mockk()
+        every { navManager.navigateUp(any()) } returns Unit
+
+        viewModel = MainViewModel(searchRecipes, navManager)
     }
 
     @Test
