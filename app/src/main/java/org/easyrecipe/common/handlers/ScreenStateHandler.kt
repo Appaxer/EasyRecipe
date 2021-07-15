@@ -23,6 +23,7 @@ import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.cancelLoadingDialog
 import org.easyrecipe.common.extensions.showIntDialog
 import org.easyrecipe.common.extensions.showLoadingDialog
+import org.easyrecipe.common.managers.dialog.IntDialog
 
 /**
  * Handler for performing some actions depending on the screen state that is being currently
@@ -46,16 +47,10 @@ class ScreenStateHandler<T : ScreenState>(
     var context: Context? = null,
     private val onLoading: (Context) -> Unit = {},
     private val onNoInternet: (Context) -> Unit = {
-        it.showIntDialog(
-            R.string.no_internet_title,
-            R.string.no_internet_message
-        )
+        it.showIntDialog(IntDialog(R.string.no_internet_title, R.string.no_internet_message))
     },
     private val onOtherError: (Context) -> Unit = {
-        it.showIntDialog(
-            R.string.other_error_title,
-            R.string.other_error_message
-        )
+        it.showIntDialog(IntDialog(R.string.other_error_title, R.string.other_error_message))
     },
     private val onExecutingUseCase: (Context) -> Unit = { it.showLoadingDialog() },
     private val action: (Context, T) -> Unit,

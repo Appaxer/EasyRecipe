@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun setUpNavManager() {
+    private fun setUpNavManager() {
         navManager.action.asLiveData().observe(this) { navState ->
             val navController = findNavController(navState.navHostFragment)
             when (navState) {
@@ -74,38 +74,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun setUpDialogManager() {
+    private fun setUpDialogManager() {
         dialogManager.dialog.asLiveData().observe(this) { dialogState ->
             when (dialogState) {
                 is DialogState.ShowIntDialog -> {
-                    with(dialogState.data) {
-                        showIntDialog(
-                            title,
-                            message,
-                            positiveButtonText,
-                            positiveButtonAction,
-                            negativeButtonText,
-                            negativeButtonAction,
-                            neutralButtonText,
-                            neutralButtonAction,
-                            isCancelable
-                        )
-                    }
+                    showIntDialog(dialogState.data)
                 }
                 is DialogState.ShowLambdaDialog -> {
-                    with(dialogState.data) {
-                        showDialog(
-                            title(this@MainActivity),
-                            message(this@MainActivity),
-                            positiveButtonText(this@MainActivity),
-                            positiveButtonAction,
-                            negativeButtonText(this@MainActivity),
-                            negativeButtonAction,
-                            neutralButtonText(this@MainActivity),
-                            neutralButtonAction,
-                            isCancelable
-                        )
-                    }
+                    showLambdaDialog(dialogState.data)
                 }
                 DialogState.ShowLoadingDialog -> {
                     showLoadingDialog()

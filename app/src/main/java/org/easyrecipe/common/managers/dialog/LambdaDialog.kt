@@ -17,13 +17,17 @@
 
 package org.easyrecipe.common.managers.dialog
 
-import androidx.annotation.StringRes
+import android.content.Context
+import android.content.DialogInterface
 
-sealed class DialogState {
-    class ShowIntDialog(val data: IntDialog) : DialogState()
-    class ShowLambdaDialog(val data: LambdaDialog) : DialogState()
-    object ShowLoadingDialog : DialogState()
-    object CancelLoadingDialog : DialogState()
-    class ShowStringToast(val data: String, val duration: Int) : DialogState()
-    class ShowIntToast(@StringRes val data: Int, val duration: Int) : DialogState()
-}
+data class LambdaDialog(
+    val title: (Context) -> String,
+    val message: (Context) -> String,
+    val positiveButtonText: (Context) -> String? = { null },
+    val positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    val negativeButtonText: (Context) -> String? = { null },
+    val negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    val neutralButtonText: (Context) -> String? = { null },
+    val neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
+    val isCancelable: Boolean = true,
+)

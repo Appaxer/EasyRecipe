@@ -19,45 +19,28 @@ package org.easyrecipe.common.extensions
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.easyrecipe.R
+import org.easyrecipe.common.managers.dialog.IntDialog
+import org.easyrecipe.common.managers.dialog.LambdaDialog
 
 /**
- * Show a dialog with [title] and [message].
+ * Show a dialog whose values are given with android string ids.
  *
- * @param title The title of the dialog
- * @param message The message of the dialog
- * @param positiveButtonText The text of the positive button
- * @param positiveButtonAction The action that takes place when the positive button is pressed,
- * only if [positiveButtonAction] is not null, being closing dialog the default behaviour
- * @param negativeButtonText The text of the negative button
- * @param negativeButtonAction The action that takes place when the negative button is pressed,
- * only if [negativeButtonText] is not null, being closing dialog the default behaviour
- * @param neutralButtonText The text of the neutral button
- * @param neutralButtonAction The action that takes place when the neutral button is pressed,
- * only if [neutralButtonText] is not null, being closing dialog the default behaviour
- * @param isCancelable It defines whether the dialog should be cancelable or not
+ * @param data The data to be shown
  */
-fun Context.showDialog(
-    title: String,
-    message: String,
-    positiveButtonText: String? = getString(android.R.string.ok),
-    positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    negativeButtonText: String? = null,
-    negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    neutralButtonText: String? = null,
-    neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    isCancelable: Boolean = true,
-) {
-    val builder = MaterialAlertDialogBuilder(this)
+fun Context.showIntDialog(data: IntDialog) = with(data) {
+    val negativeText = negativeButtonText?.let { textId -> getString(textId) } ?: ""
+    val neutralText = neutralButtonText?.let { textId -> getString(textId) } ?: ""
+
+    val builder = MaterialAlertDialogBuilder(this@showIntDialog)
         .setTitle(title)
         .setMessage(message)
-        .setPositiveButton(positiveButtonText, positiveButtonAction)
-        .setNegativeButton(negativeButtonText, negativeButtonAction)
-        .setNeutralButton(neutralButtonText, neutralButtonAction)
+        .setPositiveButton(getString(positiveButtonText), positiveButtonAction)
+        .setNegativeButton(negativeText, negativeButtonAction)
+        .setNeutralButton(neutralText, neutralButtonAction)
         .setCancelable(isCancelable)
 
     val dialog = builder.create()
@@ -65,67 +48,21 @@ fun Context.showDialog(
 }
 
 /**
- * Show a dialog with [title] and [message].
+ * Show a dialog whose values are given with lambdas.
  *
- * @param title The id of the title of the dialog
- * @param message The id of message of the dialog
- * @param positiveButtonText The text of the positive button
- * @param positiveButtonAction The action that takes place when the positive button is pressed,
- * only if [positiveButtonAction] is not null, being closing dialog the default behaviour
- * @param negativeButtonText The text of the negative button
- * @param negativeButtonAction The action that takes place when the negative button is pressed,
- * only if [negativeButtonText] is not null, being closing dialog the default behaviour
- * @param neutralButtonText The text of the neutral button
- * @param neutralButtonAction The action that takes place when the neutral button is pressed,
- * only if [neutralButtonText] is not null, being closing dialog the default behaviour
- * @param isCancelable It defines whether the dialog should be cancelable or not
+ * @param data The data to be shown
  */
-fun Context.showDialog(
-    @StringRes title: Int,
-    @StringRes message: Int,
-    positiveButtonText: String? = getString(android.R.string.ok),
-    positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    negativeButtonText: String? = null,
-    negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    neutralButtonText: String? = null,
-    neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    isCancelable: Boolean = true,
-) {
-    showDialog(
-        getString(title),
-        getString(message),
-        positiveButtonText,
-        positiveButtonAction,
-        negativeButtonText,
-        negativeButtonAction,
-        neutralButtonText,
-        neutralButtonAction,
-        isCancelable
-    )
-}
+fun Context.showLambdaDialog(data: LambdaDialog) = with(data) {
+    val builder = MaterialAlertDialogBuilder(this@showLambdaDialog)
+        .setTitle(title(this@showLambdaDialog))
+        .setMessage(message(this@showLambdaDialog))
+        .setPositiveButton(positiveButtonText(this@showLambdaDialog), positiveButtonAction)
+        .setNegativeButton(negativeButtonText(this@showLambdaDialog), negativeButtonAction)
+        .setNeutralButton(neutralButtonText(this@showLambdaDialog), neutralButtonAction)
+        .setCancelable(isCancelable)
 
-fun Context.showIntDialog(
-    @StringRes title: Int,
-    @StringRes message: Int,
-    positiveButtonText: Int? = R.string.ok,
-    positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    negativeButtonText: Int? = null,
-    negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    neutralButtonText: Int? = null,
-    neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-    isCancelable: Boolean = true,
-) {
-    showDialog(
-        getString(title),
-        getString(message),
-        positiveButtonText?.let { textId -> getString(textId) },
-        positiveButtonAction,
-        negativeButtonText?.let { textId -> getString(textId) },
-        negativeButtonAction,
-        neutralButtonText?.let { textId -> getString(textId) },
-        neutralButtonAction,
-        isCancelable
-    )
+    val dialog = builder.create()
+    dialog.show()
 }
 
 private var loadingDialog: Dialog? = null

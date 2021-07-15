@@ -32,6 +32,7 @@ import org.easyrecipe.R
 import org.easyrecipe.common.extensions.observeScreenState
 import org.easyrecipe.common.extensions.showIntDialog
 import org.easyrecipe.common.handlers.ScreenStateHandler
+import org.easyrecipe.common.managers.dialog.IntDialog
 
 /**
  * Class from which all fragments must extend from. It is a subclass of [Fragment] but it adds a
@@ -84,7 +85,7 @@ abstract class BaseFragment : Fragment() {
                         R.string.other_error_title to R.string.other_error_message
                 }
 
-                requireContext().showIntDialog(title, message)
+                requireContext().showIntDialog(IntDialog(title, message))
             }
         }
     }
