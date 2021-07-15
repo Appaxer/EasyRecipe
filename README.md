@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://www.android.com" target="__blank"><img src="https://img.shields.io/badge/platform-Android-yellow.svg?style=plastic" alt="Platform"></a>
   <a href="https://docs.gradle.org/current/release-notes" target="__blank"><img src="https://img.shields.io/badge/gradle-4.3-green.svg?style=plastic" alt="Gradle Version"></a>
+  <a href="https://sonarcloud.io/dashboard?id=Appaxer_EasyRecipe"><img src="https://sonarcloud.io/api/project_badges/measure?project=Appaxer_EasyRecipe&metric=alert_status" alt="Quality Gate Status"></a>
 </p>
 
 <p align="center">
