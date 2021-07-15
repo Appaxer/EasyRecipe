@@ -93,6 +93,7 @@ abstract class BaseFragment : Fragment() {
      * @param direction The directions to which the fragment needs to navigate
      * @param navController The [NavController] that will be used to navigate
      */
+    @Deprecated("Navigation between fragments should be done from ViewModels using NavManager")
     protected fun navigate(
         direction: NavDirections,
         navController: NavController = findNavController(),
@@ -106,6 +107,7 @@ abstract class BaseFragment : Fragment() {
      *
      * @param navController The [NavController] that will be used to navigate up
      */
+    @Deprecated("Navigation between fragments should be done from ViewModels using NavManager")
     protected fun navigateUp(navController: NavController = findNavController()) {
         navController.navigateUp()
         viewModel.onLoadNothing()

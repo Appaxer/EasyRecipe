@@ -63,8 +63,6 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onShowRecipeDetail(recipe: Recipe) {
-        //loadState(SearchState.ShowRecipeDetail(recipe))
-
         val action = searchNavigation.navigateToRecipeDetail(recipe)
         navManager.navigateMainFragment(action)
     }
