@@ -15,23 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.managers
+package org.easyrecipe.common.extensions
 
-import androidx.annotation.IdRes
 import androidx.navigation.NavDirections
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import org.easyrecipe.R
+import org.easyrecipe.common.managers.NavManager
 
-class NavManagerImpl : NavManager() {
-    private val _action = MutableSharedFlow<NavState>(replay = 1)
-    override val action: SharedFlow<NavState>
-        get() = _action
+private const val NAV_HOST_FRAGMENT = R.id.nav_host_fragment
+private const val MAIN_FRAGMENT_NAV_GRAPH = R.id.mainFragmentNavGraph
 
-    override fun navigate(@IdRes navHostFragment: Int, action: NavDirections) {
-        _action.tryEmit(NavState.Navigate(navHostFragment, action))
-    }
+fun NavManager.navigate(action: NavDirections) {
+    navigate(NAV_HOST_FRAGMENT, action)
+}
 
-    override fun navigateUp(@IdRes navHostFragment: Int) {
-        _action.tryEmit(NavState.NavigateUp(navHostFragment))
-    }
+fun NavManager.navigateUp() {
+    navigateUp(NAV_HOST_FRAGMENT)
+}
+
+fun NavManager.navigateMainFragment(action: NavDirections) {
+    navigate(MAIN_FRAGMENT_NAV_GRAPH, action)
+}
+
+fun NavManager.navigateUpMainFragment() {
+    navigateUp(MAIN_FRAGMENT_NAV_GRAPH)
 }

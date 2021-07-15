@@ -26,10 +26,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.easyrecipe.common.extensions.enableDarkTheme
 import org.easyrecipe.common.managers.NavManager
 import org.easyrecipe.common.managers.NavState
@@ -51,11 +53,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        navManager.action.asLiveData().observe(this) { navState ->
-            val navController = findNavController(navState.navHostFragment)
-            when (navState) {
-                is NavState.Navigate -> navController.navigate(navState.action)
-                else -> navController.navigateUp()
+        lifecycleScope.launch {
+            navManager.action.collect { navState ->
+                val navController = findNavController(navState.navHostFragment)
+                when (navState) {
+                    is NavState.Navigate -> navController.navigate(navState.action)
+                    else -> navController.navigateUp()
+                }
             }
         }
     }

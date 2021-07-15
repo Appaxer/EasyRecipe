@@ -21,10 +21,10 @@ import androidx.annotation.IdRes
 import androidx.navigation.NavDirections
 import kotlinx.coroutines.flow.SharedFlow
 
-interface NavManager {
-    val action: SharedFlow<NavState>
+abstract class NavManager {
+    abstract val action: SharedFlow<NavState>
 
-    fun navigate(@IdRes navHostFragment: Int, action: NavDirections)
+    abstract fun navigate(@IdRes navHostFragment: Int, action: NavDirections)
 
-    fun navigateUp(@IdRes navHostFragment: Int)
+    abstract fun navigateUp(@IdRes navHostFragment: Int)
 }

@@ -22,9 +22,9 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.easyrecipe.R
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.extensions.navigateMainFragment
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
 import org.easyrecipe.common.managers.NavManager
@@ -66,7 +66,7 @@ class SearchViewModel @Inject constructor(
         //loadState(SearchState.ShowRecipeDetail(recipe))
 
         val action = searchNavigation.navigateToRecipeDetail(recipe)
-        navManager.navigate(R.id.mainFragmentNavGraph, action)
+        navManager.navigateMainFragment(action)
     }
 
     fun onAddMealType(type: MealType) {

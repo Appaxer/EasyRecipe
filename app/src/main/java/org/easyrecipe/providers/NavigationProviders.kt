@@ -17,12 +17,14 @@
 
 package org.easyrecipe.providers
 
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.features.search.navigation.SearchNavigationImpl
 
+@Module
 @InstallIn(SingletonComponent::class)
 class NavigationProviders {
 
