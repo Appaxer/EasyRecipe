@@ -27,6 +27,7 @@ import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateMainFragment
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.model.MealType
@@ -39,6 +40,7 @@ class SearchViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
     private val navManager: NavManager,
     private val searchNavigation: SearchNavigation,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val mealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
@@ -56,8 +58,15 @@ class SearchViewModel @Inject constructor(
 
     fun onSearchRecipes() {
         viewModelScope.launch {
-            executeUseCase(searchRecipes, searchRandomRecipesResultHandler) {
-                SearchRecipes.Request(search.requireValue(), mealType.requireValue())
+            executeUseCase(
+                useCase = searchRecipes,
+                onBefore = { dialogManager.showLoadingDialog() },
+                onAfter = { dialogManager.cancelLoadingDialog() },
+                onPrepareInput = {
+                    SearchRecipes.Request(search.requireValue(), mealType.requireValue())
+                }
+            ).onSuccess { result ->
+                recipeList.value = result.recipes
             }
         }
     }
