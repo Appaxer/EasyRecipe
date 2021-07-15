@@ -46,8 +46,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       
-      - name: Build and analyze
+      - name: Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew testDebugUnitTestCoverage sonarqube --info
+        uses: ReactiveCircus/android-emulator-runner@v2.19.0
+        with:
+          api-level: 29
+          script: ./gradlew testDebugUnitTestCoverage sonarqube --info
