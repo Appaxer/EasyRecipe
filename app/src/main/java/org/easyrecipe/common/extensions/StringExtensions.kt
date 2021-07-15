@@ -25,22 +25,22 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.httpPut
 import org.easyrecipe.common.http.HttpResponse
 
-suspend fun String.get(parameters: Parameters? = null): HttpResponse {
+suspend fun String.getRequest(parameters: Parameters? = null): HttpResponse {
     val (request, response, result) = httpGet(parameters).responseString()
     return HttpResponse(request, response, result).logConnectionResults()
 }
 
-suspend fun String.post(body: Any, parameters: Parameters? = null): HttpResponse {
+suspend fun String.postRequest(body: Any, parameters: Parameters? = null): HttpResponse {
     val (request, response, result) = httpPost(parameters).jsonBody(body).responseString()
     return HttpResponse(request, response, result).logConnectionResults()
 }
 
-suspend fun String.put(parameters: Parameters? = null): HttpResponse {
+suspend fun String.putRequest(parameters: Parameters? = null): HttpResponse {
     val (request, response, result) = httpPut(parameters).responseString()
     return HttpResponse(request, response, result).logConnectionResults()
 }
 
-suspend fun String.delete(parameters: Parameters? = null): HttpResponse {
+suspend fun String.deleteRequest(parameters: Parameters? = null): HttpResponse {
     val (request, response, result) = httpDelete(parameters).responseString()
     return HttpResponse(request, response, result).logConnectionResults()
 }
