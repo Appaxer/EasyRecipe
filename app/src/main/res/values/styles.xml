@@ -118,6 +118,21 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="recipe_time">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/app_padding_less</item>
+        <item name="android:paddingEnd">@dimen/app_padding_less</item>
+        <item name="android:layout_marginEnd">@dimen/app_padding_less</item>
+        <item name="android:layout_marginBottom">@dimen/app_padding_less</item>
+        <item name="android:layout_gravity">bottom|right</item>
+        <item name="android:background">@drawable/transparent_black_rounded_background</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/recipe_time_size</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
     <style name="text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

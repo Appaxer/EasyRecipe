@@ -23,4 +23,5 @@
     <color name="sectionColor">@color/primaryLightColor</color>
     <color name="textColor">@android:color/white</color>
     <color name="red">#F44336</color>
+    <color name="transparentBlack">#CC000000</color>
 </resources>

@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import org.easyrecipe.common.extensions.dpToPixels
+import org.easyrecipe.common.extensions.toDurationString
 import org.easyrecipe.databinding.RecipeCardBinding
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.Recipe
@@ -54,6 +55,7 @@ class RecipeAdapter(
 
         private fun RecipeCardBinding.bind(recipe: Recipe) {
             recipeName.text = recipe.name
+            recipeTime.text = recipe.time.toDurationString(context)
             val icons = recipe.type.getImageTypes()
 
             typeList.removeAllViews()

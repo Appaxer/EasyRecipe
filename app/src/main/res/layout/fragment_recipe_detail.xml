@@ -77,7 +77,7 @@
                 android:id="@+id/recipeDetailTime"
                 style="@style/section_title"
                 android:textSize="@dimen/default_text_size"
-                tools:text="Time: 20 minutes" />
+                tools:text="Time: 20min" />
 
             <Space
                 android:layout_width="0dp"
