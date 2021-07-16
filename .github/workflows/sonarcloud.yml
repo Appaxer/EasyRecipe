@@ -10,6 +10,7 @@ jobs:
   build:
     name: Code analysis
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -19,11 +20,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      
-      - name: grant execution to gradlew
-        run: chmod +x ./gradlew
-      
-      - name: create local.properties
+
+      - name: Create local.properties
         shell: bash
         run: |
           echo "edamam.appId=$EDAMAM_APP_ID" > local.properties
@@ -45,9 +43,12 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      
-      - name: Build and analyze
+
+      - name: Grant execution to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube --info
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew testDebugUnitTestCoverage sonarqube --info
