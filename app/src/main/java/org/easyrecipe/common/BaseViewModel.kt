@@ -20,7 +20,10 @@ package org.easyrecipe.common
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.easyrecipe.common.handlers.UseCaseResultHandler
 import org.easyrecipe.common.usecases.UseCase
@@ -96,6 +99,17 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     /**
+     * Launch a coroutine within the [BaseViewModel].
+     *
+     * @param onAction The method to be executed within the coroutine
+     */
+    protected fun launch(onAction: suspend CoroutineScope.() -> Unit) {
+        viewModelScope.launch {
+            onAction()
+        }
+    }
+
+    /**
      * Executes a [UseCase] and returns its The [onPrepareInput] method is called to prepare the
      * input of the [UseCase].
      *
@@ -111,6 +125,7 @@ abstract class BaseViewModel : ViewModel() {
         useCase: UseCase<I, O>,
         onBefore: () -> Unit = {},
         onAfter: () -> Unit = {},
+        isDefaultErrorBehaviourEnabled: Boolean = true,
         onPrepareInput: () -> I,
     ): UseCaseResult<O> {
         onBefore()
@@ -120,9 +135,11 @@ abstract class BaseViewModel : ViewModel() {
         }
         onAfter()
 
-        (result as? UseCaseResult.Error)?.let { error ->
-            if (error.exception.isCommonError()) {
-                _displayCommonError.value = error.exception
+        if (isDefaultErrorBehaviourEnabled) {
+            (result as? UseCaseResult.Error)?.let { error ->
+                if (error.exception.isCommonError()) {
+                    _displayCommonError.value = error.exception
+                }
             }
         }
 

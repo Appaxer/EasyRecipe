@@ -19,9 +19,7 @@ package org.easyrecipe.features.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateMainFragment
@@ -56,18 +54,16 @@ class SearchViewModel @Inject constructor(
         onError = { ScreenState.OtherError }
     )
 
-    fun onSearchRecipes() {
-        viewModelScope.launch {
-            executeUseCase(
-                useCase = searchRecipes,
-                onBefore = { dialogManager.showLoadingDialog() },
-                onAfter = { dialogManager.cancelLoadingDialog() },
-                onPrepareInput = {
-                    SearchRecipes.Request(search.requireValue(), mealType.requireValue())
-                }
-            ).onSuccess { result ->
-                recipeList.value = result.recipes
+    fun onSearchRecipes() = launch {
+        executeUseCase(
+            useCase = searchRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
+                SearchRecipes.Request(search.requireValue(), mealType.requireValue())
             }
+        ).onSuccess { result ->
+            recipeList.value = result.recipes
         }
     }
 
