@@ -31,6 +31,11 @@ class HttpResponse(
     val result: Result<String, FuelError>,
 ) {
 
+    /**
+     * Log the connection results.
+     *
+     * @return The current connection results.
+     */
     fun logConnectionResults(): HttpResponse {
         Log.i("Server", "Request: $request")
         Log.i("Server", "Response: $response")
@@ -39,10 +44,23 @@ class HttpResponse(
         return this
     }
 
-    fun onStatusCode(action: (Int) -> Unit) {
+    /**
+     * Perform an action with the status code. For the no internet and server error cases there is
+     * a default behaviour implementation, which can be disabled with [isInternetErrorDefault] and
+     * [isServerErrorDefault].
+     *
+     * @param isInternetErrorDefault Indicates whether the no internet default behaviour is enabled
+     * @param isServerErrorDefault Indicates whether the server error default behaviour is enabled
+     * @param action The action to be performed depending on the status code
+     */
+    fun onStatusCode(
+        isInternetErrorDefault: Boolean = true,
+        isServerErrorDefault: Boolean = true,
+        action: (Int) -> Unit,
+    ) {
         when {
-            response.statusCode == -1 -> throw CommonException.NoInternetException
-            response.statusCode >= HttpURLConnection.HTTP_INTERNAL_ERROR ->
+            isInternetErrorDefault && response.statusCode == -1 -> throw CommonException.NoInternetException
+            isServerErrorDefault && response.statusCode >= HttpURLConnection.HTTP_INTERNAL_ERROR ->
                 throw CommonException.OtherError(result.component2()?.stackTraceToString() ?: "")
             else -> action(response.statusCode)
         }

@@ -95,6 +95,9 @@ class MainActivity : AppCompatActivity() {
                 is DialogState.ShowIntToast -> {
                     toast(dialogState.data, dialogState.duration)
                 }
+                is DialogState.ShowLambdaToast -> {
+                    toast(dialogState.msg(this), dialogState.duration)
+                }
             }
         }
     }

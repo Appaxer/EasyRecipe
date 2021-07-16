@@ -17,6 +17,7 @@
 
 package org.easyrecipe.common.managers.dialog
 
+import android.content.Context
 import androidx.annotation.StringRes
 
 sealed class DialogState {
@@ -26,4 +27,5 @@ sealed class DialogState {
     object CancelLoadingDialog : DialogState()
     class ShowStringToast(val data: String, val duration: Int) : DialogState()
     class ShowIntToast(@StringRes val data: Int, val duration: Int) : DialogState()
+    class ShowLambdaToast(val duration: Int, val msg: (Context) -> String) : DialogState()
 }

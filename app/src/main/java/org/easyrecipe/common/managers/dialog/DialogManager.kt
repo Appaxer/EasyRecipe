@@ -18,44 +18,58 @@
 package org.easyrecipe.common.managers.dialog
 
 import android.content.Context
-import android.content.DialogInterface
 import android.widget.Toast
 import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.SharedFlow
-import org.easyrecipe.R
 
 abstract class DialogManager {
     abstract val dialog: SharedFlow<DialogState>
 
-    abstract fun showDialog(
-        @StringRes title: Int,
-        @StringRes message: Int,
-        @StringRes positiveButtonText: Int = R.string.ok,
-        positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        negativeButtonText: Int? = null,
-        negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        neutralButtonText: Int? = null,
-        neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        isCancelable: Boolean = true,
-    )
+    /**
+     * Show a dialog whose data is represented with string resource ids.
+     *
+     * @param data The data to be displayed
+     */
+    abstract fun showDialog(data: IntDialog)
 
-    abstract fun showDialog(
-        title: (Context) -> String,
-        message: (Context) -> String,
-        positiveButtonText: (Context) -> String? = { context -> context.getString(R.string.ok) },
-        positiveButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        negativeButtonText: (Context) -> String? = { null },
-        negativeButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        neutralButtonText: (Context) -> String? = { null },
-        neutralButtonAction: (DialogInterface, Int) -> Unit = { dialog, _ -> dialog.dismiss() },
-        isCancelable: Boolean = true,
-    )
+    /**
+     * Show a dialog whose data is obtained from lambda with the current context as its parameter.
+     *
+     * @param data The data to be displayed
+     */
+    abstract fun showDialog(data: LambdaDialog)
 
+    /**
+     * Show the loading dialog.
+     */
     abstract fun showLoadingDialog()
 
+    /**
+     * Cancel the loading dialog.
+     */
     abstract fun cancelLoadingDialog()
 
+    /**
+     * Show a toast given the string to be displayed.
+     *
+     * @param msg The message to be displayed
+     * @param duration The duration of the toast
+     */
     abstract fun toast(msg: String, duration: Int = Toast.LENGTH_LONG)
 
+    /**
+     * Show a toast given the string resource id to be displayed.
+     *
+     * @param msgIs The id of the message to be displayed
+     * @param duration The duration of the toast
+     */
     abstract fun toast(@StringRes msgId: Int, duration: Int = Toast.LENGTH_LONG)
+
+    /**
+     * Show a toast given a lambda that calculates the message to be displayed.
+     *
+     * @param duration The duration of the toast
+     * @param msg The lambda to calculate the message to be displayed
+     */
+    abstract fun toast(duration: Int, msg: (Context) -> String)
 }

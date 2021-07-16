@@ -24,7 +24,18 @@ import kotlinx.coroutines.flow.SharedFlow
 abstract class NavManager {
     abstract val action: SharedFlow<NavState>
 
+    /**
+     * Navigate within the [navHostFragment] to the destination specified in [action].
+     *
+     * @param navHostFragment The fragment that contains the navigation
+     * @param action The action that indicates the destination
+     */
     abstract fun navigate(@IdRes navHostFragment: Int, action: NavDirections)
 
+    /**
+     * Navigates up within the [navHostFragment].
+     *
+     * @param navHostFragment The fragment that contains the navigation
+     */
     abstract fun navigateUp(@IdRes navHostFragment: Int)
 }

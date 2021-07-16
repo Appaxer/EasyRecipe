@@ -18,7 +18,6 @@
 package org.easyrecipe.common.managers.dialog
 
 import android.content.Context
-import android.content.DialogInterface
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 
@@ -27,53 +26,11 @@ class DialogManagerImpl : DialogManager() {
     override val dialog: SharedFlow<DialogState>
         get() = _dialog
 
-    override fun showDialog(
-        title: Int,
-        message: Int,
-        positiveButtonText: Int,
-        positiveButtonAction: (DialogInterface, Int) -> Unit,
-        negativeButtonText: Int?,
-        negativeButtonAction: (DialogInterface, Int) -> Unit,
-        neutralButtonText: Int?,
-        neutralButtonAction: (DialogInterface, Int) -> Unit,
-        isCancelable: Boolean,
-    ) {
-        val data = IntDialog(title,
-            message,
-            positiveButtonText,
-            positiveButtonAction,
-            negativeButtonText,
-            negativeButtonAction,
-            neutralButtonText,
-            neutralButtonAction,
-            isCancelable
-        )
-
+    override fun showDialog(data: IntDialog) {
         _dialog.tryEmit(DialogState.ShowIntDialog(data))
     }
 
-    override fun showDialog(
-        title: (Context) -> String,
-        message: (Context) -> String,
-        positiveButtonText: (Context) -> String?,
-        positiveButtonAction: (DialogInterface, Int) -> Unit,
-        negativeButtonText: (Context) -> String?,
-        negativeButtonAction: (DialogInterface, Int) -> Unit,
-        neutralButtonText: (Context) -> String?,
-        neutralButtonAction: (DialogInterface, Int) -> Unit,
-        isCancelable: Boolean,
-    ) {
-        val data = LambdaDialog(title,
-            message,
-            positiveButtonText,
-            positiveButtonAction,
-            negativeButtonText,
-            negativeButtonAction,
-            neutralButtonText,
-            neutralButtonAction,
-            isCancelable
-        )
-
+    override fun showDialog(data: LambdaDialog) {
         _dialog.tryEmit(DialogState.ShowLambdaDialog(data))
     }
 
@@ -91,5 +48,9 @@ class DialogManagerImpl : DialogManager() {
 
     override fun toast(msgId: Int, duration: Int) {
         _dialog.tryEmit(DialogState.ShowIntToast(msgId, duration))
+    }
+
+    override fun toast(duration: Int, msg: (Context) -> String) {
+        _dialog.tryEmit(DialogState.ShowLambdaToast(duration, msg))
     }
 }
