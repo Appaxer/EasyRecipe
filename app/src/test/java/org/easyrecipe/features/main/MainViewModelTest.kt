@@ -22,6 +22,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
@@ -34,8 +35,8 @@ import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
-import org.hamcrest.CoreMatchers
-import org.junit.Assert.assertThat
+import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -84,7 +85,7 @@ class MainViewModelTest {
 
         viewModel.onSearchRecipes()
         val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, CoreMatchers.instanceOf(ScreenState.NoInternet::class.java))
+        assertThat(state, instanceOf(ScreenState.NoInternet::class.java))
     }
 
     @Test
@@ -94,7 +95,7 @@ class MainViewModelTest {
 
         viewModel.onSearchRecipes()
         val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, CoreMatchers.instanceOf(ScreenState.OtherError::class.java))
+        assertThat(state, instanceOf(ScreenState.OtherError::class.java))
     }
 
     @Test
@@ -104,11 +105,19 @@ class MainViewModelTest {
 
         viewModel.onSearchRecipes()
         val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, CoreMatchers.instanceOf(ScreenState.Nothing::class.java))
+        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)
         )
+    }
+
+    @Test
+    fun `when navigating to previous fragment the NavManager is called`() {
+        viewModel.onNavigateUp()
+        verify {
+            navManager.navigateUp(any())
+        }
     }
 }
