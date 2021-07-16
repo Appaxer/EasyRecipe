@@ -22,7 +22,7 @@ Moreover, the names of the branches have to be meaningful.
 
 **Do you want to add a new feature or change an existing one?**
 1. Verify that the feature or change is not implemented yet by another user by searching on [Issues](https://github.com/EasyRecipe/Easy-Recipe/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement).
-2. Send an email to easyreacipe.app@gmail.com and describe the feature or the change.
+2. Send an email to appaxer@gmail.com and describe the feature or the change.
 3. If it is approved, then [open a new issue](https://github.com/EasyRecipe/Easy-Recipe/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BFeature%5D+Feature+name).
 4. Open a feature branch and perform there all the changes you want.
 5. When you have finished, [open a pull request](https://github.com/EasyRecipe/Easy-Recipe/pulls).

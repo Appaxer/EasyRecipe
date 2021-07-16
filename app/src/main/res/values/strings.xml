@@ -69,7 +69,9 @@
     <string name="tea_time">Teatime</string>
 
     <!-- Recipe details -->
-    <string name="recipe_detail_time">Time: %d minutes</string>
+    <string name="recipe_detail_minute_time">Time: %d min</string>
+    <string name="recipe_detail_hour_time">Time: %d h</string>
+    <string name="recipe_detail_hour_minute_time">Time: %d h %d min</string>
     <string name="check_steps">Check recipe steps</string>
     <string name="favorite_recipe">Favorite</string>
     <string name="delete_recipe">Delete</string>

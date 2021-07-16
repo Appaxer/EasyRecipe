@@ -31,7 +31,10 @@
         app:endIconDrawable="@drawable/ic_search"
         app:endIconMode="custom">
 
-        <com.google.android.material.textfield.TextInputEditText style="@style/textInputEditText" />
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/textInputEditText"
+            android:imeOptions="actionSearch"
+        />
 
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://www.android.com" target="__blank"><img src="https://img.shields.io/badge/platform-Android-yellow.svg?style=plastic" alt="Platform"></a>
   <a href="https://docs.gradle.org/current/release-notes" target="__blank"><img src="https://img.shields.io/badge/gradle-4.3-green.svg?style=plastic" alt="Gradle Version"></a>
+  <a href="https://sonarcloud.io/dashboard?id=Appaxer_EasyRecipe"><img src="https://sonarcloud.io/api/project_badges/measure?project=Appaxer_EasyRecipe&metric=alert_status" alt="Quality Gate Status"></a>
 </p>
 
 <p align="center">
@@ -72,4 +73,4 @@ This application uses icons made by:
 - [Nhor Phai](https://www.flaticon.com/authors/nhor-phai "Nhor Phai") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon")
 
 ## License
-Easy Recipe is licensed under Apache-2.0. See the [LICENSE](LICENSE) file.
+Easy Recipe is licensed under GPL. See the [LICENSE](LICENSE) file.

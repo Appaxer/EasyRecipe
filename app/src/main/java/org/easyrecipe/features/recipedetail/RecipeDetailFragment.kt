@@ -109,7 +109,7 @@ class RecipeDetailFragment : BaseFragment() {
 
         typeDetailList.bringToFront()
 
-        recipeDetailTime.text = getString(R.string.recipe_detail_time, recipe.time)
+        recipeDetailTime.text = recipe.time.toDurationString()
 
         ingredientDetailListAdapter = IngredientDetailListAdapter()
         ingredientDetailList.adapter = ingredientDetailListAdapter
@@ -214,6 +214,17 @@ class RecipeDetailFragment : BaseFragment() {
         btnCheckSteps.visibility = View.VISIBLE
         btnCheckSteps.setOnClickListener {
             checkStepsLauncher.launch(remoteRecipe.url)
+        }
+    }
+
+    private fun Int.toDurationString(): String {
+        val hours = div(60)
+        val minutes = mod(60)
+
+        return when {
+            hours < 1 -> getString(R.string.recipe_detail_minute_time, minutes)
+            minutes > 1 -> getString(R.string.recipe_detail_hour_minute_time, hours, minutes)
+            else -> getString(R.string.recipe_detail_hour_time, hours)
         }
     }
 }

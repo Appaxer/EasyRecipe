@@ -66,7 +66,9 @@
     <string name="tea_time">Merienda</string>
 
     <!-- Recipe details -->
-    <string name="recipe_detail_time">Tiempo: %d minutos</string>
+    <string name="recipe_detail_minute_time">Tiempo: %d min</string>
+    <string name="recipe_detail_hour_time">Tiempo: %d h</string>
+    <string name="recipe_detail_hour_minute_time">Tiempo: %d h %d min</string>
     <string name="check_steps">Ver pasos</string>
     <string name="favorite_recipe">Favorito</string>
     <string name="delete_recipe">Eliminar</string>

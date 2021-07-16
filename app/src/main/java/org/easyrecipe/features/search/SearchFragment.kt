@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -95,6 +96,15 @@ class SearchFragment : BaseFragment() {
         txtRecipeSearch.observeText(viewModel.search)
         txtRecipeSearch.setEndIconOnClickListener {
             viewModel.onSearchRecipes()
+        }
+        txtRecipeSearch.editText?.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    viewModel.onSearchRecipes()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
