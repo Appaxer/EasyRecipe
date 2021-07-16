@@ -67,7 +67,7 @@ abstract class BaseViewModel : ViewModel() {
      */
     @Deprecated(
         message = "The use of states is deprecated, the result should be treated after execution",
-        replaceWith = ReplaceWith("executeUseCase(useCase, onBefore, onAfter, prepareInput)")
+        replaceWith = ReplaceWith("executeUseCase(useCase, onBefore, onAfter, isDefaultErrorBehaviourEnabled, onPrepareInput)")
     )
     protected suspend fun <I : UseCase.UseCaseRequest, O : UseCase.UseCaseResponse> executeUseCase(
         useCase: UseCase<I, O>,
@@ -115,9 +115,11 @@ abstract class BaseViewModel : ViewModel() {
      *
      * @param I The input type of the use case
      * @param O The output type of the use case
+     * @param useCase The use case to be executed
      * @param onBefore Method to execute before the use case is executed
      * @param onAfter Method to execute after the use case is executed
-     * @param useCase The use case to be executed
+     * @param isDefaultErrorBehaviourEnabled Indicates whether the default error behaviour is
+     * enabled
      * @param onPrepareInput Method to prepare the input of the use case
      * @return The result of the use case
      */
