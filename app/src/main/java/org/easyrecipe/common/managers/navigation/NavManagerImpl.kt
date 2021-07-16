@@ -15,15 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.extensions
+package org.easyrecipe.common.managers.navigation
 
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.IdRes
+import androidx.navigation.NavDirections
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 
-/**
- * Notifies the [MutableLiveData] that the value have been changed.
- *
- * @param T The type of the [MutableLiveData]
- */
-fun <T> MutableLiveData<T>.notify() {
-    this.value = value
+class NavManagerImpl : NavManager() {
+    private val _action = MutableSharedFlow<NavState>(replay = 1)
+    override val action: SharedFlow<NavState>
+        get() = _action
+
+    override fun navigate(@IdRes navHostFragment: Int, action: NavDirections) {
+        _action.tryEmit(NavState.Navigate(navHostFragment, action))
+    }
+
+    override fun navigateUp(@IdRes navHostFragment: Int) {
+        _action.tryEmit(NavState.NavigateUp(navHostFragment))
+    }
 }

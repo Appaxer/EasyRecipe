@@ -80,7 +80,7 @@ class MainFragment : BaseFragment() {
         }
 
         topBar.setNavigationOnClickListener {
-            navigateUp(navController)
+            viewModel.onNavigateUp()
         }
     }
 }

@@ -15,15 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.extensions
+package org.easyrecipe.providers
 
-import androidx.lifecycle.MutableLiveData
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import org.easyrecipe.features.search.navigation.SearchNavigation
+import org.easyrecipe.features.search.navigation.SearchNavigationImpl
 
-/**
- * Notifies the [MutableLiveData] that the value have been changed.
- *
- * @param T The type of the [MutableLiveData]
- */
-fun <T> MutableLiveData<T>.notify() {
-    this.value = value
+@Module
+@InstallIn(SingletonComponent::class)
+class NavigationProviders {
+
+    @Provides
+    fun provideSearchNavigation(): SearchNavigation = SearchNavigationImpl()
 }

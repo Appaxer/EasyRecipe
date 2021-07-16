@@ -30,7 +30,9 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import org.easyrecipe.R
 import org.easyrecipe.common.extensions.observeScreenState
+import org.easyrecipe.common.extensions.showIntDialog
 import org.easyrecipe.common.handlers.ScreenStateHandler
+import org.easyrecipe.common.managers.dialog.IntDialog
 
 /**
  * Class from which all fragments must extend from. It is a subclass of [Fragment] but it adds a
@@ -38,7 +40,9 @@ import org.easyrecipe.common.handlers.ScreenStateHandler
  */
 abstract class BaseFragment : Fragment() {
     abstract val viewModel: BaseViewModel
-    abstract val screenStateHandler: ScreenStateHandler<*>
+
+    @Deprecated("The use of states is deprecated, you should use managers instead")
+    open val screenStateHandler: ScreenStateHandler<*>? = null
 
     protected val imagePermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         arrayOf(
@@ -62,13 +66,28 @@ abstract class BaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        screenStateHandler.context = requireContext()
+        screenStateHandler?.context = requireContext()
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.screenState.observeScreenState(viewLifecycleOwner, screenStateHandler)
+        screenStateHandler?.let { screenStateHandler ->
+            viewModel.screenState.observeScreenState(viewLifecycleOwner, screenStateHandler)
+        }
+
+        viewModel.displayCommonError.observe(viewLifecycleOwner) { exception ->
+            exception?.let { currentException ->
+                val (title, message) = when (currentException) {
+                    CommonException.NoInternetException ->
+                        R.string.no_internet_title to R.string.no_internet_message
+                    else ->
+                        R.string.other_error_title to R.string.other_error_message
+                }
+
+                requireContext().showIntDialog(IntDialog(title, message))
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -93,6 +112,7 @@ abstract class BaseFragment : Fragment() {
      * @param direction The directions to which the fragment needs to navigate
      * @param navController The [NavController] that will be used to navigate
      */
+    @Deprecated("Navigation between fragments should be done from ViewModels using NavManager")
     protected fun navigate(
         direction: NavDirections,
         navController: NavController = findNavController(),
@@ -106,6 +126,7 @@ abstract class BaseFragment : Fragment() {
      *
      * @param navController The [NavController] that will be used to navigate up
      */
+    @Deprecated("Navigation between fragments should be done from ViewModels using NavManager")
     protected fun navigateUp(navController: NavController = findNavController()) {
         navController.navigateUp()
         viewModel.onLoadNothing()

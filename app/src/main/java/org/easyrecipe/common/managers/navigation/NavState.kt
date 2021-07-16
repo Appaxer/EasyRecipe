@@ -15,15 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.extensions
+package org.easyrecipe.common.managers.navigation
 
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.IdRes
+import androidx.navigation.NavDirections
 
-/**
- * Notifies the [MutableLiveData] that the value have been changed.
- *
- * @param T The type of the [MutableLiveData]
- */
-fun <T> MutableLiveData<T>.notify() {
-    this.value = value
+sealed class NavState(
+    @IdRes val navHostFragment: Int,
+) {
+    class Navigate(
+        @IdRes navHostFragment: Int,
+        val action: NavDirections,
+    ) : NavState(navHostFragment)
+
+    class NavigateUp(
+        @IdRes navHostFragment: Int,
+    ) : NavState(navHostFragment)
 }

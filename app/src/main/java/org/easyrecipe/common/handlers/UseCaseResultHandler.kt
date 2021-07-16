@@ -32,6 +32,7 @@ import org.easyrecipe.common.usecases.UseCaseResult
  * result is [UseCaseResult.Error] and it is not one of the [CommonException]
  */
 @Suppress("UNCHECKED_CAST")
+@Deprecated("The use of states is deprecated, you should use managers instead")
 class UseCaseResultHandler<T : UseCase.UseCaseResponse>(
     private val onSuccess: (T) -> ScreenState,
     private val onError: (Exception) -> ScreenState,

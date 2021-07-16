@@ -39,4 +39,32 @@ sealed class UseCaseResult<O : UseCase.UseCaseResponse> {
      * @property exception The error that caused the use case to fail
      */
     class Error<O : UseCase.UseCaseResponse>(val exception: Exception) : UseCaseResult<O>()
+
+    /**
+     * Performs an action if the result is [Success].
+     *
+     * @param onResult The action to perform if result is [Success]
+     * @return The current result
+     */
+    fun onSuccess(onResult: (O) -> Unit): UseCaseResult<O> {
+        (this as? Success)?.let { success ->
+            onResult(success.result)
+        }
+
+        return this
+    }
+
+    /**
+     * Performs an action if the result is [Error].
+     *
+     * @param onException The action to perform if result is [Error]
+     * @return The current result
+     */
+    fun onError(onException: (Exception) -> Unit): UseCaseResult<O> {
+        (this as? Error)?.let { error ->
+            onException(error.exception)
+        }
+
+        return this
+    }
 }
