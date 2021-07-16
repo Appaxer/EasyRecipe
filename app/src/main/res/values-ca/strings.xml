@@ -63,9 +63,10 @@
     <string name="tea_time">Berenar</string>
 
     <!-- Recipe details -->
-    <string name="recipe_detail_minute_time">Temps: %d min</string>
-    <string name="recipe_detail_hour_time">Temps: %d h</string>
-    <string name="recipe_detail_hour_minute_time">Temps: %d h %d min</string>
+    <string name="time">Temps:</string>
+    <string name="minute_time">%dmin</string>
+    <string name="hour_time">%dh</string>
+    <string name="hour_minute_time">%dh %dmin</string>
     <string name="check_steps">Veure passos</string>
     <string name="favorite_recipe">Favorit</string>
     <string name="delete_recipe">Eliminar</string>

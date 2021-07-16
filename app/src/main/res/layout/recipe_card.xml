@@ -53,6 +53,11 @@
             android:paddingEnd="@dimen/app_padding"
             tools:text="Fried chicken" />
 
+        <TextView
+            android:id="@+id/recipeTime"
+            style="@style/recipe_time"
+            tools:text="5h 30min" />
+
     </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>
