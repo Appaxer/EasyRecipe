@@ -20,10 +20,14 @@ package org.easyrecipe.common
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.easyrecipe.common.handlers.UseCaseResultHandler
 import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.common.usecases.UseCaseResult
 
 /**
  * Class from which all view models must extend from. It is a subclass of [ViewModel] but it adds
@@ -32,14 +36,21 @@ import org.easyrecipe.common.usecases.UseCase
  */
 abstract class BaseViewModel : ViewModel() {
     private val _screenState = MutableLiveData<ScreenState>(ScreenState.Loading)
+
+    @Deprecated("The use of states is deprecated, you should use managers instead")
     val screenState: LiveData<ScreenState>
         get() = _screenState
+
+    private val _displayCommonError = MutableLiveData<Exception?>()
+    val displayCommonError: LiveData<Exception?>
+        get() = _displayCommonError
 
     /**
      * Loads a new state to the fragment.
      *
      * @param state The state to be loaded
      */
+    @Deprecated("The use of states is deprecated, you should use managers instead")
     protected fun loadState(state: ScreenState) {
         _screenState.value = state
     }
@@ -54,6 +65,10 @@ abstract class BaseViewModel : ViewModel() {
      * @param isExecutingUseCaseStateLoaded The [ScreenState.ExecutingUseCase] state is loaded
      * @param prepareInput Method to prepare the input of the use case
      */
+    @Deprecated(
+        message = "The use of states is deprecated, the result should be treated after execution",
+        replaceWith = ReplaceWith("executeUseCase(useCase, onBefore, onAfter, isDefaultErrorBehaviourEnabled, onPrepareInput)")
+    )
     protected suspend fun <I : UseCase.UseCaseRequest, O : UseCase.UseCaseResponse> executeUseCase(
         useCase: UseCase<I, O>,
         useCaseResultHandler: UseCaseResultHandler<O>,
@@ -75,7 +90,64 @@ abstract class BaseViewModel : ViewModel() {
     /**
      * Loads the [ScreenState.Nothing] state.
      */
+    @Deprecated(
+        message = "The use of states is deprecated, you should use managers instead",
+        replaceWith = ReplaceWith("")
+    )
     fun onLoadNothing() {
         loadState(ScreenState.Nothing)
     }
+
+    /**
+     * Launch a coroutine within the [BaseViewModel].
+     *
+     * @param onAction The method to be executed within the coroutine
+     */
+    protected fun launch(onAction: suspend CoroutineScope.() -> Unit) {
+        viewModelScope.launch {
+            onAction()
+        }
+    }
+
+    /**
+     * Executes a [UseCase] and returns its The [onPrepareInput] method is called to prepare the
+     * input of the [UseCase].
+     *
+     * @param I The input type of the use case
+     * @param O The output type of the use case
+     * @param useCase The use case to be executed
+     * @param onBefore Method to execute before the use case is executed
+     * @param onAfter Method to execute after the use case is executed
+     * @param isDefaultErrorBehaviourEnabled Indicates whether the default error behaviour is
+     * enabled
+     * @param onPrepareInput Method to prepare the input of the use case
+     * @return The result of the use case
+     */
+    protected suspend fun <I : UseCase.UseCaseRequest, O : UseCase.UseCaseResponse> executeUseCase(
+        useCase: UseCase<I, O>,
+        onBefore: () -> Unit = {},
+        onAfter: () -> Unit = {},
+        isDefaultErrorBehaviourEnabled: Boolean = true,
+        onPrepareInput: () -> I,
+    ): UseCaseResult<O> {
+        onBefore()
+        val input = onPrepareInput()
+        val result = withContext(Dispatchers.IO) {
+            useCase.execute(input)
+        }
+        onAfter()
+
+        if (isDefaultErrorBehaviourEnabled) {
+            (result as? UseCaseResult.Error)?.let { error ->
+                if (error.exception.isCommonError()) {
+                    _displayCommonError.value = error.exception
+                }
+            }
+        }
+
+        return result
+    }
+
+    private fun Exception.isCommonError() =
+        this is CommonException.NoInternetException || this is CommonException.OtherError
 }

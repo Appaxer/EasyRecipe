@@ -34,6 +34,7 @@ import org.easyrecipe.common.handlers.ScreenStateHandler
  * @param lifecycleOwner The [LifecycleOwner] of the fragment
  * @param handler The handler that performs some actions depending on the [ScreenState]
  */
+@Deprecated("The use of states is deprecated, you should use managers instead")
 fun <T : ScreenState> LiveData<ScreenState>.observeScreenState(
     lifecycleOwner: LifecycleOwner,
     handler: ScreenStateHandler<T>,

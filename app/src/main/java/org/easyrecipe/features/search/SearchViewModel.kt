@@ -19,13 +19,15 @@ package org.easyrecipe.features.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.extensions.navigateMainFragment
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
@@ -34,6 +36,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
+    private val navManager: NavManager,
+    private val searchNavigation: SearchNavigation,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val mealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
@@ -49,16 +54,22 @@ class SearchViewModel @Inject constructor(
         onError = { ScreenState.OtherError }
     )
 
-    fun onSearchRecipes() {
-        viewModelScope.launch {
-            executeUseCase(searchRecipes, searchRandomRecipesResultHandler) {
+    fun onSearchRecipes() = launch {
+        executeUseCase(
+            useCase = searchRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
                 SearchRecipes.Request(search.requireValue(), mealType.requireValue())
             }
+        ).onSuccess { result ->
+            recipeList.value = result.recipes
         }
     }
 
     fun onShowRecipeDetail(recipe: Recipe) {
-        loadState(SearchState.ShowRecipeDetail(recipe))
+        val action = searchNavigation.navigateToRecipeDetail(recipe)
+        navManager.navigateMainFragment(action)
     }
 
     fun onAddMealType(type: MealType) {

@@ -23,7 +23,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.extensions.navigateUpMainFragment
 import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import javax.inject.Inject
@@ -31,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
+    private val navManager: NavManager,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
 
@@ -52,4 +55,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onNavigateUp() {
+        navManager.navigateUpMainFragment()
+    }
 }

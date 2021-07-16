@@ -26,22 +26,80 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
-import org.easyrecipe.common.extensions.enableDarkTheme
+import kotlinx.coroutines.launch
+import org.easyrecipe.common.extensions.*
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.dialog.DialogState
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.common.managers.navigation.NavState
 import org.easyrecipe.databinding.ActivityMainBinding
 import org.easyrecipe.features.settings.SettingsFragment.Companion.APP_LANGUAGE
 import org.easyrecipe.features.settings.SettingsFragment.Companion.ENABLE_DARK_THEME
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    @Inject
+    lateinit var navManager: NavManager
+
+    @Inject
+    lateinit var dialogManager: DialogManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        lifecycleScope.launch {
+            setUpNavManager()
+            setUpDialogManager()
+        }
+    }
+
+    private fun setUpNavManager() {
+        navManager.action.asLiveData().observe(this) { navState ->
+            val navController = findNavController(navState.navHostFragment)
+            when (navState) {
+                is NavState.Navigate -> navController.navigate(navState.action)
+                else -> navController.navigateUp()
+            }
+        }
+    }
+
+    private fun setUpDialogManager() {
+        dialogManager.dialog.asLiveData().observe(this) { dialogState ->
+            when (dialogState) {
+                is DialogState.ShowIntDialog -> {
+                    showIntDialog(dialogState.data)
+                }
+                is DialogState.ShowLambdaDialog -> {
+                    showLambdaDialog(dialogState.data)
+                }
+                DialogState.ShowLoadingDialog -> {
+                    showLoadingDialog()
+                }
+                DialogState.CancelLoadingDialog -> {
+                    cancelLoadingDialog()
+                }
+                is DialogState.ShowStringToast -> {
+                    toast(dialogState.data, dialogState.duration)
+                }
+                is DialogState.ShowIntToast -> {
+                    toast(dialogState.data, dialogState.duration)
+                }
+                is DialogState.ShowLambdaToast -> {
+                    toast(dialogState.msg(this), dialogState.duration)
+                }
+            }
+        }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

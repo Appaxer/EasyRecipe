@@ -15,15 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.common.extensions
+package org.easyrecipe.common.managers.dialog
 
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import androidx.annotation.StringRes
 
-/**
- * Notifies the [MutableLiveData] that the value have been changed.
- *
- * @param T The type of the [MutableLiveData]
- */
-fun <T> MutableLiveData<T>.notify() {
-    this.value = value
+sealed class DialogState {
+    class ShowIntDialog(val data: IntDialog) : DialogState()
+    class ShowLambdaDialog(val data: LambdaDialog) : DialogState()
+    object ShowLoadingDialog : DialogState()
+    object CancelLoadingDialog : DialogState()
+    class ShowStringToast(val data: String, val duration: Int) : DialogState()
+    class ShowIntToast(@StringRes val data: Int, val duration: Int) : DialogState()
+    class ShowLambdaToast(val duration: Int, val msg: (Context) -> String) : DialogState()
 }
