@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Code analysis
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -45,10 +45,10 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Grant execution to gradlew
-          run: chmod +x ./gradlew
+        run: chmod +x ./gradlew
 
       - name: Analyze
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          run: ./gradlew testDebugUnitTestCoverage sonarqube --info
+        env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew testDebugUnitTestCoverage sonarqube --info
