@@ -17,11 +17,11 @@ project.afterEvaluate {
             .all { variant ->
                 def variantName = variant.name
                 def unitTestTask = "test${variantName.capitalize()}UnitTest"
-                def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+//                def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
 
                 tasks.create(name: "${unitTestTask}Coverage", type: JacocoReport, dependsOn: [
                         "$unitTestTask",
-                        "$androidTestCoverageTask"
+//                        "$androidTestCoverageTask"
                 ]) {
                     group = "Reporting"
                     description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build"
@@ -95,11 +95,11 @@ project.afterEvaluate {
                     def variantSourceSets = variant.sourceSets.java.srcDirs.collect { it.path }.flatten()
                     sourceDirectories.setFrom(project.files(variantSourceSets))
 
-                    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
+//                    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
 
                     executionData(files([
                             "$project.buildDir/jacoco/${unitTestTask}.exec",
-                            androidTestsData
+//                            androidTestsData
                     ]))
                 }
 

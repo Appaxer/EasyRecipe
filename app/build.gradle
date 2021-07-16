@@ -61,7 +61,7 @@ android {
         }
 
         debug {
-            testCoverageEnabled true
+//            testCoverageEnabled true
             buildConfigField("String", "EDAMAM_KEY", "\"" + localProperties['edamam.apiKey'] + "\"")
             buildConfigField("String", "EDAMAM_ID", "\"" + localProperties['edamam.appId'] + "\"")
         }
