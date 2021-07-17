@@ -25,5 +25,10 @@
         android:id="@+id/mainFragment"
         android:name="org.easyrecipe.features.main.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+        <argument
+            android:name="uid"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
 </navigation>

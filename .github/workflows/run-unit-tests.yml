@@ -13,19 +13,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: set up JDK 11
+      - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: grant execution to gradlew
+      - name: Grant execution to gradlew
         run: chmod +x ./gradlew
 
-      - name: create local.properties
+      - name: Create local.properties
         shell: bash
         run: |
           echo "edamam.appId=$EDAMAM_APP_ID" > local.properties
@@ -34,5 +34,10 @@ jobs:
           EDAMAM_APP_ID: ${{ secrets.EDAMAM_APP_ID }}
           EDAMAM_API_KEY: ${{ secrets.EDAMAM_API_KEY }}
 
-      - name: run unit tests
+      - name: Decrypt google-services.key
+        run: openssl enc -d -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt -in app/google-services.key -out app/google-services.json -pass pass:$GOOGLE_SERVICES_KEY
+        env:
+          GOOGLE_SERVICES_KEY: ${{ secrets.GOOGLE_SERVICES_KEY }}
+
+      - name: Run unit tests
         run: ./gradlew test
