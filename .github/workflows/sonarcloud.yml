@@ -47,6 +47,11 @@ jobs:
       - name: Grant execution to gradlew
         run: chmod +x ./gradlew
 
+      -name: Decrypt google-services.key
+        run: openssl enc -d -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt -in app/google-services.key -out app/google-services.json -pass pass:$GOOGLE_SERVICES_KEY
+        env:
+          GOOGLE_SERVICES_KEY: ${{ secrets.GOOGLE_SERVICES_KEY }}
+
       - name: Analyze
         env:
            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
