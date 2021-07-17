@@ -21,6 +21,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.room.Room
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -105,6 +109,13 @@ class DataProviders {
         LocalDatabase.NAME
     ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
 
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
 
     @Qualifier
     @Retention(AnnotationRetention.BINARY)

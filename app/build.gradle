@@ -23,6 +23,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id "org.sonarqube" version "3.3"
+    id 'com.google.gms.google-services'
 }
 
 apply from: "jacoco.gradle"
@@ -152,6 +153,11 @@ dependencies {
     implementation libs.fuel_android
     implementation libs.fuel_coroutines
     implementation libs.fuel_gson
+
+    // Firebase
+    implementation platform(libs.firebase_bom)
+    implementation libs.firebase_authentication
+    implementation libs.firebase_firestore
 
     // Unit testing
     testImplementation libs.junit
