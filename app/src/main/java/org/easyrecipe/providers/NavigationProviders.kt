@@ -23,6 +23,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
+import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigationImpl
 import org.easyrecipe.features.recipes.navigation.RecipesNavigation
 import org.easyrecipe.features.recipes.navigation.RecipesNavigationImpl
 import org.easyrecipe.features.search.navigation.SearchNavigation
@@ -39,4 +41,7 @@ class NavigationProviders {
     fun provideRecipesNavigation(
         @ApplicationContext context: Context,
     ): RecipesNavigation = RecipesNavigationImpl(context)
+
+    @Provides
+    fun provideCreateRecipeNavigation(): CreateRecipeNavigation = CreateRecipeNavigationImpl()
 }

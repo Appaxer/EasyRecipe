@@ -36,7 +36,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.easyrecipe.R
 import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.common.extensions.*
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentCreateRecipeBinding
 import org.easyrecipe.features.createrecipe.recyclerview.IngredientListAdapter
 import org.easyrecipe.features.createrecipe.recyclerview.StepListAdapter
@@ -56,27 +55,6 @@ class CreateRecipeFragment : BaseFragment() {
     private val args: CreateRecipeFragmentArgs by navArgs()
 
     override val viewModel: CreateRecipeViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<CreateRecipeState> { context, state ->
-        when (state) {
-            is CreateRecipeState.EditIngredient -> {
-                binding.txtSearchIngredients.editText?.setText(state.name)
-                binding.txtIngredientQuantity.editText?.setText(state.quantity)
-            }
-            is CreateRecipeState.EditStep -> {
-                binding.txtStep.helperText = getString(
-                    R.string.recipe_step_modifying,
-                    state.position
-                )
-                binding.txtStep.editText?.setText(state.step)
-            }
-            CreateRecipeState.RecipeCreated -> navigateUp()
-            is CreateRecipeState.RecipeUpdated -> {
-                val action = CreateRecipeFragmentDirections
-                    .actionCreateRecipeFragmentToRecipeDetail(state.recipe.name, state.recipe)
-                navigate(action)
-            }
-        }
-    }
 
     @Inject
     lateinit var recipeTypeConversion: RecipeTypeConversion
@@ -93,6 +71,7 @@ class CreateRecipeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
+        viewModel.setUpObservers()
 
         viewModel.onGetAllIngredients()
     }
@@ -258,6 +237,25 @@ class CreateRecipeFragment : BaseFragment() {
     private fun FragmentCreateRecipeBinding.loadRecipeImage(uri: Uri) {
         viewModel.imageUri.value = uri.toString()
         Glide.with(requireContext()).load(uri).into(recipeImage)
+    }
+
+    private fun CreateRecipeViewModel.setUpObservers() {
+        editIngredient.observe(viewLifecycleOwner) { ingredient ->
+            with(binding) {
+                txtSearchIngredients.editText?.setText(ingredient.first)
+                txtIngredientQuantity.editText?.setText(ingredient.second)
+            }
+        }
+
+        editStep.observe(viewLifecycleOwner) { step ->
+            with(binding) {
+                txtStep.helperText = getString(
+                    R.string.recipe_step_modifying,
+                    step.first
+                )
+                txtStep.editText?.setText(step.second)
+            }
+        }
     }
 
     private fun requestImagePermissions() {

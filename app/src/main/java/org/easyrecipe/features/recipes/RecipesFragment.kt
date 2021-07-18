@@ -24,14 +24,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import org.easyrecipe.R
 import org.easyrecipe.adapters.RecipeAdapter
 import org.easyrecipe.adapters.RecipeTypeManager
 import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.common.extensions.observeList
 import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.common.extensions.observeVisibility
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentRecipesBinding
 
 @AndroidEntryPoint
@@ -40,21 +38,6 @@ class RecipesFragment : BaseFragment() {
     private lateinit var adapter: RecipeAdapter
 
     override val viewModel: RecipesViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<RecipesState> { _, state ->
-        when (state) {
-            RecipesState.CreateRecipe -> {
-                val screenTitle = getString(R.string.create_recipe_fragment)
-                val action = RecipesFragmentDirections
-                    .actionRecipesFragmentToCreateRecipeFragment(title = screenTitle)
-                navigate(action)
-            }
-            is RecipesState.ShowRecipeDetail -> {
-                val action = RecipesFragmentDirections
-                    .actionRecipesFragmentToRecipeDetail(state.recipe.name, state.recipe)
-                navigate(action)
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

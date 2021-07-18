@@ -17,19 +17,21 @@
 
 package org.easyrecipe.features.createrecipe
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.R
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.CombinedLiveData
 import org.easyrecipe.common.MultipleCombinedLiveData
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.extensions.navigateMainFragment
+import org.easyrecipe.common.extensions.navigateUpMainFragment
 import org.easyrecipe.common.extensions.notify
 import org.easyrecipe.common.extensions.requireValue
-import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
@@ -44,6 +46,9 @@ class CreateRecipeViewModel @Inject constructor(
     private val getAllIngredients: GetAllIngredients,
     private val createRecipe: CreateRecipe,
     private val updateRecipe: UpdateRecipe,
+    private val navManager: NavManager,
+    private val createRecipeNavigation: CreateRecipeNavigation,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     val name = MutableLiveData("")
     val description = MutableLiveData("")
@@ -100,23 +105,13 @@ class CreateRecipeViewModel @Inject constructor(
             && !ingredients.value.isNullOrEmpty() && !stepList.value.isNullOrEmpty()
     }
 
-    private val getAllIngredientsHandler = UseCaseResultHandler<GetAllIngredients.Response>(
-        onSuccess = {
-            predefinedIngredients.value = it.ingredients
-            ScreenState.Nothing
-        },
-        onError = { ScreenState.Nothing }
-    )
+    private val _editIngredient = MutableLiveData<Pair<String, String>>()
+    val editIngredient: LiveData<Pair<String, String>>
+        get() = _editIngredient
 
-    private val createRecipeHandler = UseCaseResultHandler<CreateRecipe.Response>(
-        onSuccess = { CreateRecipeState.RecipeCreated },
-        onError = { ScreenState.Nothing }
-    )
-
-    private val updateRecipeHandler = UseCaseResultHandler<UpdateRecipe.Response>(
-        onSuccess = { CreateRecipeState.RecipeUpdated(it.recipe) },
-        onError = { ScreenState.Nothing }
-    )
+    private val _editStep = MutableLiveData<Pair<Int, String>>()
+    val editStep: LiveData<Pair<Int, String>>
+        get() = _editStep
 
     fun onAddRecipeType(recipeType: RecipeType) {
         types.value?.add(recipeType)
@@ -154,7 +149,7 @@ class CreateRecipeViewModel @Inject constructor(
         val quantity = ingredients.value?.getOrDefault(ingredientName, "")
         if (!quantity.isNullOrEmpty()) {
             ingredientBeingEdited.value = ingredientName
-            loadState(CreateRecipeState.EditIngredient(ingredientName, quantity))
+            _editIngredient.value = ingredientName to quantity
         }
     }
 
@@ -185,21 +180,25 @@ class CreateRecipeViewModel @Inject constructor(
         val steps = stepList.value
         if (position - 1 >= 0 && steps != null) {
             currentPosition.value = position - 1
-            loadState(CreateRecipeState.EditStep(position, steps[position - 1].second))
+            _editStep.value = position to steps[position - 1].second
         }
     }
 
-    fun onGetAllIngredients() {
-        viewModelScope.launch {
-            executeUseCase(getAllIngredients, getAllIngredientsHandler, false) {
-                GetAllIngredients.Request()
-            }
+    fun onGetAllIngredients() = launch {
+        executeUseCase(
+            useCase = getAllIngredients,
+            onPrepareInput = { GetAllIngredients.Request() }
+        ).onSuccess { result ->
+            predefinedIngredients.value = result.ingredients
         }
     }
 
-    fun onCreateRecipe() {
-        viewModelScope.launch {
-            executeUseCase(createRecipe, createRecipeHandler) {
+    fun onCreateRecipe() = launch {
+        executeUseCase(
+            useCase = createRecipe,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
                 CreateRecipe.Request(
                     name = name.requireValue(),
                     description = description.requireValue(),
@@ -210,12 +209,17 @@ class CreateRecipeViewModel @Inject constructor(
                     imageUri = imageUri.requireValue()
                 )
             }
+        ).onSuccess {
+            navManager.navigateUpMainFragment()
         }
     }
 
-    fun onUpdateRecipe(recipe: LocalRecipe) {
-        viewModelScope.launch {
-            executeUseCase(updateRecipe, updateRecipeHandler) {
+    fun onUpdateRecipe(recipe: LocalRecipe) = launch {
+        executeUseCase(
+            useCase = updateRecipe,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
                 UpdateRecipe.Request(
                     recipe = recipe,
                     name = name.requireValue(),
@@ -227,6 +231,9 @@ class CreateRecipeViewModel @Inject constructor(
                     imageUri = imageUri.requireValue()
                 )
             }
+        ).onSuccess { result ->
+            val action = createRecipeNavigation.navigateToRecipeDetail(result.recipe)
+            navManager.navigateMainFragment(action)
         }
     }
 }
