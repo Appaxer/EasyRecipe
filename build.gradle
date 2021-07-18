@@ -79,6 +79,7 @@ ext {
     resultVersion = "4.0.0"
     roomVersion = "2.2.6"
     glideVersion = "4.11.0"
+    viewPager2Version = "1.0.0"
 
     libs = [
             kotlin_std             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -139,6 +140,9 @@ ext {
             firebase_bom           : "com.google.firebase:firebase-bom:$firebaseBomVersion",
             firebase_authentication: "com.google.firebase:firebase-auth-ktx",
             firebase_firestore     : "com.google.firebase:firebase-firestore-ktx",
+
+            // ViewPager2
+            viewpager2             : "androidx.viewpager2:viewpager2:$viewPager2Version",
 
             // Unit testing
             junit                  : "junit:junit:$junitVersion",

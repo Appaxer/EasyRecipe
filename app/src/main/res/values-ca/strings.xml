@@ -22,6 +22,8 @@
     <string name="other_error_message">Hi ha hagut un error inesperat.\nSi us plau, contacta amb el servei de suport.</string>
 
     <!-- Fragment names -->
+    <string name="login_fragment">Iniciar sessió</string>
+    <string name="signup_fragment">Registrar-se</string>
     <string name="recipes_fragment">Receptes</string>
     <string name="search_fragment">Explorar</string>
     <string name="create_recipe_fragment">Crear recepta</string>

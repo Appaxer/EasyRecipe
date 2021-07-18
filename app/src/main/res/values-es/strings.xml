@@ -22,6 +22,8 @@
     <string name="other_error_message">Ha habido un error inesperado.\nPor favor, contacta con el servicio de soporte.</string>
 
     <!-- Fragment names -->
+    <string name="login_fragment">Iniciar sesión</string>
+    <string name="signup_fragment">Registrarse</string>
     <string name="recipes_fragment">Mis Recetas</string>
     <string name="search_fragment">Explorar</string>
     <string name="settings_fragment">Ajustes</string>

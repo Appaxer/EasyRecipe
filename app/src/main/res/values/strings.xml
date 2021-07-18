@@ -23,6 +23,8 @@
     <string name="other_error_message">There has been an unexpected error.\nPlease contact the support service.</string>
 
     <!-- Fragment names -->
+    <string name="login_fragment">Login</string>
+    <string name="signup_fragment">Sign up</string>
     <string name="recipes_fragment">My Recipes</string>
     <string name="search_fragment">Browse</string>
     <string name="settings_fragment">Settings</string>

@@ -18,28 +18,17 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/authFragment">
+    android:id="@+id/auth_fragment_nav_graph"
+    app:startDestination="@id/loginFragment2">
 
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="org.easyrecipe.features.main.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main">
-        <argument
-            android:name="uid"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/loginFragment2"
+        android:name="org.easyrecipe.features.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" />
     <fragment
-        android:id="@+id/authFragment"
-        android:name="org.easyrecipe.features.auth.AuthFragment"
-        android:label="fragment_auth"
-        tools:layout="@layout/fragment_auth">
-        <action
-            android:id="@+id/action_authFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        android:id="@+id/signupFragment2"
+        android:name="org.easyrecipe.features.signup.SignupFragment"
+        android:label="fragment_signup"
+        tools:layout="@layout/fragment_signup" />
 </navigation>

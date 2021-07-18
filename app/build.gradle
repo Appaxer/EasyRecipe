@@ -159,6 +159,9 @@ dependencies {
     implementation libs.firebase_authentication
     implementation libs.firebase_firestore
 
+    // ViewPager2
+    implementation libs.viewpager2
+
     // Unit testing
     testImplementation libs.junit
     testImplementation libs.core_testing
