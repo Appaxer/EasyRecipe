@@ -18,14 +18,19 @@
 package org.easyrecipe.features.recipes
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.navigation.NavDirections
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
+import org.easyrecipe.features.recipes.navigation.RecipesNavigation
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.usecases.getallrecipes.GetAllRecipes
@@ -77,6 +82,18 @@ class RecipesViewModelTest {
     @MockK
     private lateinit var getAllRecipes: GetAllRecipes
 
+    @MockK
+    private lateinit var navManager: NavManager
+
+    @MockK
+    private lateinit var recipesNavigation: RecipesNavigation
+
+    @MockK
+    private lateinit var navDirections: NavDirections
+
+    @MockK
+    private lateinit var dialogManager: DialogManager
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -86,7 +103,20 @@ class RecipesViewModelTest {
     @Before
     fun setUp() {
         getAllRecipes = mockk()
-        viewModel = RecipesViewModel(getAllRecipes)
+
+        navManager = mockk()
+        every { navManager.navigate(any(), any()) } returns Unit
+
+        navDirections = mockk()
+        recipesNavigation = mockk()
+        every { recipesNavigation.navigateToCreateRecipe() } returns navDirections
+        every { recipesNavigation.navigateToShowRecipeDetail(any()) } returns navDirections
+
+        dialogManager = mockk()
+        every { dialogManager.showLoadingDialog() } returns Unit
+        every { dialogManager.cancelLoadingDialog() } returns Unit
+
+        viewModel = RecipesViewModel(getAllRecipes, navManager, recipesNavigation, dialogManager)
     }
 
     @Test
@@ -95,8 +125,8 @@ class RecipesViewModelTest {
             UseCaseResult.Error(CommonException.OtherError(msg))
 
         viewModel.onGetAllRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.OtherError::class.java))
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, instanceOf(CommonException.OtherError::class.java))
     }
 
     @Test
@@ -105,8 +135,6 @@ class RecipesViewModelTest {
             UseCaseResult.Success(GetAllRecipes.Response(recipes))
 
         viewModel.onGetAllRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
@@ -121,8 +149,6 @@ class RecipesViewModelTest {
 
         viewModel.search.value = "Not Existing"
         viewModel.onGetAllRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValue(),
@@ -142,12 +168,31 @@ class RecipesViewModelTest {
 
         viewModel.search.value = "Spicy"
         viewModel.onGetAllRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(listOf(recipes[4]))
         )
+    }
+
+    @Test
+    fun `when creating recipe then we navigate to CreateRecipeFragment`() {
+        viewModel.onCreateRecipe()
+
+        verify {
+            recipesNavigation.navigateToCreateRecipe()
+            navManager.navigate(any(), navDirections)
+        }
+    }
+
+    @Test
+    fun `when showing recipe details then we navigate to CreateRecipeFragment`() {
+        val recipe = recipes.first()
+        viewModel.onShowRecipeDetail(recipe)
+
+        verify {
+            recipesNavigation.navigateToShowRecipeDetail(recipe)
+            navManager.navigate(any(), navDirections)
+        }
     }
 }

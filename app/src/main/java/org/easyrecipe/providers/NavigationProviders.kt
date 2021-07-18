@@ -17,10 +17,14 @@
 
 package org.easyrecipe.providers
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import org.easyrecipe.features.recipes.navigation.RecipesNavigation
+import org.easyrecipe.features.recipes.navigation.RecipesNavigationImpl
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.features.search.navigation.SearchNavigationImpl
 
@@ -30,4 +34,9 @@ class NavigationProviders {
 
     @Provides
     fun provideSearchNavigation(): SearchNavigation = SearchNavigationImpl()
+
+    @Provides
+    fun provideRecipesNavigation(
+        @ApplicationContext context: Context,
+    ): RecipesNavigation = RecipesNavigationImpl(context)
 }
