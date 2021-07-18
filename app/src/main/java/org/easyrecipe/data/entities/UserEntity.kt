@@ -26,4 +26,11 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
     val userId: Long,
+
+    @PrimaryKey
+    @ColumnInfo(name = "uid")
+    val uid: String,
+
+    @ColumnInfo(name = "last_update")
+    val lastUpdate: Long,
 )

@@ -51,6 +51,7 @@ class LocalDataSourceImplTest {
     private val recipeSteps = listOf("First", "Second")
     private val recipeImage = ""
     private val remoteRecipeId = "uri"
+    private val uid = "1"
 
     private val recipeId = 1L
     private val ingredientEntity = IngredientEntity("Salt")
@@ -142,7 +143,8 @@ class LocalDataSourceImplTest {
                 recipeTime,
                 recipeTypes,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
         }
 
@@ -157,7 +159,8 @@ class LocalDataSourceImplTest {
                 recipeTime,
                 recipeTypes,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
 
             assertThat(result.recipeId, isEqualTo(recipeId))
@@ -239,7 +242,8 @@ class LocalDataSourceImplTest {
                 recipeTime,
                 recipeTypes,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
         }
 
@@ -257,7 +261,8 @@ class LocalDataSourceImplTest {
                 recipeTime,
                 recipeTypes,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
 
             coVerify {

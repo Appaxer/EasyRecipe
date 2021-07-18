@@ -19,6 +19,8 @@ package org.easyrecipe.data
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import org.easyrecipe.common.extensions.hash
+import org.easyrecipe.data.sources.LocalDataSourceImpl
 
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
@@ -29,5 +31,15 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("alter table recipes add column is_favorite INT default 0")
+    }
+}
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        val defaultLastUpdate = System.currentTimeMillis()
+        database.execSQL("alter table users add column last_update INT default $defaultLastUpdate")
+
+        val defaultUid = "0".hash(LocalDataSourceImpl.HASH_ALGORITHM)
+        database.execSQL("alter table users add column uid TEXT default $defaultUid")
     }
 }

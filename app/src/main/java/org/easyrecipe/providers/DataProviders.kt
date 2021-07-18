@@ -34,6 +34,7 @@ import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.MIGRATION_1_2
 import org.easyrecipe.data.MIGRATION_2_3
+import org.easyrecipe.data.MIGRATION_3_4
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.data.dao.RemoteRecipeDaoImpl
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
@@ -107,7 +108,7 @@ class DataProviders {
         context,
         LocalDatabase::class.java,
         LocalDatabase.NAME
-    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
 
     @Provides
     @Singleton

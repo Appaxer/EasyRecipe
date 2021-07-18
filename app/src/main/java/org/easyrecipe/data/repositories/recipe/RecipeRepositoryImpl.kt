@@ -55,8 +55,16 @@ class RecipeRepositoryImpl @Inject constructor(
         imageUri: String,
         uid: String,
     ) {
-        val localRecipe =
-            localDataSource.insertRecipe(name, description, time, types, stepList, imageUri)
+        val localRecipe = localDataSource.insertRecipe(
+            name,
+            description,
+            time,
+            types,
+            stepList,
+            imageUri,
+            uid
+        )
+
         localDataSource.addIngredients(localRecipe, ingredients)
     }
 
@@ -75,8 +83,16 @@ class RecipeRepositoryImpl @Inject constructor(
         imageUri: String,
         uid: String,
     ) {
-        val localRecipe =
-            localDataSource.updateRecipe(id, name, description, time, types, stepList, imageUri)
+        val localRecipe = localDataSource.updateRecipe(
+            id,
+            name,
+            description,
+            time,
+            types,
+            stepList,
+            imageUri,
+            uid
+        )
 
         localDataSource.updateIngredients(localRecipe, ingredients)
     }

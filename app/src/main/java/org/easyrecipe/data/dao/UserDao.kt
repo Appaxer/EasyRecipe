@@ -46,4 +46,7 @@ interface UserDao {
 
     @Query("select * from recipes where is_favorite = 1")
     suspend fun getFavoriteLocalRecipes(): List<RecipeEntity>
+
+    @Query("select * from users where uid = :uid")
+    suspend fun getUserByUid(uid: String)
 }

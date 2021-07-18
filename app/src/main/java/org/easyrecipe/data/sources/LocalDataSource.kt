@@ -32,6 +32,7 @@ interface LocalDataSource {
         types: List<RecipeType>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     ): LocalRecipe
 
     suspend fun addIngredients(recipe: LocalRecipe, ingredients: Map<String, String>)
@@ -46,6 +47,7 @@ interface LocalDataSource {
         updateTypes: List<RecipeType>,
         updateStepList: List<String>,
         updateImageUri: String,
+        uid: String,
     ): LocalRecipe
 
     suspend fun updateIngredients(localRecipe: LocalRecipe, ingredients: Map<String, String>)

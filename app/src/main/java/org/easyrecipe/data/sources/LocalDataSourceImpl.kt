@@ -63,7 +63,9 @@ class LocalDataSourceImpl @Inject constructor(
         types: List<RecipeType>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     ): LocalRecipe {
+        addUserIfNotExisting(uid)
         val recipeEntity = RecipeEntity(
             name = name,
             description = description,
@@ -77,6 +79,10 @@ class LocalDataSourceImpl @Inject constructor(
         return LocalRecipe.fromEntity(recipeEntity).apply {
             recipeId = id
         }
+    }
+
+    private fun addUserIfNotExisting(uid: String) {
+
     }
 
     override suspend fun addIngredients(
@@ -109,6 +115,7 @@ class LocalDataSourceImpl @Inject constructor(
         updateTypes: List<RecipeType>,
         updateStepList: List<String>,
         updateImageUri: String,
+        uid: String,
     ): LocalRecipe {
         val recipeEntity = recipeDao.getRecipe(recipeId).apply {
             name = updateName
@@ -161,5 +168,9 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun getFavoriteRecipes(): List<Recipe> {
         return userDao.getFavoriteLocalRecipes().map { recipe -> LocalRecipe.fromEntity(recipe) }
+    }
+
+    companion object {
+        const val HASH_ALGORITHM = "SHA-256"
     }
 }
