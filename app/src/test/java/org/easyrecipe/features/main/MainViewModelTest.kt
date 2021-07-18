@@ -26,10 +26,10 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
-import org.easyrecipe.getAfterLoading
+import org.easyrecipe.getOrAwaitValue
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.RecipeType
@@ -57,11 +57,16 @@ class MainViewModelTest {
         time = 75
     ))
 
+    private val uid = "1"
+
     @MockK
     private lateinit var searchRecipes: SearchRecipes
 
     @MockK
     private lateinit var navManager: NavManager
+
+    @MockK
+    private lateinit var dialogManager: DialogManager
 
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
@@ -72,40 +77,44 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         searchRecipes = mockk()
+
         navManager = mockk()
         every { navManager.navigateUp(any()) } returns Unit
 
-        viewModel = MainViewModel(searchRecipes, navManager)
+        dialogManager = mockk()
+        every { dialogManager.showLoadingDialog() } returns Unit
+        every { dialogManager.cancelLoadingDialog() } returns Unit
+
+        viewModel = MainViewModel(searchRecipes, navManager, dialogManager)
     }
 
     @Test
-    fun `when there is no internet then NoInternet state is loaded`() {
+    fun `when there is no internet then NoInternet is shown`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.NoInternetException)
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.NoInternet::class.java))
+
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, instanceOf(CommonException.NoInternetException::class.java))
     }
 
     @Test
-    fun `when there is an unexpected error then OtherError state is loaded`() {
+    fun `when there is an unexpected error then OtherError is shown`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.OtherError(msg))
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.OtherError::class.java))
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, instanceOf(CommonException.OtherError::class.java))
     }
 
     @Test
-    fun `when the recipes are found in the remote database then they are stored in the MainViewModel`() {
+    fun `when the recipes are found in the remote database then they are stored`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Success(SearchRecipes.Response(recipes))
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
@@ -119,5 +128,12 @@ class MainViewModelTest {
         verify {
             navManager.navigateUp(any())
         }
+    }
+
+    @Test
+    fun `when setting user uid hen it is stored`() {
+        viewModel.onSetCurrentUserUid(uid)
+
+        assertThat(viewModel.userUid.getOrAwaitValue(), isEqualTo(uid))
     }
 }

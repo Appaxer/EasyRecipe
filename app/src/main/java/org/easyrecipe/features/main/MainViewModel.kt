@@ -17,14 +17,12 @@
 
 package org.easyrecipe.features.main
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
-import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateUpMainFragment
-import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
@@ -34,28 +32,32 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
     private val navManager: NavManager,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
-    val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
+    private val _recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
+    val recipeList: LiveData<List<Recipe>>
+        get() = _recipeList
 
-    private val searchRandomRecipesResultHandler = UseCaseResultHandler<SearchRecipes.Response>(
-        onSuccess = { result ->
-            recipeList.value = result.recipes
-            ScreenState.Nothing
-        },
-        onError = { ScreenState.OtherError }
-    )
+    private val _userUid = MutableLiveData<String>()
+    val userUid: LiveData<String>
+        get() = _userUid
 
-    fun onSearchRecipes() {
-        viewModelScope.launch {
-            if (recipeList.value.isNullOrEmpty()) {
-                executeUseCase(searchRecipes, searchRandomRecipesResultHandler) {
-                    SearchRecipes.Request("", emptyList())
-                }
-            }
+    fun onSearchRecipes() = launch {
+        executeUseCase(
+            useCase = searchRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = { SearchRecipes.Request("", emptyList()) }
+        ).onSuccess { result ->
+            _recipeList.value = result.recipes
         }
     }
 
     fun onNavigateUp() {
         navManager.navigateUpMainFragment()
+    }
+
+    fun onSetCurrentUserUid(uid: String) {
+        _userUid.value = uid
     }
 }

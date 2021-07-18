@@ -15,12 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.features.recipes
+package org.easyrecipe.features.createrecipe.navigation
 
-import org.easyrecipe.common.ScreenState
-import org.easyrecipe.model.Recipe
+import androidx.navigation.NavDirections
+import org.easyrecipe.model.LocalRecipe
 
-sealed class RecipesState : ScreenState() {
-    object CreateRecipe : RecipesState()
-    class ShowRecipeDetail(val recipe: Recipe) : RecipesState()
+interface CreateRecipeNavigation {
+    fun navigateToRecipeDetail(recipe: LocalRecipe): NavDirections
 }
