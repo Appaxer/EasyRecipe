@@ -63,6 +63,8 @@ class CreateRecipeViewModelTest {
         Ingredient("Fish")
     )
 
+    private val uid = "1"
+
     private val localRecipe = LocalRecipe(
         name = recipeName,
         description = recipeDescription,
@@ -376,7 +378,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onCreateRecipe()
+        viewModel.onCreateRecipe(uid)
 
         assertThat(
             viewModel.displayCommonError.getOrAwaitValue(),
@@ -403,7 +405,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onCreateRecipe()
+        viewModel.onCreateRecipe(uid)
 
         verify {
             navManager.navigateUp(any())
@@ -429,7 +431,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onUpdateRecipe(localRecipe)
+        viewModel.onUpdateRecipe(localRecipe, uid)
 
         assertThat(
             viewModel.displayCommonError.getOrAwaitValue(),
@@ -456,7 +458,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onUpdateRecipe(localRecipe)
+        viewModel.onUpdateRecipe(localRecipe, uid)
 
         verify {
             createRecipeNavigation.navigateToRecipeDetail(localRecipe)

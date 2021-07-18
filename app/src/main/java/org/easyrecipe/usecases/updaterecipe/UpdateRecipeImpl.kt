@@ -33,7 +33,8 @@ class UpdateRecipeImpl @Inject constructor(
             request.type,
             request.ingredients,
             request.stepList,
-            request.imageUri
+            request.imageUri,
+            request.uid
         )
 
         val recipe = recipeRepository.getRecipeById(request.recipe.recipeId)

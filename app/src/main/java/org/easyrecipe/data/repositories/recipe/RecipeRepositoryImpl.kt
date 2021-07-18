@@ -53,6 +53,7 @@ class RecipeRepositoryImpl @Inject constructor(
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     ) {
         val localRecipe =
             localDataSource.insertRecipe(name, description, time, types, stepList, imageUri)
@@ -72,6 +73,7 @@ class RecipeRepositoryImpl @Inject constructor(
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     ) {
         val localRecipe =
             localDataSource.updateRecipe(id, name, description, time, types, stepList, imageUri)

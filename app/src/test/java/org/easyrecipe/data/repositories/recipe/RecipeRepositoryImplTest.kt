@@ -80,6 +80,7 @@ class RecipeRepositoryImplTest {
     private val recipeImage = ""
     private val recipeId = 1L
     private val remoteRecipeId = "uri"
+    private val uid = "1"
 
     private val localFavorites = recipes.take(3)
     private val remoteFavorites = recipes.takeLast(2)
@@ -175,7 +176,8 @@ class RecipeRepositoryImplTest {
                 recipeTypes,
                 recipeIngredients,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
         }
 
@@ -197,7 +199,8 @@ class RecipeRepositoryImplTest {
                 recipeTypes,
                 recipeIngredients,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
 
             coVerify {
@@ -268,7 +271,8 @@ class RecipeRepositoryImplTest {
                 recipeTypes,
                 recipeIngredients,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
         }
 
@@ -291,7 +295,8 @@ class RecipeRepositoryImplTest {
                 recipeTypes,
                 recipeIngredients,
                 recipeSteps,
-                recipeImage
+                recipeImage,
+                uid
             )
 
             coVerify {

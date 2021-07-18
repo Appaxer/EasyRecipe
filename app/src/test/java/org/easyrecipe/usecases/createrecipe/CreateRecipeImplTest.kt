@@ -41,7 +41,8 @@ class CreateRecipeImplTest {
         types = listOf(RecipeType.Hot, RecipeType.Fish),
         ingredients = mutableMapOf("Fish" to "1", "Potato" to "2"),
         stepList = listOf("First", "Second"),
-        imageUri = ""
+        imageUri = "",
+        uid = "1"
     )
 
     @MockK
@@ -56,7 +57,7 @@ class CreateRecipeImplTest {
     @Test
     fun `when there is an error then the result is an error`() = runBlockingTest {
         coEvery {
-            recipeRepository.createRecipe(any(), any(), any(), any(), any(), any(), any())
+            recipeRepository.createRecipe(any(), any(), any(), any(), any(), any(), any(), any())
         } throws Exception("")
 
         val result = createRecipeImpl.execute(request)
@@ -66,7 +67,7 @@ class CreateRecipeImplTest {
     @Test
     fun `when there is no error then the recipe is created`() = runBlockingTest {
         coEvery {
-            recipeRepository.createRecipe(any(), any(), any(), any(), any(), any(), any())
+            recipeRepository.createRecipe(any(), any(), any(), any(), any(), any(), any(), any())
         } returns Unit
 
         val result = createRecipeImpl.execute(request)

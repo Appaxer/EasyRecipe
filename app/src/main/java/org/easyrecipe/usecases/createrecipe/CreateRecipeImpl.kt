@@ -32,7 +32,8 @@ class CreateRecipeImpl @Inject constructor(
             request.types,
             request.ingredients,
             request.stepList,
-            request.imageUri
+            request.imageUri,
+            request.uid
         )
         CreateRecipe.Response()
     }

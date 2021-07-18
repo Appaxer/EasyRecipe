@@ -44,6 +44,7 @@ class UpdateRecipeImplTest {
         type = listOf(RecipeType.Hot, RecipeType.Fish),
         image = ""
     )
+
     private val request = UpdateRecipe.Request(
         recipe = localRecipe,
         name = "Fish and chips",
@@ -52,7 +53,8 @@ class UpdateRecipeImplTest {
         type = listOf(RecipeType.Hot, RecipeType.Fish),
         ingredients = mutableMapOf("Fish" to "1", "Potato" to "2"),
         stepList = listOf("First", "Second"),
-        imageUri = ""
+        imageUri = "",
+        uid = "1"
     )
 
     @MockK
@@ -67,7 +69,9 @@ class UpdateRecipeImplTest {
     @Test
     fun `when there is an error then the result is an error`() = runBlockingTest {
         coEvery {
-            recipeRepository.updateRecipe(any(), any(), any(), any(), any(), any(), any(), any())
+            recipeRepository.updateRecipe(
+                any(), any(), any(), any(), any(), any(), any(), any(), any()
+            )
         } throws Exception("")
 
         val result = updateRecipeImpl.execute(request)
@@ -80,7 +84,9 @@ class UpdateRecipeImplTest {
     @Test
     fun `when there is no error then the recipe is created`() = runBlockingTest {
         coEvery {
-            recipeRepository.updateRecipe(any(), any(), any(), any(), any(), any(), any(), any())
+            recipeRepository.updateRecipe(
+                any(), any(), any(), any(), any(), any(), any(), any(), any()
+            )
         } returns Unit
 
         coEvery {

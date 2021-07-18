@@ -193,7 +193,7 @@ class CreateRecipeViewModel @Inject constructor(
         }
     }
 
-    fun onCreateRecipe() = launch {
+    fun onCreateRecipe(uid: String) = launch {
         executeUseCase(
             useCase = createRecipe,
             onBefore = { dialogManager.showLoadingDialog() },
@@ -206,7 +206,8 @@ class CreateRecipeViewModel @Inject constructor(
                     types = types.requireValue().toList(),
                     ingredients = ingredients.requireValue(),
                     stepList = _stepList.requireValue(),
-                    imageUri = imageUri.requireValue()
+                    imageUri = imageUri.requireValue(),
+                    uid = uid
                 )
             }
         ).onSuccess {
@@ -214,7 +215,7 @@ class CreateRecipeViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateRecipe(recipe: LocalRecipe) = launch {
+    fun onUpdateRecipe(recipe: LocalRecipe, uid: String) = launch {
         executeUseCase(
             useCase = updateRecipe,
             onBefore = { dialogManager.showLoadingDialog() },
@@ -228,7 +229,8 @@ class CreateRecipeViewModel @Inject constructor(
                     type = types.requireValue().toList(),
                     ingredients = ingredients.requireValue(),
                     stepList = _stepList.requireValue(),
-                    imageUri = imageUri.requireValue()
+                    imageUri = imageUri.requireValue(),
+                    uid = uid
                 )
             }
         ).onSuccess { result ->

@@ -30,6 +30,7 @@ interface CreateRecipe : UseCase<CreateRecipe.Request, CreateRecipe.Response> {
         val ingredients: Map<String, String>,
         val stepList: List<String>,
         val imageUri: String,
+        val uid: String,
     ) : UseCase.UseCaseRequest
 
     class Response : UseCase.UseCaseResponse

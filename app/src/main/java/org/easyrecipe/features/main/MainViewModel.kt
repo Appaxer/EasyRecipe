@@ -38,9 +38,9 @@ class MainViewModel @Inject constructor(
     val recipeList: LiveData<List<Recipe>>
         get() = _recipeList
 
-    private val _userUid = MutableLiveData<String>()
-    val userUid: LiveData<String>
-        get() = _userUid
+    private val _uid = MutableLiveData<String>()
+    val uid: LiveData<String>
+        get() = _uid
 
     fun onSearchRecipes() = launch {
         executeUseCase(
@@ -58,6 +58,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun onSetCurrentUserUid(uid: String) {
-        _userUid.value = uid
+        _uid.value = "1"    // This string is hardcoded until login is finished
     }
 }

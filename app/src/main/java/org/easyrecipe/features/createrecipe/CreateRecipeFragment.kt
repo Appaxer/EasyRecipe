@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -39,6 +40,7 @@ import org.easyrecipe.common.extensions.*
 import org.easyrecipe.databinding.FragmentCreateRecipeBinding
 import org.easyrecipe.features.createrecipe.recyclerview.IngredientListAdapter
 import org.easyrecipe.features.createrecipe.recyclerview.StepListAdapter
+import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.utils.RecipeTypeConversion
 import javax.inject.Inject
@@ -55,6 +57,8 @@ class CreateRecipeFragment : BaseFragment() {
     private val args: CreateRecipeFragmentArgs by navArgs()
 
     override val viewModel: CreateRecipeViewModel by viewModels()
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     @Inject
     lateinit var recipeTypeConversion: RecipeTypeConversion
@@ -194,10 +198,10 @@ class CreateRecipeFragment : BaseFragment() {
         btnCreateRecipe.setOnClickListener {
             if (args.isEditing) {
                 args.recipe?.let { localRecipe ->
-                    viewModel.onUpdateRecipe(localRecipe)
+                    viewModel.onUpdateRecipe(localRecipe, mainViewModel.uid.requireValue())
                 }
             } else {
-                viewModel.onCreateRecipe()
+                viewModel.onCreateRecipe(mainViewModel.uid.requireValue())
             }
         }
     }

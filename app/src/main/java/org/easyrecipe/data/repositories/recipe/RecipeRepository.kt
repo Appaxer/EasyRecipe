@@ -32,6 +32,7 @@ interface RecipeRepository {
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     )
 
     suspend fun deleteRecipe(recipeId: Long)
@@ -45,6 +46,7 @@ interface RecipeRepository {
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     )
 
     suspend fun getRecipeById(recipeId: Long): LocalRecipe

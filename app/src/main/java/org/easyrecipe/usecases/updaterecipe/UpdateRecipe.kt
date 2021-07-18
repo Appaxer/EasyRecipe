@@ -32,6 +32,7 @@ interface UpdateRecipe : UseCase<UpdateRecipe.Request, UpdateRecipe.Response> {
         val ingredients: Map<String, String>,
         val stepList: List<String>,
         val imageUri: String,
+        val uid: String,
     ) : UseCase.UseCaseRequest
 
     data class Response(

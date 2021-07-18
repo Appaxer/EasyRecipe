@@ -134,6 +134,6 @@ class MainViewModelTest {
     fun `when setting user uid hen it is stored`() {
         viewModel.onSetCurrentUserUid(uid)
 
-        assertThat(viewModel.userUid.getOrAwaitValue(), isEqualTo(uid))
+        assertThat(viewModel.uid.getOrAwaitValue(), isEqualTo(uid))
     }
 }
