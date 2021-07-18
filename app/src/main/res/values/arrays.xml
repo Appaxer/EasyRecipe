@@ -28,10 +28,10 @@
     </string-array>
     <string-array name="remote_languages">
         <item>English</item>
-        <!--        <item>Spanish (beta)</item>-->
+        <item>Spanish (beta)</item>
     </string-array>
     <string-array name="remote_languages_values">
         <item>en</item>
-        <!--        <item>es</item>-->
+        <item>es</item>
     </string-array>
 </resources>

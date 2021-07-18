@@ -69,8 +69,7 @@ class ScreenStateHandler<T : ScreenState>(
             ScreenState.NoInternet -> onNoInternet(it)
             ScreenState.OtherError -> onOtherError(it)
             ScreenState.ExecutingUseCase -> onExecutingUseCase(it)
-            ScreenState.Nothing -> {
-            }
+            ScreenState.Nothing -> return@let
             else -> action(it, state as T)
         }
     } ?: throw ContextNotSetException()

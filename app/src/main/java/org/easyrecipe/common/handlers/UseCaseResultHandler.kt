@@ -45,12 +45,13 @@ class UseCaseResultHandler<T : UseCase.UseCaseResponse>(
      */
     fun getScreenState(useCaseResult: UseCaseResult<*>) = when (useCaseResult) {
         is UseCaseResult.Success -> onSuccess(useCaseResult.result as T)
-        else -> {
-            when (val exception = (useCaseResult as UseCaseResult.Error).exception) {
-                CommonException.NoInternetException -> ScreenState.NoInternet
-                is CommonException.OtherError -> ScreenState.OtherError
-                else -> onError(exception)
-            }
-        }
+        else -> showOnError(useCaseResult)
     }
+
+    private fun showOnError(useCaseResult: UseCaseResult<*>) =
+        when (val exception = (useCaseResult as UseCaseResult.Error).exception) {
+            CommonException.NoInternetException -> ScreenState.NoInternet
+            is CommonException.OtherError -> ScreenState.OtherError
+            else -> onError(exception)
+        }
 }

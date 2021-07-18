@@ -30,5 +30,7 @@ class OpenUrlContract : ActivityResultContract<String, Unit>() {
         return Intent(Intent.ACTION_VIEW, Uri.parse(input))
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?) {}
+    override fun parseResult(resultCode: Int, intent: Intent?) {
+        // The result of this contract is not used
+    }
 }

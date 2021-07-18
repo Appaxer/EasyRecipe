@@ -20,6 +20,7 @@ package org.easyrecipe.features.recipedetail
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -42,6 +43,7 @@ import org.easyrecipe.databinding.FragmentRecipeDetailBinding
 import org.easyrecipe.features.recipedetail.recyclerview.IngredientDetailListAdapter
 import org.easyrecipe.features.recipedetail.recyclerview.StepDetailListAdapter
 import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.Recipe
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import javax.inject.Inject
@@ -138,10 +140,7 @@ class RecipeDetailFragment : BaseFragment() {
                 when (item.itemId) {
                     R.id.favoriteRecipe -> {
                         viewModel.onFavoriteLocalRecipe(localRecipe.recipeId, localRecipe.favorite)
-                        when (localRecipe.favorite) {
-                            true -> item.setIcon(R.drawable.ic_not_favorite)
-                            false -> item.setIcon(R.drawable.ic_favourite)
-                        }
+                        setFavouriteIcon(localRecipe, item)
                         localRecipe.toggleFavorite()
                         true
                     }
@@ -169,16 +168,23 @@ class RecipeDetailFragment : BaseFragment() {
                 when (item.itemId) {
                     R.id.favorite -> {
                         viewModel.onFavoriteRecipe(remoteRecipe.recipeId, remoteRecipe.favorite)
-                        when (remoteRecipe.favorite) {
-                            true -> item.setIcon(R.drawable.ic_not_favorite)
-                            false -> item.setIcon(R.drawable.ic_favourite)
-                        }
+                        setFavouriteIcon(remoteRecipe, item)
                         remoteRecipe.toggleFavorite()
                         true
                     }
                     else -> false
                 }
             }
+        }
+    }
+
+    private fun setFavouriteIcon(
+        recipe: Recipe,
+        item: MenuItem,
+    ) {
+        when (recipe.favorite) {
+            true -> item.setIcon(R.drawable.ic_not_favorite)
+            false -> item.setIcon(R.drawable.ic_favourite)
         }
     }
 
