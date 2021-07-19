@@ -29,6 +29,11 @@
     <string name="create_recipe_fragment">Crear recepta</string>
     <string name="favorite_fragment">Favorites</string>
 
+    <!-- Auth fragment -->
+    <string name="email">Correu electrònic</string>
+    <string name="password">Contrasenya</string>
+    <string name="forgotten_password">Has oblidat la contrasenya?</string>
+
     <!-- Recipes fragment -->
     <string name="content_description_create_recipe">Crear recepta</string>
     <string name="recipes_not_found">Receptes no trobades</string>

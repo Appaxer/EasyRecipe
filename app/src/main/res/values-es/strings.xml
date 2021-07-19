@@ -30,6 +30,11 @@
     <string name="create_recipe_fragment">Crear receta</string>
     <string name="favorite_fragment">Favoritas</string>
 
+    <!-- Auth fragment -->
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="forgotten_password">¿Has olvidado la contraseña?</string>
+
     <!-- Recipes fragment -->
     <string name="content_description_create_recipe">Crear receta</string>
     <string name="search">Buscar</string>
