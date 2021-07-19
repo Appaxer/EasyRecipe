@@ -18,10 +18,7 @@
 package org.easyrecipe.data.sources
 
 import org.easyrecipe.data.LocalDatabase
-import org.easyrecipe.data.entities.FavoriteRemoteRecipeEntity
-import org.easyrecipe.data.entities.IngredientEntity
-import org.easyrecipe.data.entities.RecipeEntity
-import org.easyrecipe.data.entities.RecipeIngredient
+import org.easyrecipe.data.entities.*
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.Recipe
@@ -65,7 +62,7 @@ class LocalDataSourceImpl @Inject constructor(
         imageUri: String,
         uid: String,
     ): LocalRecipe {
-        addUserIfNotExisting(uid)
+        val user = getOrCreateUser(uid)
         val recipeEntity = RecipeEntity(
             name = name,
             description = description,
@@ -76,13 +73,27 @@ class LocalDataSourceImpl @Inject constructor(
         )
 
         val id = recipeDao.insertRecipe(recipeEntity)
+        val userRecipe = UserRecipe(user.userId, id)
+        userDao.insertUserRecipe(userRecipe)
+
         return LocalRecipe.fromEntity(recipeEntity).apply {
             recipeId = id
         }
     }
 
-    private fun addUserIfNotExisting(uid: String) {
+    private suspend fun getOrCreateUser(uid: String): UserEntity {
+        return userDao.getUserByUid(uid) ?: createUser(uid)
+    }
 
+    private suspend fun createUser(uid: String): UserEntity {
+        val userEntity = UserEntity(
+            userId = 0,
+            uid = uid,
+            lastUpdate = System.currentTimeMillis()
+        )
+
+        userDao.insertUser(userEntity)
+        return userEntity
     }
 
     override suspend fun addIngredients(

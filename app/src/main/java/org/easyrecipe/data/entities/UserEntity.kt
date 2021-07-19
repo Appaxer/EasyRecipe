@@ -21,16 +21,20 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "users")
+@Entity(
+    tableName = "users"
+    /*indices = [
+        Index(value = ["uid"], unique = true)
+    ]*/
+)
 data class UserEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
     val userId: Long,
 
-    @PrimaryKey
     @ColumnInfo(name = "uid")
-    val uid: String,
+    val uid: String? = null,
 
     @ColumnInfo(name = "last_update")
-    val lastUpdate: Long,
+    val lastUpdate: Long?,
 )

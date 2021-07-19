@@ -34,7 +34,7 @@ import org.easyrecipe.data.entities.*
         FavoriteRemoteRecipeEntity::class,
         UserFavoriteRemoteRecipe::class
     ],
-    version = 3
+    version = 4
 )
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {

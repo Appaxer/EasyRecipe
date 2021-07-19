@@ -48,5 +48,5 @@ interface UserDao {
     suspend fun getFavoriteLocalRecipes(): List<RecipeEntity>
 
     @Query("select * from users where uid = :uid")
-    suspend fun getUserByUid(uid: String)
+    suspend fun getUserByUid(uid: String): UserEntity?
 }
