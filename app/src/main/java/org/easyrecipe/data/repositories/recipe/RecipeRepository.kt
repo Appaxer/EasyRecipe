@@ -20,7 +20,7 @@ package org.easyrecipe.data.repositories.recipe
 import org.easyrecipe.model.*
 
 interface RecipeRepository {
-    suspend fun getAllLocalRecipes(): List<Recipe>
+    suspend fun getAllLocalRecipes(uid: String): List<Recipe>
     suspend fun getAllIngredients(): List<Ingredient>
     suspend fun getRemoteRecipes(name: String, mealType: List<MealType>): List<Recipe>
 
@@ -56,4 +56,6 @@ interface RecipeRepository {
     suspend fun favoriteLocalRecipe(recipeId: Long, isFavorite: Boolean)
 
     suspend fun getFavoriteRecipes(): List<Recipe>
+
+    suspend fun getAllRecipesFromUser(user: User): List<Recipe>
 }

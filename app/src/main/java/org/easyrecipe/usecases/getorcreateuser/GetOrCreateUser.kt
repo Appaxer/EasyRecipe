@@ -15,17 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.getallrecipes
+package org.easyrecipe.usecases.getorcreateuser
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.User
 
-class GetAllRecipesImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : GetAllRecipes {
-    override suspend fun execute(request: GetAllRecipes.Request) = runUseCase {
-        val recipes = recipeRepository.getAllLocalRecipes(request.uid)
-        GetAllRecipes.Response(recipes)
-    }
+interface GetOrCreateUser : UseCase<GetOrCreateUser.Request, GetOrCreateUser.Response> {
+
+    data class Request(
+        val uid: String,
+    ) : UseCase.UseCaseRequest
+
+    data class Response(
+        val user: User,
+    ) : UseCase.UseCaseResponse
 }

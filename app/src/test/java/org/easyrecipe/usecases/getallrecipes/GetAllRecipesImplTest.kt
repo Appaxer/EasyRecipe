@@ -75,6 +75,8 @@ class GetAllRecipesImplTest {
             image = "")
     )
 
+    private val uid = "1"
+
     @MockK
     private lateinit var recipeRepository: RecipeRepository
 
@@ -90,9 +92,10 @@ class GetAllRecipesImplTest {
     @Test
     fun `when there is an unexpected error then Error result is returned with the OtherError exception`() =
         runBlockingTest {
-            coEvery { recipeRepository.getAllLocalRecipes() } throws CommonException.OtherError(msg)
+            coEvery { recipeRepository.getAllLocalRecipes(any()) } throws CommonException.OtherError(
+                msg)
 
-            val result = getAllRecipes.execute(GetAllRecipes.Request())
+            val result = getAllRecipes.execute(GetAllRecipes.Request(uid))
             assertThat(result, isResultError())
 
             val exception = (result as UseCaseResult.Error).exception
@@ -102,9 +105,9 @@ class GetAllRecipesImplTest {
     @Test
     fun `when the recipes are found in the database then Success result is returned with the recipe list`() =
         runBlockingTest {
-            coEvery { recipeRepository.getAllLocalRecipes() } returns recipes
+            coEvery { recipeRepository.getAllLocalRecipes(any()) } returns recipes
 
-            val result = getAllRecipes.execute(GetAllRecipes.Request())
+            val result = getAllRecipes.execute(GetAllRecipes.Request(uid))
             assertThat(result, isResultSuccess())
 
             val recipeList = (result as UseCaseResult.Success).result.recipes

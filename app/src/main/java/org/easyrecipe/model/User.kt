@@ -15,17 +15,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.getallrecipes
+package org.easyrecipe.model
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import org.easyrecipe.data.entities.UserEntity
+import java.io.Serializable
 
-class GetAllRecipesImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : GetAllRecipes {
-    override suspend fun execute(request: GetAllRecipes.Request) = runUseCase {
-        val recipes = recipeRepository.getAllLocalRecipes(request.uid)
-        GetAllRecipes.Response(recipes)
+class User(
+    val uid: String,
+    val lastUpdate: Long,
+) : Serializable {
+    private val _recipes: MutableList<Recipe> = mutableListOf()
+    val recipes: List<Recipe>
+        get() = _recipes
+
+    fun addRecipe(recipe: Recipe) {
+        _recipes.add(recipe)
+    }
+
+    fun addRecipes(recipes: List<Recipe>) {
+        _recipes.addAll(recipes)
+    }
+
+    companion object {
+        @JvmStatic
+        fun fromEntity(userEntity: UserEntity) = User(
+            uid = userEntity.uid ?: "",
+            lastUpdate = userEntity.lastUpdate ?: 0
+        )
     }
 }

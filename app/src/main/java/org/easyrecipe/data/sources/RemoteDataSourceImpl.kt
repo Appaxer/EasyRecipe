@@ -18,12 +18,15 @@
 package org.easyrecipe.data.sources
 
 import org.easyrecipe.data.dao.RemoteRecipeDao
+import org.easyrecipe.data.remotedatabase.RemoteDataBase
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
+import org.easyrecipe.model.User
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(
-    private var remoteRecipeDao: RemoteRecipeDao,
+    private val remoteRecipeDao: RemoteRecipeDao,
+    private val remoteDataBase: RemoteDataBase,
 ) : RemoteDataSource {
 
     override suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe> {
@@ -36,5 +39,23 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe> {
         return remoteRecipeDao.getFavoriteRecipes(recipeIds)
+    }
+
+    override suspend fun createUserIfNotExisting(uid: String) {
+        if (!remoteDataBase.isUserExisting()) {
+            remoteDataBase.createUser(uid)
+        }
+    }
+
+    override suspend fun getUser(uid: String): User {
+        return User("1", 0)
+    }
+
+    override suspend fun addRecipesToUser(
+        uid: String,
+        lastUpdate: Long,
+        localRecipes: List<Recipe>,
+    ) {
+
     }
 }

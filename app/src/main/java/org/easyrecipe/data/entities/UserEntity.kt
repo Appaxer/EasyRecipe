@@ -23,14 +23,11 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "users"
-    /*indices = [
-        Index(value = ["uid"], unique = true)
-    ]*/
 )
 data class UserEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
-    val userId: Long,
+    var userId: Long,
 
     @ColumnInfo(name = "uid")
     val uid: String? = null,

@@ -57,7 +57,7 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
 
-        viewModel.onSetCurrentUserUid(args.uid)
+        viewModel.onGetCurrentUser("1")
     }
 
     private fun FragmentMainBinding.bind() {

@@ -17,10 +17,7 @@
 
 package org.easyrecipe.data.sources
 
-import org.easyrecipe.model.Ingredient
-import org.easyrecipe.model.LocalRecipe
-import org.easyrecipe.model.Recipe
-import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.*
 
 class MockLocalDataSource : LocalDataSource {
     private val recipesData = mutableListOf(
@@ -69,7 +66,7 @@ class MockLocalDataSource : LocalDataSource {
         "recipe1"
     )
 
-    override suspend fun getAllRecipes(): List<LocalRecipe> {
+    override suspend fun getAllRecipes(uid: String): List<LocalRecipe> {
         return recipesData
     }
 
@@ -187,5 +184,11 @@ class MockLocalDataSource : LocalDataSource {
 
     override suspend fun getFavoriteRecipes(): List<Recipe> {
         return recipesData
+    }
+
+    override suspend fun getOrCreateUser(uid: String) = User(uid, System.currentTimeMillis())
+
+    override suspend fun addRecipesToUser(uid: String, lastUpdate: Long, recipes: List<Recipe>) {
+
     }
 }

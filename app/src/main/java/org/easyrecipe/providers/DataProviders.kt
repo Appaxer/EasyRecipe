@@ -31,12 +31,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.easyrecipe.data.LocalDatabase
-import org.easyrecipe.data.MIGRATION_1_2
-import org.easyrecipe.data.MIGRATION_2_3
-import org.easyrecipe.data.MIGRATION_3_4
+import org.easyrecipe.data.*
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.data.dao.RemoteRecipeDaoImpl
+import org.easyrecipe.data.remotedatabase.RemoteDataBase
+import org.easyrecipe.data.remotedatabase.RemoteDataBaseImpl
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
 import org.easyrecipe.data.repositories.recipe.RecipeRepositoryImpl
 import org.easyrecipe.data.repositories.user.UserRepository
@@ -55,8 +54,9 @@ class DataProviders {
     @Provides
     @Singleton
     fun provideUserRepository(
-        localDataSource: LocalDataSource,
-    ): UserRepository = UserRepositoryImpl(localDataSource)
+        @LocalData localDataSource: LocalDataSource,
+        remoteDataSource: RemoteDataSource,
+    ): UserRepository = UserRepositoryImpl(localDataSource, remoteDataSource)
 
     @Provides
     @Singleton
@@ -81,7 +81,8 @@ class DataProviders {
     @Singleton
     fun provideRemoteDataSource(
         remoteRecipeDao: RemoteRecipeDao,
-    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao)
+        remoteDataBase: RemoteDataBase,
+    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, remoteDataBase)
 
     @Provides
     @Singleton
@@ -89,6 +90,12 @@ class DataProviders {
         sharedPreferences: SharedPreferences,
         gson: Gson,
     ): RemoteRecipeDao = RemoteRecipeDaoImpl(sharedPreferences, gson)
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataBase(
+        firestore: FirebaseFirestore,
+    ): RemoteDataBase = RemoteDataBaseImpl(firestore)
 
     @Provides
     @Singleton
@@ -108,7 +115,7 @@ class DataProviders {
         context,
         LocalDatabase::class.java,
         LocalDatabase.NAME
-    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
 
     @Provides
     @Singleton

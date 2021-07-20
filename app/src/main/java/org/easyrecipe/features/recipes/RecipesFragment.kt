@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +32,7 @@ import org.easyrecipe.common.extensions.observeList
 import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.common.extensions.observeVisibility
 import org.easyrecipe.databinding.FragmentRecipesBinding
+import org.easyrecipe.features.main.MainViewModel
 
 @AndroidEntryPoint
 class RecipesFragment : BaseFragment() {
@@ -38,6 +40,7 @@ class RecipesFragment : BaseFragment() {
     private lateinit var adapter: RecipeAdapter
 
     override val viewModel: RecipesViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,8 +60,7 @@ class RecipesFragment : BaseFragment() {
             }
             binding.bind()
             viewModel.setUpObservers()
-
-            viewModel.onGetAllRecipes()
+            mainViewModel.setUpObservers()
         }
     }
 
@@ -82,6 +84,12 @@ class RecipesFragment : BaseFragment() {
         recipesDisplayed.observe(viewLifecycleOwner) {
             (binding.recipesRecyclerView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(0, 0)
+        }
+    }
+
+    private fun MainViewModel.setUpObservers() {
+        user.observe { user ->
+            viewModel.onGetAllRecipes(user.uid)
         }
     }
 }

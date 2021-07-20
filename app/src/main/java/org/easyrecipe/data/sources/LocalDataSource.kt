@@ -17,13 +17,10 @@
 
 package org.easyrecipe.data.sources
 
-import org.easyrecipe.model.Ingredient
-import org.easyrecipe.model.LocalRecipe
-import org.easyrecipe.model.Recipe
-import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.*
 
 interface LocalDataSource {
-    suspend fun getAllRecipes(): List<LocalRecipe>
+    suspend fun getAllRecipes(uid: String): List<LocalRecipe>
     suspend fun getAllIngredients(): List<Ingredient>
     suspend fun insertRecipe(
         name: String,
@@ -65,4 +62,8 @@ interface LocalDataSource {
     suspend fun removeFavoriteLocalRecipe(recipeId: Long)
 
     suspend fun getFavoriteRecipes(): List<Recipe>
+
+    suspend fun getOrCreateUser(uid: String): User
+
+    suspend fun addRecipesToUser(uid: String, lastUpdate: Long, recipes: List<Recipe>)
 }

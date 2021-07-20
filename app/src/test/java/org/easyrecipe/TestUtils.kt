@@ -17,6 +17,7 @@
 
 package org.easyrecipe
 
+import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.instanceOf
@@ -33,3 +34,8 @@ fun isEmpty(): Matcher<String?> = isEqualTo("")
 fun <T> isResultSuccess(): Matcher<T> = instanceOf(UseCaseResult.Success::class.java)
 
 fun <T> isResultError(): Matcher<T> = instanceOf(UseCaseResult.Error::class.java)
+
+fun <T> isNoInternetError(): Matcher<T> =
+    instanceOf(CommonException.NoInternetException::class.java)
+
+fun <T> isOtherError(): Matcher<T> = instanceOf(CommonException.OtherError::class.java)

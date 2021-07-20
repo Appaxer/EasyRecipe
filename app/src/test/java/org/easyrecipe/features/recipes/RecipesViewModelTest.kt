@@ -78,6 +78,7 @@ class RecipesViewModelTest {
             image = "")
     )
 
+    private val uid = "1"
 
     @MockK
     private lateinit var getAllRecipes: GetAllRecipes
@@ -124,7 +125,7 @@ class RecipesViewModelTest {
         coEvery { getAllRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.OtherError(msg))
 
-        viewModel.onGetAllRecipes()
+        viewModel.onGetAllRecipes(uid)
         val exception = viewModel.displayCommonError.getOrAwaitValue()
         assertThat(exception, instanceOf(CommonException.OtherError::class.java))
     }
@@ -134,7 +135,7 @@ class RecipesViewModelTest {
         coEvery { getAllRecipes.execute(any()) } returns
             UseCaseResult.Success(GetAllRecipes.Response(recipes))
 
-        viewModel.onGetAllRecipes()
+        viewModel.onGetAllRecipes(uid)
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
@@ -148,7 +149,7 @@ class RecipesViewModelTest {
             UseCaseResult.Success(GetAllRecipes.Response(recipes))
 
         viewModel.search.value = "Not Existing"
-        viewModel.onGetAllRecipes()
+        viewModel.onGetAllRecipes(uid)
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValue(),
@@ -167,7 +168,7 @@ class RecipesViewModelTest {
             UseCaseResult.Success(GetAllRecipes.Response(recipes))
 
         viewModel.search.value = "Spicy"
-        viewModel.onGetAllRecipes()
+        viewModel.onGetAllRecipes(uid)
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),

@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -168,5 +169,15 @@ abstract class BaseFragment : Fragment() {
         }
 
         requestImagePermissions.launch(imagePermissions)
+    }
+
+    /**
+     * Observe a [LiveData] inside fragment.
+     *
+     * @param T The type of the [LiveData]
+     * @param onReceived The action performed when a new value is received
+     */
+    protected fun <T> LiveData<T>.observe(onReceived: (T) -> Unit) {
+        observe(viewLifecycleOwner, onReceived)
     }
 }

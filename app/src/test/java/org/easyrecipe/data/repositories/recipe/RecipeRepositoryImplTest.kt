@@ -116,7 +116,6 @@ class RecipeRepositoryImplTest {
     ))
 
     private val favoriteRemoteRecipeList = remoteRecipes.onEach { it.toggleFavorite() }
-
     private val mealType = mutableListOf<MealType>()
 
     @MockK
@@ -134,16 +133,16 @@ class RecipeRepositoryImplTest {
 
     @Test(expected = CommonException.OtherError::class)
     fun `when there is an unexpected error then OtherError state is loaded`() = runBlockingTest {
-        coEvery { localDataSource.getAllRecipes() } throws CommonException.OtherError(msg)
-        recipeRepository.getAllLocalRecipes()
+        coEvery { localDataSource.getAllRecipes(uid) } throws CommonException.OtherError(msg)
+        recipeRepository.getAllLocalRecipes(uid)
     }
 
     @Test
     fun `when the recipes are found in the database then the recipe list is returned`() =
         runBlockingTest {
-            coEvery { localDataSource.getAllRecipes() } returns recipes
+            coEvery { localDataSource.getAllRecipes(uid) } returns recipes
 
-            val recipeList = recipeRepository.getAllLocalRecipes()
+            val recipeList = recipeRepository.getAllLocalRecipes(uid)
             assertThat(recipeList, `is`(recipes))
         }
 
@@ -167,7 +166,7 @@ class RecipeRepositoryImplTest {
     fun `when creating a recipe there is an error then an exception is thrown`() =
         runBlockingTest {
             coEvery {
-                localDataSource.insertRecipe(any(), any(), any(), any(), any(), any())
+                localDataSource.insertRecipe(any(), any(), any(), any(), any(), any(), any())
             } throws Exception(msg)
             recipeRepository.createRecipe(
                 recipeName,
@@ -185,7 +184,7 @@ class RecipeRepositoryImplTest {
     fun `when creating a recipe there is no error then the recipe is created`() =
         runBlockingTest {
             coEvery {
-                localDataSource.insertRecipe(any(), any(), any(), any(), any(), any())
+                localDataSource.insertRecipe(any(), any(), any(), any(), any(), any(), any())
             } returns localRecipe
 
             coEvery {
@@ -260,7 +259,7 @@ class RecipeRepositoryImplTest {
     fun `when updating the recipe there is an error then an exception is thrown`() =
         runBlockingTest {
             coEvery {
-                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any())
+                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any(), any())
             } throws Exception()
 
             recipeRepository.updateRecipe(
@@ -280,7 +279,7 @@ class RecipeRepositoryImplTest {
     fun `when updating the recipe there is no error then the recipe is updated`() =
         runBlockingTest {
             coEvery {
-                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any())
+                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any(), any())
             } returns localRecipe
 
             coEvery {
@@ -300,7 +299,7 @@ class RecipeRepositoryImplTest {
             )
 
             coVerify {
-                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any())
+                localDataSource.updateRecipe(any(), any(), any(), any(), any(), any(), any(), any())
                 localDataSource.updateIngredients(localRecipe, any())
             }
         }

@@ -17,6 +17,7 @@
 
 package org.easyrecipe.features.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,12 +26,15 @@ import org.easyrecipe.common.extensions.navigateUpMainFragment
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.model.Recipe
+import org.easyrecipe.model.User
+import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUser
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val searchRecipes: SearchRecipes,
+    private val getOrCreateUser: GetOrCreateUser,
     private val navManager: NavManager,
     private val dialogManager: DialogManager,
 ) : BaseViewModel() {
@@ -38,9 +42,9 @@ class MainViewModel @Inject constructor(
     val recipeList: LiveData<List<Recipe>>
         get() = _recipeList
 
-    private val _uid = MutableLiveData<String>()
-    val uid: LiveData<String>
-        get() = _uid
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User>
+        get() = _user
 
     fun onSearchRecipes() = launch {
         executeUseCase(
@@ -57,7 +61,15 @@ class MainViewModel @Inject constructor(
         navManager.navigateUpMainFragment()
     }
 
-    fun onSetCurrentUserUid(uid: String) {
-        _uid.value = "1"    // This string is hardcoded until login is finished
+    fun onGetCurrentUser(uid: String) = launch {
+        executeUseCase(
+            useCase = getOrCreateUser,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = { GetOrCreateUser.Request(uid) }
+        ).onSuccess { result ->
+            Log.i("Test", "onGetCurrentUser: ${result.user}")
+            _user.value = result.user
+        }
     }
 }

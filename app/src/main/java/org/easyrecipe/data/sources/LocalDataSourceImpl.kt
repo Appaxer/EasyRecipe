@@ -17,12 +17,10 @@
 
 package org.easyrecipe.data.sources
 
+import org.easyrecipe.common.extensions.hash
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.entities.*
-import org.easyrecipe.model.Ingredient
-import org.easyrecipe.model.LocalRecipe
-import org.easyrecipe.model.Recipe
-import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.*
 import javax.inject.Inject
 
 class LocalDataSourceImpl @Inject constructor(
@@ -31,7 +29,7 @@ class LocalDataSourceImpl @Inject constructor(
     private val userDao = database.userDao()
     private val recipeDao = database.recipeDao()
 
-    override suspend fun getAllRecipes(): List<LocalRecipe> {
+    override suspend fun getAllRecipes(uid: String): List<LocalRecipe> {
         val recipeEntities = recipeDao.getAllRecipes()
         val ingredients = getAllIngredients()
         val ingredientsMap = ingredients.groupBy { it.name }.mapValues { it.value.first() }
@@ -62,7 +60,7 @@ class LocalDataSourceImpl @Inject constructor(
         imageUri: String,
         uid: String,
     ): LocalRecipe {
-        val user = getOrCreateUser(uid)
+        val user = getUser(uid)
         val recipeEntity = RecipeEntity(
             name = name,
             description = description,
@@ -73,27 +71,25 @@ class LocalDataSourceImpl @Inject constructor(
         )
 
         val id = recipeDao.insertRecipe(recipeEntity)
-        val userRecipe = UserRecipe(user.userId, id)
-        userDao.insertUserRecipe(userRecipe)
+        user?.let { currentUser ->
+            insertUserRecipe(currentUser, recipeEntity)
+        }
 
         return LocalRecipe.fromEntity(recipeEntity).apply {
             recipeId = id
         }
     }
 
-    private suspend fun getOrCreateUser(uid: String): UserEntity {
-        return userDao.getUserByUid(uid) ?: createUser(uid)
+    private suspend fun insertUserRecipe(
+        user: UserEntity,
+        recipe: RecipeEntity,
+    ) {
+        val userRecipe = UserRecipe(user.userId, recipe.recipeId)
+        userDao.insertUserRecipe(userRecipe)
     }
 
-    private suspend fun createUser(uid: String): UserEntity {
-        val userEntity = UserEntity(
-            userId = 0,
-            uid = uid,
-            lastUpdate = System.currentTimeMillis()
-        )
-
-        userDao.insertUser(userEntity)
-        return userEntity
+    private suspend fun getUser(uid: String): UserEntity? {
+        return userDao.getUserByUid(uid)
     }
 
     override suspend fun addIngredients(
@@ -180,6 +176,41 @@ class LocalDataSourceImpl @Inject constructor(
     override suspend fun getFavoriteRecipes(): List<Recipe> {
         return userDao.getFavoriteLocalRecipes().map { recipe -> LocalRecipe.fromEntity(recipe) }
     }
+
+    override suspend fun getOrCreateUser(uid: String): User {
+        return uid.toUid()?.let { currentUid ->
+            userDao.getUserByUid(currentUid)?.let { userEntity ->
+                User.fromEntity(userEntity)
+            }
+        } ?: createUser(uid)
+    }
+
+    override suspend fun addRecipesToUser(uid: String, lastUpdate: Long, recipes: List<Recipe>) {
+        val userEntity = userDao.getUserByUid(uid)
+    }
+
+    private suspend fun createUser(uid: String): User {
+        val userEntity = UserEntity(
+            userId = 0,
+            uid = uid.toUid(),
+            lastUpdate = System.currentTimeMillis()
+        )
+
+        val id = userDao.insertUser(userEntity)
+        userEntity.userId = id
+
+        val user = User.fromEntity(userEntity)
+
+        if (userDao.getUserAmount() == 1) {
+            recipeDao.getAllRecipes().forEach { recipe ->
+                insertUserRecipe(userEntity, recipe)
+            }
+        }
+
+        return user
+    }
+
+    private fun String.toUid() = hash(HASH_ALGORITHM)
 
     companion object {
         const val HASH_ALGORITHM = "SHA-256"

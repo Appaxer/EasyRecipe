@@ -15,17 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.getallrecipes
+package org.easyrecipe.data.remotedatabase
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
-class GetAllRecipesImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : GetAllRecipes {
-    override suspend fun execute(request: GetAllRecipes.Request) = runUseCase {
-        val recipes = recipeRepository.getAllLocalRecipes(request.uid)
-        GetAllRecipes.Response(recipes)
+class RemoteDataBaseImpl @Inject constructor(
+    private val firestore: FirebaseFirestore,
+) : RemoteDataBase {
+    override fun isUserExisting(): Boolean {
+        return true
+    }
+
+    override fun createUser(uid: String) {
+
     }
 }

@@ -27,8 +27,8 @@ class RecipeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
 ) : RecipeRepository {
 
-    override suspend fun getAllLocalRecipes(): List<Recipe> {
-        return localDataSource.getAllRecipes()
+    override suspend fun getAllLocalRecipes(uid: String): List<Recipe> {
+        return localDataSource.getAllRecipes(uid)
     }
 
     override suspend fun getAllIngredients(): List<Ingredient> {
@@ -118,5 +118,44 @@ class RecipeRepositoryImpl @Inject constructor(
         return localDataSource.getFavoriteRecipes()
             .union(remoteDataSource.getFavoriteRecipes(localDataSource.getAllRemoteFavorites()))
             .toList()
+    }
+
+    override suspend fun getAllRecipesFromUser(user: User): List<Recipe> {
+        val localRecipes = localDataSource.getAllRecipes(user.uid)
+        val remoteUser = remoteDataSource.getUser(user.uid)
+
+        return when {
+            user.lastUpdate > remoteUser.lastUpdate -> {
+                syncRemoteRecipesWithLocal(user, localRecipes)
+            }
+            user.lastUpdate < remoteUser.lastUpdate -> {
+                syncLocalRecipesWithRemote(user, remoteUser)
+            }
+            else -> localRecipes
+        }
+    }
+
+    private suspend fun syncRemoteRecipesWithLocal(
+        user: User,
+        localRecipes: List<LocalRecipe>,
+    ): List<LocalRecipe> {
+        remoteDataSource.addRecipesToUser(
+            user.uid,
+            user.lastUpdate,
+            localRecipes
+        )
+        return localRecipes
+    }
+
+    private suspend fun syncLocalRecipesWithRemote(
+        user: User,
+        remoteUser: User,
+    ): List<Recipe> {
+        localDataSource.addRecipesToUser(
+            user.uid,
+            remoteUser.lastUpdate,
+            remoteUser.recipes
+        )
+        return remoteUser.recipes
     }
 }
