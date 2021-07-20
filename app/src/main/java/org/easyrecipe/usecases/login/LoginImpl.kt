@@ -15,18 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.repositories.user
+package org.easyrecipe.usecases.login
 
-import org.easyrecipe.data.sources.LocalDataSource
-import org.easyrecipe.data.sources.RemoteDataSource
+import org.easyrecipe.common.usecases.runUseCase
+import org.easyrecipe.data.repositories.user.UserRepository
 import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(
-    private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource,
-) : UserRepository {
-    override suspend fun doLogin(email: String, password: String): String {
-        return remoteDataSource.doLogin(email, password)
+class LoginImpl @Inject constructor(
+    private val userRepository: UserRepository,
+) : Login {
+    override suspend fun execute(request: Login.Request) = runUseCase {
+        val uid = userRepository.doLogin(request.email, request.password)
+        Login.Response(uid)
     }
 
 }

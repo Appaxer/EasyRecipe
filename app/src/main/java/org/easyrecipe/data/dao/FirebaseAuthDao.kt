@@ -15,18 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.repositories.user
+package org.easyrecipe.data.dao
 
-import org.easyrecipe.data.sources.LocalDataSource
-import org.easyrecipe.data.sources.RemoteDataSource
-import javax.inject.Inject
-
-class UserRepositoryImpl @Inject constructor(
-    private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource,
-) : UserRepository {
-    override suspend fun doLogin(email: String, password: String): String {
-        return remoteDataSource.doLogin(email, password)
-    }
+interface FirebaseAuthDao {
+    suspend fun doLogin(email: String, password: String): String
 
 }

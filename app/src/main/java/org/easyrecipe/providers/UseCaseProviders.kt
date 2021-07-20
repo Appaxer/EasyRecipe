@@ -22,6 +22,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
+import org.easyrecipe.data.repositories.user.UserRepository
 import org.easyrecipe.usecases.createrecipe.CreateRecipe
 import org.easyrecipe.usecases.createrecipe.CreateRecipeImpl
 import org.easyrecipe.usecases.deleterecipe.DeleteRecipe
@@ -36,6 +37,8 @@ import org.easyrecipe.usecases.getallrecipes.GetAllRecipes
 import org.easyrecipe.usecases.getallrecipes.GetAllRecipesImpl
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipesImpl
+import org.easyrecipe.usecases.login.Login
+import org.easyrecipe.usecases.login.LoginImpl
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipesImpl
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipe
@@ -102,4 +105,10 @@ class UseCaseProviders {
     fun provideGetFavoriteRecipes(
         recipeRepository: RecipeRepository,
     ): GetFavoriteRecipes = GetFavoriteRecipesImpl(recipeRepository)
+
+    @Provides
+    @Singleton
+    fun provideLogin(
+        userRepository: UserRepository,
+    ): Login = LoginImpl(userRepository)
 }

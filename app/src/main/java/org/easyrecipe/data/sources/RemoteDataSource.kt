@@ -24,4 +24,6 @@ interface RemoteDataSource {
     suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe>
 
     suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe>
+
+    suspend fun doLogin(email: String, password: String): String
 }

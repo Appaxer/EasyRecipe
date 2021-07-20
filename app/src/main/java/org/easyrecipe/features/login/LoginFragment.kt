@@ -23,7 +23,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import org.easyrecipe.R
 import org.easyrecipe.common.BaseFragment
+import org.easyrecipe.common.extensions.observeEnable
+import org.easyrecipe.common.extensions.observeError
+import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.databinding.FragmentLoginBinding
 
 @AndroidEntryPoint
@@ -47,6 +51,17 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun FragmentLoginBinding.bind() {
-
+        txtEmail.observeText(viewModel.email)
+        txtEmail.observeError(viewLifecycleOwner,
+            getString(R.string.invalid_email),
+            viewModel.isEmailInvalid)
+        txtPassword.observeText(viewModel.password)
+        txtPassword.observeError(viewLifecycleOwner,
+            getString(R.string.invalid_password),
+            viewModel.isPasswordInvalid)
+        btnLogin.observeEnable(viewLifecycleOwner, viewModel.isButtonEnabled)
+        btnLogin.setOnClickListener {
+            viewModel.onDoLogin()
+        }
     }
 }

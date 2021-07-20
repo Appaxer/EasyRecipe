@@ -17,13 +17,15 @@
 
 package org.easyrecipe.data.sources
 
+import org.easyrecipe.data.dao.FirebaseAuthDao
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(
-    private var remoteRecipeDao: RemoteRecipeDao,
+    private val remoteRecipeDao: RemoteRecipeDao,
+    private val firebaseAuthDao: FirebaseAuthDao,
 ) : RemoteDataSource {
 
     override suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe> {
@@ -36,5 +38,9 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe> {
         return remoteRecipeDao.getFavoriteRecipes(recipeIds)
+    }
+
+    override suspend fun doLogin(email: String, password: String): String {
+        return firebaseAuthDao.doLogin(email, password)
     }
 }

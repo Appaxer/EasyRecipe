@@ -18,5 +18,6 @@
 package org.easyrecipe.data.repositories.user
 
 interface UserRepository {
+    suspend fun doLogin(email: String, password: String): String
 
 }

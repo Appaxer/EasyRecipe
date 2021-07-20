@@ -85,3 +85,13 @@ fun TextInputLayout.observeExposedMenu(
         (editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 }
+
+fun TextInputLayout.observeError(
+    lifecycleOwner: LifecycleOwner,
+    errorMsg: String,
+    liveData: LiveData<Boolean>,
+) {
+    liveData.observe(lifecycleOwner) {
+        showErrorIf(it, errorMsg)
+    }
+}

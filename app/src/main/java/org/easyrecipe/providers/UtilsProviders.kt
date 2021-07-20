@@ -23,6 +23,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.adapters.IconManager
 import org.easyrecipe.adapters.RecipeTypeManager
+import org.easyrecipe.common.validation.FieldValidator
+import org.easyrecipe.common.validation.FieldValidatorImpl
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.utils.MealTypeConversion
 import org.easyrecipe.utils.MealTypeConversionImpl
@@ -45,4 +47,8 @@ class UtilsProviders {
     @Provides
     @Singleton
     fun provideRecipeRecipeTypeIconManager(): IconManager<RecipeType> = RecipeTypeManager()
+
+    @Provides
+    @Singleton
+    fun provideFieldValidator(): FieldValidator = FieldValidatorImpl()
 }

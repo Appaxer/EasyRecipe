@@ -34,6 +34,8 @@ import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.MIGRATION_1_2
 import org.easyrecipe.data.MIGRATION_2_3
+import org.easyrecipe.data.dao.FirebaseAuthDao
+import org.easyrecipe.data.dao.FirebaseAuthDaoImpl
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.data.dao.RemoteRecipeDaoImpl
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
@@ -54,8 +56,9 @@ class DataProviders {
     @Provides
     @Singleton
     fun provideUserRepository(
-        localDataSource: LocalDataSource,
-    ): UserRepository = UserRepositoryImpl(localDataSource)
+        @LocalData localDataSource: LocalDataSource,
+        remoteDataSource: RemoteDataSource,
+    ): UserRepository = UserRepositoryImpl(localDataSource, remoteDataSource)
 
     @Provides
     @Singleton
@@ -80,7 +83,8 @@ class DataProviders {
     @Singleton
     fun provideRemoteDataSource(
         remoteRecipeDao: RemoteRecipeDao,
-    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao)
+        firebaseAuthDao: FirebaseAuthDao,
+    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, firebaseAuthDao)
 
     @Provides
     @Singleton
@@ -88,6 +92,12 @@ class DataProviders {
         sharedPreferences: SharedPreferences,
         gson: Gson,
     ): RemoteRecipeDao = RemoteRecipeDaoImpl(sharedPreferences, gson)
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuthDao(
+        firebaseAuth: FirebaseAuth,
+    ): FirebaseAuthDao = FirebaseAuthDaoImpl(firebaseAuth)
 
     @Provides
     @Singleton

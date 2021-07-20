@@ -33,6 +33,12 @@
     <string name="email">Correu electrònic</string>
     <string name="password">Contrasenya</string>
     <string name="forgotten_password">Has oblidat la contrasenya?</string>
+    <string name="invalid_email">Correu no vàlid</string>
+    <string name="invalid_password">Contrasenya no vàlida: Introdueix una combinació d\'almenys 8 caràcters que contingui números, lletres en minúscules i majúscules i caràcters especials (@#$)</string>
+    <string name="wrong_email">Usuari no trobat</string>
+    <string name="wrong_email_explanation">No existeix cap usuari amb aquest correu</string>
+    <string name="wrong_password">Contrasenya incorrecta</string>
+    <string name="wrong_password_explanation">Torna a probar</string>
 
     <!-- Recipes fragment -->
     <string name="content_description_create_recipe">Crear recepta</string>
