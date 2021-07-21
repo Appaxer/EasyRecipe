@@ -18,18 +18,18 @@
 package org.easyrecipe.data.dao
 
 import android.content.SharedPreferences
-import android.util.Log
-import com.github.kittinunf.fuel.core.Response
-import com.github.kittinunf.fuel.httpGet
 import com.google.gson.Gson
 import org.easyrecipe.BuildConfig
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.extensions.fromJson
+import org.easyrecipe.common.extensions.getRequest
+import org.easyrecipe.common.http.HttpResponse
 import org.easyrecipe.data.edamam.EdamamHit
 import org.easyrecipe.data.edamam.EdamamResponse
 import org.easyrecipe.features.settings.SettingsFragment.Companion.API_LANGUAGE
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.RemoteRecipe
+import java.net.HttpURLConnection.HTTP_OK
 import java.util.*
 import javax.inject.Inject
 
@@ -60,12 +60,12 @@ class RemoteRecipeDaoImpl @Inject constructor(
         } else {
             addQueryParameter(name)
         }
-        parameters.add("random" to true)
-        val (_, response, result) = url.httpGet(parameters).responseString()
+        addRandomParameter()
+        val response = url.getRequest(parameters)
 
         checkResponseCode(response)
 
-        val edamamResponse: EdamamResponse = gson.fromJson(result.get())
+        val edamamResponse: EdamamResponse = gson.fromJson(response.result.get())
         return edamamResponse.hits.map { hit ->
             hit.recipe.toRemoteRecipe()
         }
@@ -77,12 +77,12 @@ class RemoteRecipeDaoImpl @Inject constructor(
     ): List<RemoteRecipe> {
         resetParameters()
         addQueryParameter(name, mealTypes)
-        parameters.add("random" to true)
-        val (_, response, result) = url.httpGet(parameters).responseString()
+        addRandomParameter()
+        val response = url.getRequest(parameters)
 
         checkResponseCode(response)
 
-        val edamamResponse: EdamamResponse = gson.fromJson(result.get())
+        val edamamResponse: EdamamResponse = gson.fromJson(response.result.get())
         return edamamResponse.hits.map { hit ->
             hit.recipe.toRemoteRecipe()
         }
@@ -93,22 +93,21 @@ class RemoteRecipeDaoImpl @Inject constructor(
         resetParameters()
         return recipeIds.map {
             val reqUrl = "$url/${it.substringAfter('#')}"
-            val (_, response, result) = reqUrl.httpGet(parameters).responseString()
+            val response = reqUrl.getRequest(parameters)
 
             checkResponseCode(response)
 
-            Log.i(this.javaClass.name, "getFavoriteRecipes: ${result.get()}")
-            val edamamResponse: EdamamHit = gson.fromJson(result.get())
+            val edamamResponse: EdamamHit = gson.fromJson(response.result.get())
             edamamResponse.recipe.toRemoteRecipe()
         }
     }
 
-    private fun addQueryParameter(name: String) {
-        parameters.add("q" to name)
+    private fun addRandomParameter() {
+        parameters.add("random" to true)
     }
 
-    private fun addIdParameter(uri: String) {
-        parameters.add("r" to uri)
+    private fun addQueryParameter(name: String) {
+        parameters.add("q" to name)
     }
 
     private fun addQueryParameter(name: String, mealTypes: List<MealType>) {
@@ -118,13 +117,12 @@ class RemoteRecipeDaoImpl @Inject constructor(
         }
     }
 
-    private fun checkResponseCode(response: Response) {
-        Log.i("RemoteRecipeDaoImpl", "checkResponseCode: $response")
-        response.statusCode.run {
-            when (this) {
-                NO_INTERNET -> throw CommonException.NoInternetException
-                OK -> return@run
-                else -> throw CommonException.OtherError("API error: response code $this")
+    private fun checkResponseCode(response: HttpResponse) {
+        response.onStatusCode {
+            if (it == HTTP_OK) {
+                return@onStatusCode
+            } else {
+                throw CommonException.OtherError("API error: response code $this")
             }
         }
     }
@@ -134,8 +132,6 @@ class RemoteRecipeDaoImpl @Inject constructor(
     }
 
     companion object {
-        private const val NO_INTERNET = -1
-        private const val OK = 200
         private const val EN_URL = "https://api.edamam.com/api/recipes/v2"
         private const val ES_URL = "https://test-es.edamam.com/search"
         private const val ES = "es"
