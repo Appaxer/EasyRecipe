@@ -5,7 +5,8 @@ on:
     branches-ignore: [ main, develop ]
 
   pull_request:
-    branches: [ main, develop ]
+    branches: main
+    types: [opened, synchronize, reopened]
 
 jobs:
   unit-tests:

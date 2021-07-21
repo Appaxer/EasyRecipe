@@ -1,8 +1,8 @@
 name: Code analysis
 on:
   push:
-  pull_request:
-    types: [opened, synchronize, reopened]
+#  pull_request:
+#    types: [opened, synchronize, reopened]
 jobs:
   build:
     name: Code analysis

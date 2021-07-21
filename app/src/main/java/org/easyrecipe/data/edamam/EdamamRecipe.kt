@@ -51,8 +51,6 @@ data class EdamamRecipe(
                 "Vegan" -> recipeTypes.add(RecipeType.Vegan)
                 "Vegetarian" -> recipeTypes.add(RecipeType.Vegetarian)
                 "Gluten-Free" -> recipeTypes.add(RecipeType.GlutenFree)
-                else -> {
-                }
             }
         }
 
