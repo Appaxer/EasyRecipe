@@ -98,7 +98,9 @@ class RemoteRecipeDaoImpl @Inject constructor(
             checkResponseCode(response)
 
             val edamamResponse: EdamamHit = gson.fromJson(response.result.get())
-            edamamResponse.recipe.toRemoteRecipe()
+            val remoteRecipe = edamamResponse.recipe.toRemoteRecipe()
+            remoteRecipe.toggleFavorite()
+            remoteRecipe
         }
     }
 
