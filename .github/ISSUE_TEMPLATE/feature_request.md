@@ -11,7 +11,10 @@ assignees: ''
 Explain here how this new feature will contribute to improve the project.
 
 **Describe your solution**
-Describe in a clear and short way your solution to the problem.
+Describe clearly and shortly your solution to the problem.
 
 **Describe any alternative you have considered**
 Describe any alternatives to your solution and why you have discarded them.
+
+**Dependencies**
+Add here any dependencies with other issues or remove the section if there is not any.
