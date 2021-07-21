@@ -2,7 +2,7 @@
 name: Assets
 about: Suggest any assets change
 title: "[Asset] Asset title"
-labels: assets
+labels: ''
 assignees: ''
 
 ---
