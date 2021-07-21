@@ -18,14 +18,18 @@
 package org.easyrecipe.features.favorites
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.navigation.NavDirections
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
+import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
@@ -76,6 +80,18 @@ class FavoriteViewModelTest {
     @MockK
     private lateinit var getFavoriteRecipes: GetFavoriteRecipes
 
+    @MockK
+    private lateinit var navManager: NavManager
+
+    @MockK
+    private lateinit var favoriteNavigation: FavoriteNavigation
+
+    @MockK
+    private lateinit var navDirections: NavDirections
+
+    @MockK
+    private lateinit var dialogManager: DialogManager
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -85,7 +101,20 @@ class FavoriteViewModelTest {
     @Before
     fun setUp() {
         getFavoriteRecipes = mockk()
-        viewModel = FavoriteViewModel(getFavoriteRecipes)
+
+        navManager = mockk()
+        every { navManager.navigate(any(), any()) } returns Unit
+
+        navDirections = mockk()
+        favoriteNavigation = mockk()
+        every { favoriteNavigation.navigateToRecipeDetail(any()) } returns navDirections
+
+        dialogManager = mockk()
+        every { dialogManager.showLoadingDialog() } returns Unit
+        every { dialogManager.cancelLoadingDialog() } returns Unit
+
+        viewModel =
+            FavoriteViewModel(getFavoriteRecipes, navManager, favoriteNavigation, dialogManager)
 
         recipes.forEach { recipe -> recipe.toggleFavorite() }
     }
@@ -96,8 +125,8 @@ class FavoriteViewModelTest {
             UseCaseResult.Error(CommonException.OtherError(msg))
 
         viewModel.onGetFavoriteRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.OtherError::class.java))
+        val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
+        assertThat(state, instanceOf(CommonException.OtherError::class.java))
     }
 
     @Test
@@ -106,8 +135,6 @@ class FavoriteViewModelTest {
             UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
 
         viewModel.onGetFavoriteRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
@@ -122,8 +149,6 @@ class FavoriteViewModelTest {
 
         viewModel.search.value = "Not Existing"
         viewModel.onGetFavoriteRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValue(),
@@ -143,8 +168,6 @@ class FavoriteViewModelTest {
 
         viewModel.search.value = "Spicy"
         viewModel.onGetFavoriteRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),

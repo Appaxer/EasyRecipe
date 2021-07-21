@@ -30,7 +30,6 @@ import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.common.extensions.observeList
 import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.common.extensions.observeVisibility
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentFavoriteBinding
 
 @AndroidEntryPoint
@@ -39,15 +38,6 @@ class FavoriteFragment : BaseFragment() {
     private lateinit var adapter: RecipeAdapter
 
     override val viewModel: FavoriteViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<FavoriteState> { context, state ->
-        when (state) {
-            is FavoriteState.ShowRecipeDetail -> {
-                val action = FavoriteFragmentDirections
-                    .actionFavoriteFragmentToRecipeDetail(state.recipe.name, state.recipe)
-                navigate(action)
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
