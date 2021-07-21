@@ -15,9 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.remotedatabase
+package org.easyrecipe.data.firebase
 
-interface RemoteDataBase {
-    fun isUserExisting(): Boolean
-    fun createUser(uid: String)
-}
+import java.io.Serializable
+
+data class FirebaseRecipe(
+    var name: String = "",
+    var types: List<String> = emptyList(),
+    var time: Int = 0,
+    var image: String = "",
+    var description: String = "",
+    var steps: List<String> = emptyList(),
+    var ingredients: Map<String, String> = emptyMap(),
+) : Serializable

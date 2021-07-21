@@ -17,8 +17,9 @@
 
 package org.easyrecipe.data.sources
 
+import org.easyrecipe.data.dao.RemoteDataBaseDao
 import org.easyrecipe.data.dao.RemoteRecipeDao
-import org.easyrecipe.data.remotedatabase.RemoteDataBase
+import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.model.User
@@ -26,7 +27,7 @@ import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(
     private val remoteRecipeDao: RemoteRecipeDao,
-    private val remoteDataBase: RemoteDataBase,
+    private val remoteDataBaseDao: RemoteDataBaseDao,
 ) : RemoteDataSource {
 
     override suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe> {
@@ -42,20 +43,20 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createUserIfNotExisting(uid: String) {
-        if (!remoteDataBase.isUserExisting()) {
-            remoteDataBase.createUser(uid)
+        if (!remoteDataBaseDao.isUserExisting(uid)) {
+            remoteDataBaseDao.createUser(uid)
         }
     }
 
     override suspend fun getUser(uid: String): User {
-        return User("1", 0)
+        return remoteDataBaseDao.getUser(uid)
     }
 
-    override suspend fun addRecipesToUser(
+    override suspend fun addLocalRecipesToRemoteDataBaseUser(
         uid: String,
         lastUpdate: Long,
-        localRecipes: List<Recipe>,
+        localRecipes: List<LocalRecipe>,
     ) {
-
+        remoteDataBaseDao.addLocalRecipesToRemoteDataBaseUser(uid, lastUpdate, localRecipes)
     }
 }

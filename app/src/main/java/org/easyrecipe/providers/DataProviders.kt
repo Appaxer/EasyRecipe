@@ -32,10 +32,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.data.*
+import org.easyrecipe.data.dao.RemoteDataBaseDao
+import org.easyrecipe.data.dao.RemoteDataBaseDaoImpl
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.data.dao.RemoteRecipeDaoImpl
-import org.easyrecipe.data.remotedatabase.RemoteDataBase
-import org.easyrecipe.data.remotedatabase.RemoteDataBaseImpl
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
 import org.easyrecipe.data.repositories.recipe.RecipeRepositoryImpl
 import org.easyrecipe.data.repositories.user.UserRepository
@@ -81,8 +81,8 @@ class DataProviders {
     @Singleton
     fun provideRemoteDataSource(
         remoteRecipeDao: RemoteRecipeDao,
-        remoteDataBase: RemoteDataBase,
-    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, remoteDataBase)
+        remoteDataBaseDao: RemoteDataBaseDao,
+    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, remoteDataBaseDao)
 
     @Provides
     @Singleton
@@ -93,9 +93,9 @@ class DataProviders {
 
     @Provides
     @Singleton
-    fun provideRemoteDataBase(
+    fun provideRemoteDataBaseDao(
         firestore: FirebaseFirestore,
-    ): RemoteDataBase = RemoteDataBaseImpl(firestore)
+    ): RemoteDataBaseDao = RemoteDataBaseDaoImpl(firestore)
 
     @Provides
     @Singleton

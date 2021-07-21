@@ -30,8 +30,8 @@ data class UserEntity(
     var userId: Long,
 
     @ColumnInfo(name = "uid")
-    val uid: String? = null,
+    var uid: String? = null,
 
     @ColumnInfo(name = "last_update")
-    val lastUpdate: Long?,
+    var lastUpdate: Long?,
 )

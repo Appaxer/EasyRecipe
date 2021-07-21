@@ -60,12 +60,12 @@ class RecipesViewModel @Inject constructor(
         navManager.navigateMainFragment(action)
     }
 
-    fun onGetAllRecipes(uid: String) = launch {
+    fun onGetAllRecipes() = launch {
         executeUseCase(
             useCase = getAllRecipes,
             onBefore = { dialogManager.showLoadingDialog() },
             onAfter = { dialogManager.cancelLoadingDialog() },
-            onPrepareInput = { GetAllRecipes.Request(uid) }
+            onPrepareInput = { GetAllRecipes.Request() }
         ).onSuccess { result ->
             recipeList.value = result.recipes.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }

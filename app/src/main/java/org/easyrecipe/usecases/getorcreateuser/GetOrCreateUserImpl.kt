@@ -29,9 +29,9 @@ class GetOrCreateUserImpl @Inject constructor(
 
     override suspend fun execute(request: GetOrCreateUser.Request) = runUseCase {
         val user = userRepository.getOrCreateUser(request.uid)
-        //val recipes = recipeRepository.getAllRecipesFromUser(user)
+        val recipes = recipeRepository.getAllRecipesFromUser(user)
 
-        //user.addRecipes(recipes)
+        user.addRecipes(recipes)
         GetOrCreateUser.Response(user)
     }
 }

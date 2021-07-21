@@ -27,8 +27,8 @@ class RecipeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
 ) : RecipeRepository {
 
-    override suspend fun getAllLocalRecipes(uid: String): List<Recipe> {
-        return localDataSource.getAllRecipes(uid)
+    override suspend fun getAllLocalRecipes(): List<Recipe> {
+        return localDataSource.getAllRecipes()
     }
 
     override suspend fun getAllIngredients(): List<Ingredient> {
@@ -121,7 +121,7 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllRecipesFromUser(user: User): List<Recipe> {
-        val localRecipes = localDataSource.getAllRecipes(user.uid)
+        val localRecipes = localDataSource.getAllRecipesFromUser(user.uid)
         val remoteUser = remoteDataSource.getUser(user.uid)
 
         return when {
@@ -139,7 +139,7 @@ class RecipeRepositoryImpl @Inject constructor(
         user: User,
         localRecipes: List<LocalRecipe>,
     ): List<LocalRecipe> {
-        remoteDataSource.addRecipesToUser(
+        remoteDataSource.addLocalRecipesToRemoteDataBaseUser(
             user.uid,
             user.lastUpdate,
             localRecipes
@@ -151,7 +151,7 @@ class RecipeRepositoryImpl @Inject constructor(
         user: User,
         remoteUser: User,
     ): List<Recipe> {
-        localDataSource.addRecipesToUser(
+        localDataSource.addRemoteDatabaseRecipesToUser(
             user.uid,
             remoteUser.lastUpdate,
             remoteUser.recipes

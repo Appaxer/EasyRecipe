@@ -15,19 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.remotedatabase
+package org.easyrecipe.data.firebase
 
-import com.google.firebase.firestore.FirebaseFirestore
-import javax.inject.Inject
+import java.io.Serializable
 
-class RemoteDataBaseImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
-) : RemoteDataBase {
-    override fun isUserExisting(): Boolean {
-        return true
-    }
-
-    override fun createUser(uid: String) {
-
-    }
-}
+data class FirebaseUser(
+    var lastUpdate: Long = 0,
+    var recipes: List<FirebaseRecipe> = emptyList(),
+) : Serializable

@@ -66,7 +66,7 @@ class MockLocalDataSource : LocalDataSource {
         "recipe1"
     )
 
-    override suspend fun getAllRecipes(uid: String): List<LocalRecipe> {
+    override suspend fun getAllRecipes(): List<LocalRecipe> {
         return recipesData
     }
 
@@ -187,8 +187,15 @@ class MockLocalDataSource : LocalDataSource {
     }
 
     override suspend fun getOrCreateUser(uid: String) = User(uid, System.currentTimeMillis())
+    override suspend fun addRemoteDatabaseRecipesToUser(
+        uid: String,
+        lastUpdate: Long,
+        recipes: List<Recipe>,
+    ) {
 
-    override suspend fun addRecipesToUser(uid: String, lastUpdate: Long, recipes: List<Recipe>) {
+    }
 
+    override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> {
+        return recipesData
     }
 }

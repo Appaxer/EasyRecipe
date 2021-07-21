@@ -21,7 +21,7 @@ import org.easyrecipe.common.usecases.UseCase
 import org.easyrecipe.model.Recipe
 
 interface GetAllRecipes : UseCase<GetAllRecipes.Request, GetAllRecipes.Response> {
-    class Request(val uid: String) : UseCase.UseCaseRequest
+    class Request : UseCase.UseCaseRequest
     data class Response(
         val recipes: List<Recipe>,
     ) : UseCase.UseCaseResponse

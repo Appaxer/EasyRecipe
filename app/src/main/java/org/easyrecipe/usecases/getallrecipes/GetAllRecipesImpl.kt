@@ -25,7 +25,7 @@ class GetAllRecipesImpl @Inject constructor(
     private val recipeRepository: RecipeRepository,
 ) : GetAllRecipes {
     override suspend fun execute(request: GetAllRecipes.Request) = runUseCase {
-        val recipes = recipeRepository.getAllLocalRecipes(request.uid)
+        val recipes = recipeRepository.getAllLocalRecipes()
         GetAllRecipes.Response(recipes)
     }
 }

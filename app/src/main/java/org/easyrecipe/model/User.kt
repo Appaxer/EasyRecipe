@@ -38,8 +38,8 @@ class User(
 
     companion object {
         @JvmStatic
-        fun fromEntity(userEntity: UserEntity) = User(
-            uid = userEntity.uid ?: "",
+        fun fromEntity(userEntity: UserEntity, uid: String) = User(
+            uid = uid,
             lastUpdate = userEntity.lastUpdate ?: 0
         )
     }

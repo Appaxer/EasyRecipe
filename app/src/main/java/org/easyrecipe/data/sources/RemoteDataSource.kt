@@ -17,6 +17,7 @@
 
 package org.easyrecipe.data.sources
 
+import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.model.User
@@ -30,5 +31,9 @@ interface RemoteDataSource {
 
     suspend fun getUser(uid: String): User
 
-    suspend fun addRecipesToUser(uid: String, lastUpdate: Long, localRecipes: List<Recipe>)
+    suspend fun addLocalRecipesToRemoteDataBaseUser(
+        uid: String,
+        lastUpdate: Long,
+        localRecipes: List<LocalRecipe>,
+    )
 }

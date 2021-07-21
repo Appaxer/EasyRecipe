@@ -68,7 +68,7 @@ class MainViewModel @Inject constructor(
             onAfter = { dialogManager.cancelLoadingDialog() },
             onPrepareInput = { GetOrCreateUser.Request(uid) }
         ).onSuccess { result ->
-            Log.i("Test", "onGetCurrentUser: ${result.user}")
+            Log.i("Test", "onGetCurrentUser: ${result.user.recipes.map { it.name }}")
             _user.value = result.user
         }
     }
