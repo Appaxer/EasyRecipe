@@ -43,4 +43,8 @@ class RemoteDataSourceImpl @Inject constructor(
     override suspend fun doLogin(email: String, password: String): String {
         return firebaseAuthDao.doLogin(email, password)
     }
+
+    override suspend fun doSignup(email: String, password: String): String {
+        return firebaseAuthDao.doSignup(email, password)
+    }
 }

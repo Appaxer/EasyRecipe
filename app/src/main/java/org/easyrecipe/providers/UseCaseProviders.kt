@@ -41,6 +41,8 @@ import org.easyrecipe.usecases.login.Login
 import org.easyrecipe.usecases.login.LoginImpl
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipesImpl
+import org.easyrecipe.usecases.signup.Signup
+import org.easyrecipe.usecases.signup.SignupImpl
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipe
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipeImpl
 import javax.inject.Singleton
@@ -111,4 +113,10 @@ class UseCaseProviders {
     fun provideLogin(
         userRepository: UserRepository,
     ): Login = LoginImpl(userRepository)
+
+    @Provides
+    @Singleton
+    fun provideSignup(
+        userRepository: UserRepository,
+    ): Signup = SignupImpl(userRepository)
 }

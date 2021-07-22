@@ -52,11 +52,13 @@ class LoginFragment : BaseFragment() {
 
     private fun FragmentLoginBinding.bind() {
         txtEmail.observeText(viewModel.email)
-        txtEmail.observeError(viewLifecycleOwner,
+        txtEmail.observeError(
+            viewLifecycleOwner,
             getString(R.string.invalid_email),
             viewModel.isEmailInvalid)
         txtPassword.observeText(viewModel.password)
-        txtPassword.observeError(viewLifecycleOwner,
+        txtPassword.observeError(
+            viewLifecycleOwner,
             getString(R.string.invalid_password),
             viewModel.isPasswordInvalid)
         btnLogin.observeEnable(viewLifecycleOwner, viewModel.isButtonEnabled)

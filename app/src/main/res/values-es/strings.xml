@@ -33,13 +33,17 @@
     <!-- Auth fragment -->
     <string name="email">Correo electrónico</string>
     <string name="password">Contraseña</string>
+    <string name="repeat_password">Repite la contraseña</string>
     <string name="forgotten_password">¿Has olvidado la contraseña?</string>
     <string name="invalid_email">Correo no válido</string>
     <string name="invalid_password">Contraseña no válida: Introduce una combinación de al menos 8 caracteres que contengan números, letras en minúsculas y mayúsculas y carácteres especiales (@#$)</string>
+    <string name="password_repeat_different">Contraseñas diferentes: Las contraseñas no coinciden</string>
     <string name="wrong_email">Usuario no encontrado</string>
     <string name="wrong_email_explanation">No existe ningún usuario con este correo</string>
     <string name="wrong_password">Contraseña incorrecta</string>
     <string name="wrong_password_explanation">Vuelve a intentarlo</string>
+    <string name="repeated_email">Usuario ya existente</string>
+    <string name="repeated_email_explanation">Este correo ya está registrado</string>
 
     <!-- Recipes fragment -->
     <string name="content_description_create_recipe">Crear receta</string>

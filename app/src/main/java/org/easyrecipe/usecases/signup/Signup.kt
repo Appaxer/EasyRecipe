@@ -15,17 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.sources
+package org.easyrecipe.usecases.signup
 
-import org.easyrecipe.model.MealType
-import org.easyrecipe.model.Recipe
+import org.easyrecipe.common.usecases.UseCase
 
-interface RemoteDataSource {
-    suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe>
+interface Signup : UseCase<Signup.Request, Signup.Response> {
+    data class Request(
+        val email: String,
+        val password: String,
+    ) : UseCase.UseCaseRequest
 
-    suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe>
-
-    suspend fun doLogin(email: String, password: String): String
-
-    suspend fun doSignup(email: String, password: String): String
+    data class Response(
+        val uid: String,
+    ) : UseCase.UseCaseResponse
 }

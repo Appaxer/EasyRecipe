@@ -15,17 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.sources
+package org.easyrecipe.usecases.signup
 
-import org.easyrecipe.model.MealType
-import org.easyrecipe.model.Recipe
+import org.easyrecipe.common.usecases.runUseCase
+import org.easyrecipe.data.repositories.user.UserRepository
+import javax.inject.Inject
 
-interface RemoteDataSource {
-    suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe>
-
-    suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe>
-
-    suspend fun doLogin(email: String, password: String): String
-
-    suspend fun doSignup(email: String, password: String): String
+class SignupImpl @Inject constructor(
+    private val userRepository: UserRepository,
+) : Signup {
+    override suspend fun execute(request: Signup.Request) = runUseCase {
+        val uid = userRepository.doSignup(request.email, request.password)
+        Signup.Response(uid)
+    }
 }

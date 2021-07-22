@@ -34,13 +34,17 @@
     <!-- Auth fragment -->
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
     <string name="forgotten_password">Forgot password?</string>
     <string name="invalid_email">Invalid email</string>
     <string name="invalid_password">Invalid password: Enter a combination of at least 8 characters containing numbers, letters in lowercase and uppercase and special characters (@#$)</string>
+    <string name="password_repeat_different">Different passwords: Both passwords do not match</string>
     <string name="wrong_email">User not found</string>
     <string name="wrong_email_explanation">There is no user registered with this email</string>
     <string name="wrong_password">Incorrect password</string>
     <string name="wrong_password_explanation">Please try again</string>
+    <string name="repeated_email">User already exists</string>
+    <string name="repeated_email_explanation">This email is already registered</string>
 
     <!-- Recipes fragment -->
     <string name="content_description_create_recipe">Create recipe</string>

@@ -19,5 +19,5 @@ package org.easyrecipe.data.dao
 
 interface FirebaseAuthDao {
     suspend fun doLogin(email: String, password: String): String
-
+    suspend fun doSignup(email: String, password: String): String
 }

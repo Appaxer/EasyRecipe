@@ -15,17 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.sources
+package org.easyrecipe.features.signup.navigation
 
-import org.easyrecipe.model.MealType
-import org.easyrecipe.model.Recipe
+import androidx.navigation.NavDirections
 
-interface RemoteDataSource {
-    suspend fun getRecipes(name: String, mealType: List<MealType>): List<Recipe>
-
-    suspend fun getFavoriteRecipes(recipeIds: List<String>): List<Recipe>
-
-    suspend fun doLogin(email: String, password: String): String
-
-    suspend fun doSignup(email: String, password: String): String
+interface SignupNavigation {
+    fun navigateToMainFragment(uid: String): NavDirections
 }

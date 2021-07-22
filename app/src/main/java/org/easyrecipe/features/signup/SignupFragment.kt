@@ -23,7 +23,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import org.easyrecipe.R
 import org.easyrecipe.common.BaseFragment
+import org.easyrecipe.common.extensions.observeEnable
+import org.easyrecipe.common.extensions.observeError
+import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.databinding.FragmentSignupBinding
 
 @AndroidEntryPoint
@@ -48,6 +52,30 @@ class SignupFragment : BaseFragment() {
     }
 
     private fun FragmentSignupBinding.bind() {
-
+        txtEmail.observeText(viewModel.email)
+        txtPassword.observeText(viewModel.password)
+        txtPasswordRepeat.observeText(viewModel.repeatPassword)
+        txtEmail.observeError(
+            viewLifecycleOwner,
+            getString(R.string.invalid_email),
+            viewModel.isEmailInvalid,
+        )
+        txtPassword.observeError(
+            viewLifecycleOwner,
+            getString(R.string.invalid_password),
+            viewModel.isPasswordInvalid,
+        )
+        txtPasswordRepeat.observeError(
+            viewLifecycleOwner,
+            getString(R.string.password_repeat_different),
+            viewModel.isRepeatPasswordDifferent
+        )
+        btnSignup.observeEnable(
+            viewLifecycleOwner,
+            viewModel.isButtonEnabled
+        )
+        btnSignup.setOnClickListener {
+            viewModel.onDoSignup()
+        }
     }
 }

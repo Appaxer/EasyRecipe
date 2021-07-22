@@ -19,8 +19,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
+    android:padding="@dimen/app_padding"
     tools:context=".features.signup.SignupFragment">
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtEmail"
+        style="@style/fullWidthTextInputLayout"
+        android:layout_marginTop="40dp"
+        android:hint="@string/email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/textInputEditText"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtPassword"
+        style="@style/fullWidthTextInputLayout"
+        android:layout_marginTop="30dp"
+        android:hint="@string/password"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/textInputEditText"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtPasswordRepeat"
+        style="@style/fullWidthTextInputLayout"
+        android:layout_marginTop="30dp"
+        android:hint="@string/repeat_password"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/textInputEditText"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignup"
+            style="@style/fullWidthButton"
+            android:layout_height="55dp"
+            android:text="@string/signup_fragment" />
+
+    </LinearLayout>
+
 </LinearLayout>
+

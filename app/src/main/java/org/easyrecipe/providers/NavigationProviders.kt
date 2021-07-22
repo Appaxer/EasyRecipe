@@ -21,13 +21,27 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.easyrecipe.features.login.navigation.LoginNavigation
+import org.easyrecipe.features.login.navigation.LoginNavigationImpl
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.features.search.navigation.SearchNavigationImpl
+import org.easyrecipe.features.signup.navigation.SignupNavigation
+import org.easyrecipe.features.signup.navigation.SignupNavigationImpl
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class NavigationProviders {
 
     @Provides
+    @Singleton
     fun provideSearchNavigation(): SearchNavigation = SearchNavigationImpl()
+
+    @Provides
+    @Singleton
+    fun provideLoginNavigation(): LoginNavigation = LoginNavigationImpl()
+
+    @Provides
+    @Singleton
+    fun provideSignupNavigation(): SignupNavigation = SignupNavigationImpl()
 }

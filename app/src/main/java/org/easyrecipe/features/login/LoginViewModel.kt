@@ -25,17 +25,20 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.easyrecipe.R
 import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.extensions.combine
+import org.easyrecipe.common.extensions.navigate
 import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.dialog.IntDialog
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.validation.FieldValidator
+import org.easyrecipe.features.login.navigation.LoginNavigation
 import org.easyrecipe.usecases.login.Login
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val navManager: NavManager,
+    private val loginNavigation: LoginNavigation,
     private val fieldValidator: FieldValidator,
     private val dialogManager: DialogManager,
     private val login: Login,
@@ -59,14 +62,18 @@ class LoginViewModel @Inject constructor(
                 Login.Request(email.requireValue(), password.requireValue())
             }
         ).onSuccess { result ->
-            // Fragment navigation
+            val action = loginNavigation.navigateToMainFragment(result.uid)
+            navManager.navigate(action)
         }.onError { exception ->
             when (exception) {
-                is FirebaseAuthInvalidUserException -> dialogManager.showDialog(IntDialog(title = R.string.wrong_email,
-                    message = R.string.wrong_email_explanation))
+                is FirebaseAuthInvalidUserException -> dialogManager.showDialog(IntDialog(
+                    title = R.string.wrong_email,
+                    message = R.string.wrong_email_explanation
+                ))
                 is FirebaseAuthInvalidCredentialsException -> dialogManager.showDialog(IntDialog(
                     title = R.string.wrong_password,
-                    message = R.string.wrong_password_explanation))
+                    message = R.string.wrong_password_explanation
+                ))
             }
         }
     }

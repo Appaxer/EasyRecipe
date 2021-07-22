@@ -19,6 +19,8 @@ package org.easyrecipe.data.dao
 
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.coroutines.tasks.await
 import org.easyrecipe.common.CommonException
 import javax.inject.Inject
@@ -37,6 +39,26 @@ class FirebaseAuthDaoImpl @Inject constructor(
                     exception
                 }
             } ?: Exception()
+        }
+        return task.result?.let { authResult ->
+            authResult.user?.uid
+        } ?: ""
+    }
+
+    override suspend fun doSignup(email: String, password: String): String {
+        val task = firebaseAuth.createUserWithEmailAndPassword(email, password)
+        task.await()
+        if (!task.isSuccessful) {
+            throw task.exception?.let { exception ->
+                when (exception) {
+                    is FirebaseNetworkException -> CommonException.NoInternetException
+                    is FirebaseAuthWeakPasswordException -> CommonException.OtherError(exception.stackTraceToString())
+                    is FirebaseAuthInvalidCredentialsException -> CommonException.OtherError(
+                        exception.stackTraceToString())
+                    else -> exception
+                }
+            } ?: Exception()
+
         }
         return task.result?.let { authResult ->
             authResult.user?.uid

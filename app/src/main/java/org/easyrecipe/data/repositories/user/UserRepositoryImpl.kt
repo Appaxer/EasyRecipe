@@ -29,4 +29,7 @@ class UserRepositoryImpl @Inject constructor(
         return remoteDataSource.doLogin(email, password)
     }
 
+    override suspend fun doSignup(email: String, password: String): String {
+        return remoteDataSource.doSignup(email, password)
+    }
 }
