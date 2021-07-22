@@ -88,10 +88,11 @@ class LocalDataSourceImplTest {
         image = null
     )
 
-    private val recipeEntities = listOf(recipeEntity)
-
     private val localRecipe: LocalRecipe
         get() = LocalRecipe.fromEntity(recipeEntity)
+
+    private val recipeEntities = listOf(recipeEntity)
+    private val recipes = listOf(localRecipe)
 
     private val recipeIngredientEntities = ingredients.map { ingredient ->
         RecipeIngredient(recipeId, ingredient.name, "1")
@@ -584,7 +585,7 @@ class LocalDataSourceImplTest {
 
             coEvery {
                 userDao.insertUser(any())
-            } returns userEntity.userId
+            } returns userId
 
             coEvery {
                 userDao.getUserAmount()
@@ -602,6 +603,97 @@ class LocalDataSourceImplTest {
             assertThat(user.uid, isEqualTo(uid))
 
             coVerify(exactly = recipeEntities.size) {
+                userDao.insertUserRecipe(any())
+            }
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding remote recipes to user there is an error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.addRemoteDatabaseRecipesToUser(uid, lastUpdate, recipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding remote recipes and user update there is an error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUser(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.addRemoteDatabaseRecipesToUser(uid, lastUpdate, recipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding remote recipes and recipe error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUser(any())
+            } returns Unit
+
+            coEvery {
+                recipeDao.insertRecipe(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.addRemoteDatabaseRecipesToUser(uid, lastUpdate, recipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding remote recipes and user recipe error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUser(any())
+            } returns Unit
+
+            coEvery {
+                recipeDao.insertRecipe(any())
+            } returns recipeId
+
+            coEvery {
+                userDao.insertUserRecipe(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.addRemoteDatabaseRecipesToUser(uid, lastUpdate, recipes)
+        }
+
+    @Test
+    fun `when adding remote recipes there is no error then they are added`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUser(any())
+            } returns Unit
+
+            coEvery {
+                recipeDao.insertRecipe(any())
+            } returns recipeId
+
+            coEvery {
+                userDao.insertUserRecipe(any())
+            } returns Unit
+
+            localDataSourceImpl.addRemoteDatabaseRecipesToUser(uid, lastUpdate, recipes)
+
+            coVerify(exactly = recipes.size) {
+                recipeDao.insertRecipe(any())
                 userDao.insertUserRecipe(any())
             }
         }
