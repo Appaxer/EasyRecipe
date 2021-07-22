@@ -133,7 +133,9 @@ class MainViewModelTest {
 
     @Test
     fun `when getting current user there is an unexpected error then OtherError is shown`() {
-        coEvery { getOrCreateUser.execute(any()) } returns UseCaseResult.Error(Exception())
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
         viewModel.onGetCurrentUser(uid)
 
         val exception = viewModel.displayCommonError.getOrAwaitValue()

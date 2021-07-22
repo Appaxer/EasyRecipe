@@ -25,6 +25,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.managers.dialog.DialogManager
@@ -34,6 +35,7 @@ import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.createrecipe.CreateRecipe
 import org.easyrecipe.usecases.getallingredients.GetAllIngredients
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipe
@@ -64,6 +66,8 @@ class CreateRecipeViewModelTest {
     )
 
     private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
 
     private val localRecipe = LocalRecipe(
         name = recipeName,
@@ -378,7 +382,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onCreateRecipe(uid)
+        viewModel.onCreateRecipe(user)
 
         assertThat(
             viewModel.displayCommonError.getOrAwaitValue(),
@@ -405,7 +409,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onCreateRecipe(uid)
+        viewModel.onCreateRecipe(user)
 
         verify {
             navManager.navigateUp(any())
@@ -431,7 +435,7 @@ class CreateRecipeViewModelTest {
             viewModel.onAddStep()
         }
 
-        viewModel.onUpdateRecipe(localRecipe, uid)
+        viewModel.onUpdateRecipe(localRecipe, user)
 
         assertThat(
             viewModel.displayCommonError.getOrAwaitValue(),
@@ -440,29 +444,31 @@ class CreateRecipeViewModelTest {
     }
 
     @Test
-    fun `when updateRecipe is executed and there is no error then we navigate to RecipeDetail`() {
-        coEvery { updateRecipe.execute(any()) } returns
-            UseCaseResult.Success(UpdateRecipe.Response(localRecipe))
+    fun `when updateRecipe is executed and there is no error then we navigate to RecipeDetail`() =
+        runBlockingTest {
+            coEvery { updateRecipe.execute(any()) } returns
+                UseCaseResult.Success(UpdateRecipe.Response(localRecipe))
 
-        viewModel.name.value = recipeName
-        viewModel.description.value = recipeDescription
-        viewModel.time.value = recipeTime
-        recipeTypes.forEach { viewModel.onAddRecipeType(it) }
-        recipeIngredients.forEach { (ingredient, quantity) ->
-            viewModel.ingredientName.value = ingredient
-            viewModel.ingredientQuantity.value = quantity
-            viewModel.onAddIngredient()
-        }
-        recipeSteps.forEach { (_, step) ->
-            viewModel.step.value = step
-            viewModel.onAddStep()
-        }
+            viewModel.name.value = recipeName
+            viewModel.description.value = recipeDescription
+            viewModel.time.value = recipeTime
+            recipeTypes.forEach { viewModel.onAddRecipeType(it) }
+            recipeIngredients.forEach { (ingredient, quantity) ->
+                viewModel.ingredientName.value = ingredient
+                viewModel.ingredientQuantity.value = quantity
+                viewModel.onAddIngredient()
+            }
+            recipeSteps.forEach { (_, step) ->
+                viewModel.step.value = step
+                viewModel.onAddStep()
+            }
 
-        viewModel.onUpdateRecipe(localRecipe, uid)
+            viewModel.onUpdateRecipe(localRecipe, user)
+            await()
 
-        verify {
-            createRecipeNavigation.navigateToRecipeDetail(localRecipe)
-            navManager.navigate(any(), navDirections)
+            verify {
+                createRecipeNavigation.navigateToRecipeDetail(localRecipe)
+                navManager.navigate(any(), navDirections)
+            }
         }
-    }
 }

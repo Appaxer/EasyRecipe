@@ -20,6 +20,7 @@ package org.easyrecipe.usecases.updaterecipe
 import org.easyrecipe.common.usecases.UseCase
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 
 interface UpdateRecipe : UseCase<UpdateRecipe.Request, UpdateRecipe.Response> {
 
@@ -32,7 +33,7 @@ interface UpdateRecipe : UseCase<UpdateRecipe.Request, UpdateRecipe.Response> {
         val ingredients: Map<String, String>,
         val stepList: List<String>,
         val imageUri: String,
-        val uid: String,
+        val user: User,
     ) : UseCase.UseCaseRequest
 
     data class Response(

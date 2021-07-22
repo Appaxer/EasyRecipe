@@ -89,7 +89,7 @@ class RecipesFragment : BaseFragment() {
 
     private fun MainViewModel.setUpObservers() {
         user.observe { user ->
-            viewModel.onGetAllRecipes()
+            viewModel.onSetRecipeList(user.recipes)
         }
     }
 }

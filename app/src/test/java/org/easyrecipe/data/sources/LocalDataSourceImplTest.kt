@@ -27,10 +27,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.dao.RecipeDao
 import org.easyrecipe.data.dao.UserDao
-import org.easyrecipe.data.entities.FavoriteRemoteRecipeEntity
-import org.easyrecipe.data.entities.IngredientEntity
-import org.easyrecipe.data.entities.RecipeEntity
-import org.easyrecipe.data.entities.RecipeIngredient
+import org.easyrecipe.data.entities.*
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
@@ -43,6 +40,15 @@ import org.junit.Test
 class LocalDataSourceImplTest {
     private lateinit var localDataSourceImpl: LocalDataSourceImpl
 
+    private val userId = 0L
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = UserEntity(
+        userId = userId,
+        uid = uid,
+        lastUpdate = lastUpdate
+    )
+
     private val recipeName = "Fish and chips"
     private val recipeDescription = "Delicious"
     private val recipeTime = 10
@@ -51,7 +57,6 @@ class LocalDataSourceImplTest {
     private val recipeSteps = listOf("First", "Second")
     private val recipeImage = ""
     private val remoteRecipeId = "uri"
-    private val uid = "1"
 
     private val recipeId = 1L
     private val ingredientEntity = IngredientEntity("Salt")
@@ -144,13 +149,17 @@ class LocalDataSourceImplTest {
                 recipeTypes,
                 recipeSteps,
                 recipeImage,
-                uid
+                uid,
+                lastUpdate
             )
         }
 
     @Test
     fun `when creating recipe the new id is returned and assigned to the entity`() =
         runBlockingTest {
+            coEvery { userDao.getUserByUid(any()) } returns user
+            coEvery { userDao.updateUser(any()) } returns Unit
+            coEvery { userDao.insertUserRecipe(any()) } returns Unit
             coEvery { recipeDao.insertRecipe(any()) } returns recipeId
 
             val result = localDataSourceImpl.insertRecipe(
@@ -160,7 +169,8 @@ class LocalDataSourceImplTest {
                 recipeTypes,
                 recipeSteps,
                 recipeImage,
-                uid
+                uid,
+                lastUpdate
             )
 
             assertThat(result.recipeId, isEqualTo(recipeId))
@@ -243,15 +253,17 @@ class LocalDataSourceImplTest {
                 recipeTypes,
                 recipeSteps,
                 recipeImage,
-                uid
+                uid,
+                lastUpdate
             )
         }
 
     @Test
     fun `when updating the recipe there is no error then the recipe is updated`() =
         runBlockingTest {
+            coEvery { userDao.getUserByUid(any()) } returns user
+            coEvery { userDao.updateUser(any()) } returns Unit
             coEvery { recipeDao.getRecipe(any()) } returns recipeEntity
-
             coEvery { recipeDao.updateRecipe(any()) } returns Unit
 
             localDataSourceImpl.updateRecipe(
@@ -262,7 +274,8 @@ class LocalDataSourceImplTest {
                 recipeTypes,
                 recipeSteps,
                 recipeImage,
-                uid
+                uid,
+                lastUpdate
             )
 
             coVerify {

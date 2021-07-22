@@ -34,25 +34,6 @@ class LocalDataSourceImpl @Inject constructor(
         return parseLocalRecipeList(recipeEntities)
     }
 
-    private suspend fun parseLocalRecipeList(
-        recipeEntities: List<RecipeEntity>,
-    ): List<LocalRecipe> {
-        val ingredients = getAllIngredients()
-        val ingredientsMap = ingredients.groupBy { it.name }.mapValues { it.value.first() }
-
-        return recipeEntities.map { recipeEntity ->
-            LocalRecipe.fromEntity(recipeEntity).also { recipe ->
-                val recipeIngredients = recipeDao.getAllIngredientsForRecipe(recipeEntity.recipeId)
-                recipeIngredients.forEach { recipeIngredient ->
-                    ingredientsMap[recipeIngredient.ingredientName]?.let { currentIngredient ->
-                        val quantity = recipeIngredient.quantity
-                        recipe.addIngredient(currentIngredient, quantity)
-                    }
-                }
-            }
-        }
-    }
-
     override suspend fun getAllIngredients(): List<Ingredient> {
         return recipeDao.getAllIngredients().map { Ingredient.fromEntity(it) }
     }
@@ -65,8 +46,9 @@ class LocalDataSourceImpl @Inject constructor(
         stepList: List<String>,
         imageUri: String,
         uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
-        val user = getUser(uid)
+        val user = updateUser(uid, lastUpdate)
         return addRecipe(name, description, time, types, stepList, imageUri, user)
     }
 
@@ -101,7 +83,9 @@ class LocalDataSourceImpl @Inject constructor(
         updateStepList: List<String>,
         updateImageUri: String,
         uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
+        updateUser(uid, lastUpdate)
         val recipeEntity = recipeDao.getRecipe(recipeId).apply {
             name = updateName
             description = updateDescription
@@ -187,6 +171,34 @@ class LocalDataSourceImpl @Inject constructor(
             }
             parseLocalRecipeList(recipes)
         } ?: emptyList()
+    }
+
+    private suspend fun updateUser(uid: String, lastUpdate: Long): UserEntity? {
+        val user = getUser(uid)
+        user?.let { currentUser ->
+            currentUser.lastUpdate = lastUpdate
+            userDao.updateUser(currentUser)
+        }
+        return user
+    }
+
+    private suspend fun parseLocalRecipeList(
+        recipeEntities: List<RecipeEntity>,
+    ): List<LocalRecipe> {
+        val ingredients = getAllIngredients()
+        val ingredientsMap = ingredients.groupBy { it.name }.mapValues { it.value.first() }
+
+        return recipeEntities.map { recipeEntity ->
+            LocalRecipe.fromEntity(recipeEntity).also { recipe ->
+                val recipeIngredients = recipeDao.getAllIngredientsForRecipe(recipeEntity.recipeId)
+                recipeIngredients.forEach { recipeIngredient ->
+                    ingredientsMap[recipeIngredient.ingredientName]?.let { currentIngredient ->
+                        val quantity = recipeIngredient.quantity
+                        recipe.addIngredient(currentIngredient, quantity)
+                    }
+                }
+            }
+        }
     }
 
     private suspend fun createUser(uid: String): User {

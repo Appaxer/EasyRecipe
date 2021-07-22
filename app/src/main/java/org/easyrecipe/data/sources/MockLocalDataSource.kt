@@ -82,6 +82,7 @@ class MockLocalDataSource : LocalDataSource {
         stepList: List<String>,
         imageUri: String,
         uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
         val recipe = LocalRecipe(
             recipeId = recipesData.size.inc().toLong(),
@@ -126,6 +127,7 @@ class MockLocalDataSource : LocalDataSource {
         updateStepList: List<String>,
         updateImageUri: String,
         uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
         val recipe = recipesData.find { it.recipeId == recipeId }?.apply {
             name = updateName

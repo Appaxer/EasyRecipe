@@ -17,7 +17,6 @@
 
 package org.easyrecipe.features.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,7 +67,6 @@ class MainViewModel @Inject constructor(
             onAfter = { dialogManager.cancelLoadingDialog() },
             onPrepareInput = { GetOrCreateUser.Request(uid) }
         ).onSuccess { result ->
-            Log.i("Test", "onGetCurrentUser: ${result.user.recipes.map { it.name }}")
             _user.value = result.user
         }
     }

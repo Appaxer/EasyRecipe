@@ -29,4 +29,13 @@ interface RemoteDataBaseDao {
         lastUpdate: Long,
         localRecipes: List<LocalRecipe>,
     )
+
+    suspend fun insertRecipe(uid: String, localRecipe: LocalRecipe, lastUpdate: Long)
+
+    suspend fun updateRecipe(
+        uid: String,
+        originalName: String,
+        localRecipe: LocalRecipe,
+        lastUpdate: Long,
+    )
 }

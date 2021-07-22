@@ -34,10 +34,12 @@ class UpdateRecipeImpl @Inject constructor(
             request.ingredients,
             request.stepList,
             request.imageUri,
-            request.uid
+            request.user.uid
         )
 
         val recipe = recipeRepository.getRecipeById(request.recipe.recipeId)
+        request.user.updateRecipe(request.recipe.name, recipe)
+
         UpdateRecipe.Response(recipe)
     }
 }

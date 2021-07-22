@@ -198,10 +198,10 @@ class CreateRecipeFragment : BaseFragment() {
         btnCreateRecipe.setOnClickListener {
             if (args.isEditing) {
                 args.recipe?.let { localRecipe ->
-                    viewModel.onUpdateRecipe(localRecipe, mainViewModel.user.requireValue().uid)
+                    viewModel.onUpdateRecipe(localRecipe, mainViewModel.user.requireValue())
                 }
             } else {
-                viewModel.onCreateRecipe(mainViewModel.user.requireValue().uid)
+                viewModel.onCreateRecipe(mainViewModel.user.requireValue())
             }
         }
     }

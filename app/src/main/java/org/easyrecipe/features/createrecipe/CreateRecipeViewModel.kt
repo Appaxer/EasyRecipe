@@ -35,6 +35,7 @@ import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.createrecipe.CreateRecipe
 import org.easyrecipe.usecases.getallingredients.GetAllIngredients
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipe
@@ -193,7 +194,7 @@ class CreateRecipeViewModel @Inject constructor(
         }
     }
 
-    fun onCreateRecipe(uid: String) = launch {
+    fun onCreateRecipe(user: User) = launch {
         executeUseCase(
             useCase = createRecipe,
             onBefore = { dialogManager.showLoadingDialog() },
@@ -207,7 +208,7 @@ class CreateRecipeViewModel @Inject constructor(
                     ingredients = ingredients.requireValue(),
                     stepList = _stepList.requireValue(),
                     imageUri = imageUri.requireValue(),
-                    uid = uid
+                    user = user
                 )
             }
         ).onSuccess {
@@ -215,7 +216,7 @@ class CreateRecipeViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateRecipe(recipe: LocalRecipe, uid: String) = launch {
+    fun onUpdateRecipe(recipe: LocalRecipe, user: User) = launch {
         executeUseCase(
             useCase = updateRecipe,
             onBefore = { dialogManager.showLoadingDialog() },
@@ -230,7 +231,7 @@ class CreateRecipeViewModel @Inject constructor(
                     ingredients = ingredients.requireValue(),
                     stepList = _stepList.requireValue(),
                     imageUri = imageUri.requireValue(),
-                    uid = uid
+                    user = user
                 )
             }
         ).onSuccess { result ->

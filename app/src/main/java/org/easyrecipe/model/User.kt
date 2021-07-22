@@ -36,6 +36,13 @@ class User(
         _recipes.addAll(recipes)
     }
 
+    fun updateRecipe(name: String, recipe: LocalRecipe) {
+        val index = _recipes.indexOfFirst { currentRecipe -> currentRecipe.name == name }
+        if (index >= 0) {
+            _recipes[index] = recipe
+        }
+    }
+
     companion object {
         @JvmStatic
         fun fromEntity(userEntity: UserEntity, uid: String) = User(

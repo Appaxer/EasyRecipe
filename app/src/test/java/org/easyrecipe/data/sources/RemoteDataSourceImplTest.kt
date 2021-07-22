@@ -17,7 +17,6 @@
 
 package org.easyrecipe.data.sources
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
@@ -25,6 +24,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.easyrecipe.common.CommonException
+import org.easyrecipe.data.dao.RemoteDataBaseDao
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.MealType
@@ -32,7 +32,6 @@ import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -55,16 +54,17 @@ class RemoteDataSourceImplTest {
     private val mealType = mutableListOf(MealType.Teatime)
     private val recipeIds = listOf("uri")
 
-    @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
-
     @MockK
     private lateinit var remoteRecipeDao: RemoteRecipeDao
+
+    @MockK
+    private lateinit var remoteDataBaseDao: RemoteDataBaseDao
 
     @Before
     fun setUp() {
         remoteRecipeDao = mockk()
-        remoteDataSource = RemoteDataSourceImpl(remoteRecipeDao)
+        remoteDataBaseDao = mockk()
+        remoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, remoteDataBaseDao)
     }
 
     @Test(expected = CommonException.NoInternetException::class)

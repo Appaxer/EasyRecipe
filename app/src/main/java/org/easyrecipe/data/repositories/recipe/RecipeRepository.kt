@@ -33,7 +33,7 @@ interface RecipeRepository {
         stepList: List<String>,
         imageUri: String,
         uid: String,
-    )
+    ): LocalRecipe
 
     suspend fun deleteRecipe(recipeId: Long)
 

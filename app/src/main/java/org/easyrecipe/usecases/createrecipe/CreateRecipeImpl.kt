@@ -25,7 +25,7 @@ class CreateRecipeImpl @Inject constructor(
     private val recipeRepository: RecipeRepository,
 ) : CreateRecipe {
     override suspend fun execute(request: CreateRecipe.Request) = runUseCase {
-        recipeRepository.createRecipe(
+        val recipe = recipeRepository.createRecipe(
             request.name,
             request.description,
             request.time,
@@ -33,8 +33,10 @@ class CreateRecipeImpl @Inject constructor(
             request.ingredients,
             request.stepList,
             request.imageUri,
-            request.uid
+            request.user.uid
         )
+
+        request.user.addRecipe(recipe)
         CreateRecipe.Response()
     }
 }

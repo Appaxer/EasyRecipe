@@ -54,7 +54,8 @@ class RecipeRepositoryImpl @Inject constructor(
         stepList: List<String>,
         imageUri: String,
         uid: String,
-    ) {
+    ): LocalRecipe {
+        val lastUpdate = System.currentTimeMillis()
         val localRecipe = localDataSource.insertRecipe(
             name,
             description,
@@ -62,10 +63,14 @@ class RecipeRepositoryImpl @Inject constructor(
             types,
             stepList,
             imageUri,
-            uid
+            uid,
+            lastUpdate
         )
 
         localDataSource.addIngredients(localRecipe, ingredients)
+        remoteDataSource.insertRecipe(uid, localRecipe, lastUpdate)
+
+        return localRecipe
     }
 
     override suspend fun deleteRecipe(recipeId: Long) {
@@ -83,6 +88,8 @@ class RecipeRepositoryImpl @Inject constructor(
         imageUri: String,
         uid: String,
     ) {
+        val lastUpdate = System.currentTimeMillis()
+        val originalRecipe = localDataSource.getRecipeById(id)
         val localRecipe = localDataSource.updateRecipe(
             id,
             name,
@@ -91,10 +98,15 @@ class RecipeRepositoryImpl @Inject constructor(
             types,
             stepList,
             imageUri,
-            uid
+            uid,
+            lastUpdate
         )
 
         localDataSource.updateIngredients(localRecipe, ingredients)
+
+        originalRecipe?.let { recipe ->
+            remoteDataSource.updateRecipe(uid, recipe.name, localRecipe, lastUpdate)
+        }
     }
 
     override suspend fun getRecipeById(recipeId: Long): LocalRecipe =

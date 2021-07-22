@@ -26,8 +26,10 @@ import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
 import org.easyrecipe.isResultError
 import org.easyrecipe.isResultSuccess
+import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -37,24 +39,42 @@ import org.junit.Test
 class UpdateRecipeImplTest {
     private lateinit var updateRecipeImpl: UpdateRecipeImpl
 
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
+    private val name = "Fish and chips"
+    private val description = "Delicious"
+    private val time = 10
+    private val types = listOf(RecipeType.Hot, RecipeType.Fish)
+    private val ingredients = mutableMapOf("Fish" to "1", "Potato" to "2")
+    private val stepList = listOf("First", "Second")
+    private val imageUri = ""
+
     private val localRecipe = LocalRecipe(
-        name = "Fish and chips",
-        description = "Delicious",
-        time = 10,
-        type = listOf(RecipeType.Hot, RecipeType.Fish),
-        image = ""
-    )
+        name = name,
+        description = description,
+        time = time,
+        type = types,
+        image = imageUri
+    ).also { recipe ->
+        ingredients.forEach { (name, quantity) ->
+            recipe.addIngredient(Ingredient(name), quantity)
+        }
+
+        recipe.setSteps(stepList)
+    }
 
     private val request = UpdateRecipe.Request(
         recipe = localRecipe,
-        name = "Fish and chips",
-        description = "Delicious",
-        time = 10,
-        type = listOf(RecipeType.Hot, RecipeType.Fish),
-        ingredients = mutableMapOf("Fish" to "1", "Potato" to "2"),
-        stepList = listOf("First", "Second"),
-        imageUri = "",
-        uid = "1"
+        name = name,
+        description = description,
+        time = time,
+        type = types,
+        ingredients = ingredients,
+        stepList = stepList,
+        imageUri = imageUri,
+        user = user
     )
 
     @MockK

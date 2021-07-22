@@ -19,6 +19,7 @@ package org.easyrecipe.usecases.createrecipe
 
 import org.easyrecipe.common.usecases.UseCase
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 
 interface CreateRecipe : UseCase<CreateRecipe.Request, CreateRecipe.Response> {
 
@@ -30,7 +31,7 @@ interface CreateRecipe : UseCase<CreateRecipe.Request, CreateRecipe.Response> {
         val ingredients: Map<String, String>,
         val stepList: List<String>,
         val imageUri: String,
-        val uid: String,
+        val user: User,
     ) : UseCase.UseCaseRequest
 
     class Response : UseCase.UseCaseResponse

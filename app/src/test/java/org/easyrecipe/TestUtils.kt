@@ -17,11 +17,14 @@
 
 package org.easyrecipe
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matcher
+import java.util.concurrent.CountDownLatch
 
 fun <T> isEqualTo(value: T): Matcher<T?> = `is`(value)
 
@@ -39,3 +42,18 @@ fun <T> isNoInternetError(): Matcher<T> =
     instanceOf(CommonException.NoInternetException::class.java)
 
 fun <T> isOtherError(): Matcher<T> = instanceOf(CommonException.OtherError::class.java)
+
+private val liveData = MutableLiveData<Unit>()
+
+fun await() {
+    val latch = CountDownLatch(1)
+    val observer = object : Observer<Unit> {
+        override fun onChanged(o: Unit?) {
+            latch.countDown()
+            liveData.removeObserver(this)
+        }
+    }
+
+    liveData.observeForever(observer)
+    liveData.removeObserver(observer)
+}

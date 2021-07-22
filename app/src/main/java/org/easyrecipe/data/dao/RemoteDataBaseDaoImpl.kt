@@ -71,11 +71,52 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         runFirebaseTask(task)
     }
 
+    override suspend fun insertRecipe(uid: String, localRecipe: LocalRecipe, lastUpdate: Long) {
+        val getUserTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(getUserTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.lastUpdate = lastUpdate
+                firebaseUser.recipes.add(localRecipe.toFirebaseRecipe())
+
+                val updateUserTask =
+                    firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
+
+                runFirebaseTask(updateUserTask)
+            }
+        }
+    }
+
+    override suspend fun updateRecipe(
+        uid: String,
+        originalName: String,
+        localRecipe: LocalRecipe,
+        lastUpdate: Long,
+    ) {
+        val getUserTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(getUserTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.lastUpdate = lastUpdate
+
+                val firebaseRecipe = localRecipe.toFirebaseRecipe()
+                val index = firebaseUser.recipes.indexOfFirst { recipe ->
+                    recipe.name == originalName
+                }
+
+                firebaseUser.recipes[index] = firebaseRecipe
+
+                val updateUserTask =
+                    firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
+
+                runFirebaseTask(updateUserTask)
+            }
+        }
+    }
+
     private suspend fun <I> runFirebaseTask(task: Task<I>) {
         executeFirebaseTask(task)
     }
 
-    private suspend fun <I, O> runFirebaseTask(task: Task<I>, onSuccess: (I?) -> O): O {
+    private suspend fun <I, O> runFirebaseTask(task: Task<I>, onSuccess: suspend (I?) -> O): O {
         val currentTask = executeFirebaseTask(task)
         return onSuccess(currentTask.result)
     }
@@ -109,20 +150,21 @@ class RemoteDataBaseDaoImpl @Inject constructor(
             }
         }
 
-    private fun List<LocalRecipe>.toFirebaseRecipes(): List<FirebaseRecipe> =
+    private fun List<LocalRecipe>.toFirebaseRecipes(): MutableList<FirebaseRecipe> =
         map { localRecipe ->
-            with(localRecipe) {
-                FirebaseRecipe(
-                    name = name,
-                    types = type.map { type -> type.name },
-                    time = time,
-                    image = imageLocation,
-                    description = description,
-                    ingredients = ingredients.mapKeys { entry -> entry.key.name },
-                    steps = steps
-                )
-            }
-        }
+            localRecipe.toFirebaseRecipe()
+        }.toMutableList()
+
+    private fun LocalRecipe.toFirebaseRecipe(): FirebaseRecipe =
+        FirebaseRecipe(
+            name = name,
+            types = type.map { type -> type.name },
+            time = time,
+            image = imageLocation,
+            description = description,
+            ingredients = ingredients.mapKeys { entry -> entry.key.name },
+            steps = steps
+        )
 
     companion object {
         private const val COLLECTION_USERS = "users"

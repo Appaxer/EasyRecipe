@@ -59,4 +59,17 @@ class RemoteDataSourceImpl @Inject constructor(
     ) {
         remoteDataBaseDao.addLocalRecipesToRemoteDataBaseUser(uid, lastUpdate, localRecipes)
     }
+
+    override suspend fun insertRecipe(uid: String, localRecipe: LocalRecipe, lastUpdate: Long) {
+        remoteDataBaseDao.insertRecipe(uid, localRecipe, lastUpdate)
+    }
+
+    override suspend fun updateRecipe(
+        uid: String,
+        originalName: String,
+        localRecipe: LocalRecipe,
+        lastUpdate: Long,
+    ) {
+        remoteDataBaseDao.updateRecipe(uid, originalName, localRecipe, lastUpdate)
+    }
 }

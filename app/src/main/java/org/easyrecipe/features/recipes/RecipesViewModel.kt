@@ -72,4 +72,10 @@ class RecipesViewModel @Inject constructor(
             )
         }
     }
+
+    fun onSetRecipeList(recipes: List<Recipe>) {
+        recipeList.value = recipes.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+        )
+    }
 }
