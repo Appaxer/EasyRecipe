@@ -93,6 +93,7 @@ class LocalDataSourceImplTest {
 
     private val recipeEntities = listOf(recipeEntity)
     private val recipes = listOf(localRecipe)
+    private val userRecipes = recipes.map { recipe -> UserRecipe(userId, recipe.recipeId) }
 
     private val recipeIngredientEntities = ingredients.map { ingredient ->
         RecipeIngredient(recipeId, ingredient.name, "1")
@@ -695,6 +696,138 @@ class LocalDataSourceImplTest {
             coVerify(exactly = recipes.size) {
                 recipeDao.insertRecipe(any())
                 userDao.insertUserRecipe(any())
+            }
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user there is an error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getAllRecipesFromUser(uid)
+        }
+
+    @Test
+    fun `when getting all recipes from user it does not exist then recipe list is empty`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            val result = localDataSourceImpl.getAllRecipesFromUser(uid)
+            assertThat(result.size, isEqualTo(0))
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user there is a list error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                recipeDao.getAllRecipesFromUser(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getAllRecipesFromUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user there is a recipe error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                recipeDao.getAllRecipesFromUser(any())
+            } returns userRecipes
+
+            coEvery {
+                recipeDao.getRecipe(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getAllRecipesFromUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user there is ingredients error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                recipeDao.getAllRecipesFromUser(any())
+            } returns userRecipes
+
+            coEvery {
+                recipeDao.getRecipe(any())
+            } returns recipeEntity
+
+            coEvery {
+                recipeDao.getAllIngredients()
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getAllRecipesFromUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user there is ingredient error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                recipeDao.getAllRecipesFromUser(any())
+            } returns userRecipes
+
+            coEvery {
+                recipeDao.getRecipe(any())
+            } returns recipeEntity
+
+            coEvery {
+                recipeDao.getAllIngredients()
+            } returns ingredients
+
+            coEvery {
+                recipeDao.getAllIngredientsForRecipe(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getAllRecipesFromUser(uid)
+        }
+
+    @Test
+    fun `when getting all recipes from user there is not any error then list is returned`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                recipeDao.getAllRecipesFromUser(any())
+            } returns userRecipes
+
+            coEvery {
+                recipeDao.getRecipe(any())
+            } returns recipeEntity
+
+            coEvery {
+                recipeDao.getAllIngredients()
+            } returns ingredients
+
+            coEvery {
+                recipeDao.getAllIngredientsForRecipe(any())
+            } returns recipeIngredientEntities
+
+            val result = localDataSourceImpl.getAllRecipesFromUser(uid)
+            assertThat(result.size, isEqualTo(userRecipes.size))
+
+            coVerify(exactly = userRecipes.size) {
+                recipeDao.getRecipe(any())
             }
         }
 }
