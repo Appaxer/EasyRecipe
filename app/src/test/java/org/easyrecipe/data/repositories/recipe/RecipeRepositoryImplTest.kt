@@ -37,6 +37,12 @@ import org.junit.Test
 class RecipeRepositoryImplTest {
     private lateinit var recipeRepository: RecipeRepository
 
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val newLastUpdate = 1L
+    private val localUser = User(uid, lastUpdate)
+    private val remoteUser = User(uid, lastUpdate)
+
     private var msg = "There was an unexpected error"
     private var recipes = listOf(
         LocalRecipe(recipeId = 1,
@@ -80,7 +86,6 @@ class RecipeRepositoryImplTest {
     private val recipeImage = ""
     private val recipeId = 1L
     private val remoteRecipeId = "uri"
-    private val uid = "1"
 
     private val localFavorites = recipes.take(3)
     private val remoteFavorites = recipes.takeLast(2)
@@ -480,5 +485,175 @@ class RecipeRepositoryImplTest {
 
             val recipes = recipeRepository.getFavoriteRecipes()
             assertThat(recipes, isEqualTo(localFavorites.union(remoteFavorites).toList()))
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting all recipes from user in local there is an error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } throws CommonException.OtherError("Other error")
+
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when getting user from remote source there is a network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } throws CommonException.NoInternetException
+
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user from remote source there is an other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } throws CommonException.OtherError("Other error")
+
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when local is updated and there is a network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                remoteDataSource.addLocalRecipesToRemoteDataBaseUser(any(), any(), any())
+            } throws CommonException.NoInternetException
+
+            localUser.lastUpdate = newLastUpdate
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when local is updated and there is an other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                remoteDataSource.addLocalRecipesToRemoteDataBaseUser(any(), any(), any())
+            } throws CommonException.OtherError("Other error")
+
+            localUser.lastUpdate = newLastUpdate
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test
+    fun `when local is updated and there is not any error then remote recipes are updated`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                remoteDataSource.addLocalRecipesToRemoteDataBaseUser(any(), any(), any())
+            } returns Unit
+
+            localUser.lastUpdate = newLastUpdate
+
+            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            assertThat(result, isEqualTo(recipes))
+
+            coVerify {
+                remoteDataSource.addLocalRecipesToRemoteDataBaseUser(uid, newLastUpdate, recipes)
+            }
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when remote is updated and there is an other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                localDataSource.addRemoteDatabaseRecipesToUser(any(), any(), any())
+            } throws CommonException.OtherError("Other error")
+
+            remoteUser.lastUpdate = newLastUpdate
+            recipeRepository.getAllRecipesFromUser(localUser)
+        }
+
+    @Test
+    fun `when remote is updated and there is no error then local recipes are updated`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                localDataSource.addRemoteDatabaseRecipesToUser(any(), any(), any())
+            } returns Unit
+
+            remoteUser.lastUpdate = newLastUpdate
+            remoteUser.addRecipes(recipes)
+
+            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            assertThat(result, isEqualTo(recipes))
+
+            coVerify {
+                localDataSource.addRemoteDatabaseRecipesToUser(uid, newLastUpdate, recipes)
+            }
+        }
+
+    @Test
+    fun `when local and remote are updated then list of recipes is returned`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipesFromUser(any())
+            } returns recipes
+
+            coEvery {
+                remoteDataSource.getUser(any())
+            } returns remoteUser
+
+            coEvery {
+                localDataSource.addRemoteDatabaseRecipesToUser(any(), any(), any())
+            } returns Unit
+
+            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            assertThat(result, isEqualTo(recipes))
+
+            coVerify(exactly = 0) {
+                remoteDataSource.addLocalRecipesToRemoteDataBaseUser(uid, newLastUpdate, recipes)
+                localDataSource.addRemoteDatabaseRecipesToUser(uid, newLastUpdate, recipes)
+            }
         }
 }

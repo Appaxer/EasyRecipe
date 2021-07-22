@@ -22,7 +22,7 @@ import java.io.Serializable
 
 class User(
     val uid: String,
-    val lastUpdate: Long,
+    var lastUpdate: Long,
 ) : Serializable {
     private val _recipes: MutableList<Recipe> = mutableListOf()
     val recipes: List<Recipe>
