@@ -24,6 +24,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.easyrecipe.common.CommonException
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.dao.RecipeDao
 import org.easyrecipe.data.dao.UserDao
@@ -43,7 +44,7 @@ class LocalDataSourceImplTest {
     private val userId = 0L
     private val uid = "1"
     private val lastUpdate = 0L
-    private val user = UserEntity(
+    private val userEntity = UserEntity(
         userId = userId,
         uid = uid,
         lastUpdate = lastUpdate
@@ -86,6 +87,8 @@ class LocalDataSourceImplTest {
         steps = recipeSteps,
         image = null
     )
+
+    private val recipeEntities = listOf(recipeEntity)
 
     private val localRecipe: LocalRecipe
         get() = LocalRecipe.fromEntity(recipeEntity)
@@ -157,7 +160,7 @@ class LocalDataSourceImplTest {
     @Test
     fun `when creating recipe the new id is returned and assigned to the entity`() =
         runBlockingTest {
-            coEvery { userDao.getUserByUid(any()) } returns user
+            coEvery { userDao.getUserByUid(any()) } returns userEntity
             coEvery { userDao.updateUser(any()) } returns Unit
             coEvery { userDao.insertUserRecipe(any()) } returns Unit
             coEvery { recipeDao.insertRecipe(any()) } returns recipeId
@@ -261,7 +264,7 @@ class LocalDataSourceImplTest {
     @Test
     fun `when updating the recipe there is no error then the recipe is updated`() =
         runBlockingTest {
-            coEvery { userDao.getUserByUid(any()) } returns user
+            coEvery { userDao.getUserByUid(any()) } returns userEntity
             coEvery { userDao.updateUser(any()) } returns Unit
             coEvery { recipeDao.getRecipe(any()) } returns recipeEntity
             coEvery { recipeDao.updateRecipe(any()) } returns Unit
@@ -450,5 +453,156 @@ class LocalDataSourceImplTest {
             } returns listOf(recipeEntity)
 
             localDataSourceImpl.getFavoriteRecipes()
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user there is an other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getOrCreateUser(uid)
+        }
+
+    @Test
+    fun `when user exists then it is returned`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            val user = localDataSourceImpl.getOrCreateUser(uid)
+            assertThat(user.uid, isEqualTo(uid))
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when user does not exist and there is an error then an exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } throws CommonException.OtherError("Error")
+
+            localDataSourceImpl.getOrCreateUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when user does not exist and when get amount is error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } returns userEntity.userId
+
+            coEvery {
+                userDao.getUserAmount()
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getOrCreateUser(uid)
+        }
+
+    @Test
+    fun `when user does not exist and is not the first then it is returned`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } returns userEntity.userId
+
+            coEvery {
+                userDao.getUserAmount()
+            } returns 2
+
+            val user = localDataSourceImpl.getOrCreateUser(uid)
+            assertThat(user.uid, isEqualTo(uid))
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when user does not exist and is the first but error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } returns userEntity.userId
+
+            coEvery {
+                userDao.getUserAmount()
+            } returns 1
+
+            coEvery {
+                recipeDao.getAllRecipes()
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getOrCreateUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when user does not exist and is the first and recipes error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } returns userEntity.userId
+
+            coEvery {
+                userDao.getUserAmount()
+            } returns 1
+
+            coEvery {
+                recipeDao.getAllRecipes()
+            } returns recipeEntities
+
+            coEvery {
+                userDao.insertUserRecipe(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.getOrCreateUser(uid)
+        }
+
+    @Test
+    fun `when user does not exist and is the first then recipes are added to user`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            coEvery {
+                userDao.insertUser(any())
+            } returns userEntity.userId
+
+            coEvery {
+                userDao.getUserAmount()
+            } returns 1
+
+            coEvery {
+                recipeDao.getAllRecipes()
+            } returns recipeEntities
+
+            coEvery {
+                userDao.insertUserRecipe(any())
+            } returns Unit
+
+            val user = localDataSourceImpl.getOrCreateUser(uid)
+            assertThat(user.uid, isEqualTo(uid))
+
+            coVerify(exactly = recipeEntities.size) {
+                userDao.insertUserRecipe(any())
+            }
         }
 }
