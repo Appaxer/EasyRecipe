@@ -132,6 +132,17 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `when getting current user there is a network error then OtherError is shown`() {
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Error(CommonException.NoInternetException)
+        viewModel.onGetCurrentUser(uid)
+
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, isNoInternetError())
+    }
+
+    @Test
     fun `when getting current user there is an unexpected error then OtherError is shown`() {
         coEvery {
             getOrCreateUser.execute(any())
