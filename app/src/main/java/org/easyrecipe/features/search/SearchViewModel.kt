@@ -27,6 +27,7 @@ import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.handlers.UseCaseResultHandler
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
@@ -54,7 +55,7 @@ class SearchViewModel @Inject constructor(
         onError = { ScreenState.OtherError }
     )
 
-    fun onSearchRecipes() = launch {
+    fun onSearchRecipes(mainViewModel: MainViewModel) = launch {
         executeUseCase(
             useCase = searchRecipes,
             onBefore = { dialogManager.showLoadingDialog() },
@@ -64,6 +65,7 @@ class SearchViewModel @Inject constructor(
             }
         ).onSuccess { result ->
             recipeList.value = result.recipes
+            mainViewModel.searchResultList.value = recipeList.value
         }
     }
 

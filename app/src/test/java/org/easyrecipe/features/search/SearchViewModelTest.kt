@@ -30,6 +30,7 @@ import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
+import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
@@ -59,6 +60,9 @@ class SearchViewModelTest {
     ))
 
     @MockK
+    private lateinit var mainViewModel: MainViewModel
+
+    @MockK
     private lateinit var searchRecipes: SearchRecipes
 
     @MockK
@@ -81,6 +85,7 @@ class SearchViewModelTest {
 
     @Before
     fun setUp() {
+        mainViewModel = mockk()
         searchRecipes = mockk()
         navManager = mockk()
         every { navManager.navigate(any(), any()) } returns Unit
@@ -101,7 +106,7 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.NoInternetException)
 
-        viewModel.onSearchRecipes()
+        viewModel.onSearchRecipes(mainViewModel)
         val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
         assertThat(state, instanceOf(CommonException.NoInternetException::class.java))
     }
@@ -111,7 +116,7 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.OtherError(msg))
 
-        viewModel.onSearchRecipes()
+        viewModel.onSearchRecipes(mainViewModel)
         val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
         assertThat(state, instanceOf(CommonException.OtherError::class.java))
     }
@@ -121,7 +126,7 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Success(SearchRecipes.Response(recipes))
 
-        viewModel.onSearchRecipes()
+        viewModel.onSearchRecipes(mainViewModel)
 
         assertThat(
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),

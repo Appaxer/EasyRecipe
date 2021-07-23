@@ -31,10 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.easyrecipe.adapters.RecipeAdapter
 import org.easyrecipe.adapters.RecipeTypeManager
 import org.easyrecipe.common.BaseFragment
-import org.easyrecipe.common.extensions.notify
-import org.easyrecipe.common.extensions.observeList
-import org.easyrecipe.common.extensions.observeText
-import org.easyrecipe.common.extensions.observeVisibility
+import org.easyrecipe.common.extensions.*
 import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentSearchBinding
 import org.easyrecipe.features.main.MainViewModel
@@ -77,6 +74,7 @@ class SearchFragment : BaseFragment() {
 
         runWithImagePermissions { isGranted ->
             adapter = RecipeAdapter(requireContext(), isGranted, RecipeTypeManager()) { recipe ->
+                mainViewModel.comesFromDetail.value = true
                 viewModel.onShowRecipeDetail(recipe)
             }
             binding.bind()
@@ -95,12 +93,12 @@ class SearchFragment : BaseFragment() {
     private fun FragmentSearchBinding.setUpBasicInformation() {
         txtRecipeSearch.observeText(viewModel.search)
         txtRecipeSearch.setEndIconOnClickListener {
-            viewModel.onSearchRecipes()
+            viewModel.onSearchRecipes(mainViewModel)
         }
         txtRecipeSearch.editText?.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    viewModel.onSearchRecipes()
+                    viewModel.onSearchRecipes(mainViewModel)
                     true
                 }
                 else -> false
@@ -131,9 +129,18 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun MainViewModel.setUpObservers() {
-        recipeList.observe(viewLifecycleOwner) {
-            viewModel.recipeList.value = it
-            viewModel.recipeList.notify()
+        if (comesFromDetail.requireValue() && !searchResultList.value.isNullOrEmpty()) {
+            searchResultList.observe(viewLifecycleOwner) {
+                viewModel.recipeList.value = it
+                viewModel.recipeList.notify()
+            }
+            comesFromDetail.value = false
+        } else {
+            recipeList.observe(viewLifecycleOwner) {
+                viewModel.recipeList.value = it
+                viewModel.recipeList.notify()
+            }
+            searchResultList.value = null
         }
     }
 

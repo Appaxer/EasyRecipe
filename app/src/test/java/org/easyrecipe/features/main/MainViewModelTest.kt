@@ -26,10 +26,9 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
-import org.easyrecipe.getAfterLoading
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.RecipeType
@@ -63,6 +62,9 @@ class MainViewModelTest {
     @MockK
     private lateinit var navManager: NavManager
 
+    @MockK
+    private lateinit var dialogManager: DialogManager
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -75,7 +77,11 @@ class MainViewModelTest {
         navManager = mockk()
         every { navManager.navigateUp(any()) } returns Unit
 
-        viewModel = MainViewModel(searchRecipes, navManager)
+        dialogManager = mockk()
+        every { dialogManager.showLoadingDialog() } returns Unit
+        every { dialogManager.cancelLoadingDialog() } returns Unit
+
+        viewModel = MainViewModel(searchRecipes, navManager, dialogManager)
     }
 
     @Test
@@ -84,8 +90,8 @@ class MainViewModelTest {
             UseCaseResult.Error(CommonException.NoInternetException)
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.NoInternet::class.java))
+        val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
+        assertThat(state, instanceOf(CommonException.NoInternetException::class.java))
     }
 
     @Test
@@ -94,8 +100,8 @@ class MainViewModelTest {
             UseCaseResult.Error(CommonException.OtherError(msg))
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.OtherError::class.java))
+        val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
+        assertThat(state, instanceOf(CommonException.OtherError::class.java))
     }
 
     @Test
@@ -104,8 +110,6 @@ class MainViewModelTest {
             UseCaseResult.Success(SearchRecipes.Response(recipes))
 
         viewModel.onSearchRecipes()
-        val state = viewModel.screenState.getAfterLoading()
-        assertThat(state, instanceOf(ScreenState.Nothing::class.java))
 
         assertThat(
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
