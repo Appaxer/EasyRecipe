@@ -79,6 +79,22 @@ class RecipesViewModelTest {
     )
 
     private val uid = "1"
+    private val localRecipes = listOf(
+        LocalRecipe(
+            name = "RecipeB",
+            description = "Delicious",
+            type = listOf(RecipeType.Hot),
+            time = 10,
+            image = ""
+        ),
+        LocalRecipe(
+            name = "RecipeA",
+            description = "Delicious",
+            type = listOf(RecipeType.Hot),
+            time = 10,
+            image = ""
+        )
+    )
 
     @MockK
     private lateinit var getAllRecipes: GetAllRecipes
@@ -177,6 +193,14 @@ class RecipesViewModelTest {
     }
 
     @Test
+    fun `when search is null then displayed list is empty`() {
+        viewModel.search.value = null
+
+        val result = viewModel.recipesDisplayed.getOrAwaitValue()
+        assertThat(result.size, isEqualTo(0))
+    }
+
+    @Test
     fun `when creating recipe then we navigate to CreateRecipeFragment`() {
         viewModel.onCreateRecipe()
 
@@ -195,5 +219,13 @@ class RecipesViewModelTest {
             recipesNavigation.navigateToShowRecipeDetail(recipe)
             navManager.navigate(any(), navDirections)
         }
+    }
+
+    @Test
+    fun `when adding recipes then they are sorted first`() {
+        viewModel.onSetRecipeList(localRecipes)
+
+        val result = viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList())
+        assertThat(result.first().name, isEqualTo(localRecipes[1].name))
     }
 }

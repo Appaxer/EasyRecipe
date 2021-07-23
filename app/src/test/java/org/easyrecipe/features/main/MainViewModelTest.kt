@@ -31,6 +31,7 @@ import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUser
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import org.hamcrest.MatcherAssert.assertThat
@@ -55,6 +56,8 @@ class MainViewModelTest {
     ))
 
     private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
 
     @MockK
     private lateinit var searchRecipes: SearchRecipes
@@ -151,5 +154,16 @@ class MainViewModelTest {
 
         val exception = viewModel.displayCommonError.getOrAwaitValue()
         assertThat(exception, isOtherError())
+    }
+
+    @Test
+    fun `when getting current user there is not any error then user is stored`() {
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Success(GetOrCreateUser.Response(user))
+        viewModel.onGetCurrentUser(uid)
+
+        val result = viewModel.user.getOrAwaitValue()
+        assertThat(result, isEqualTo(user))
     }
 }
