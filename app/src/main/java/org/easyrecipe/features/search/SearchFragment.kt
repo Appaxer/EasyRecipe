@@ -32,7 +32,6 @@ import org.easyrecipe.adapters.RecipeAdapter
 import org.easyrecipe.adapters.RecipeTypeManager
 import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.common.extensions.*
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentSearchBinding
 import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.model.MealType
@@ -46,15 +45,6 @@ class SearchFragment : BaseFragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override val viewModel: SearchViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<SearchState> { context, state ->
-        when (state) {
-            is SearchState.ShowRecipeDetail -> {
-                val action = SearchFragmentDirections
-                    .actionSearchFragmentToRecipeDetail(state.recipe.name, state.recipe)
-                navigate(action)
-            }
-        }
-    }
 
     @Inject
     lateinit var mealTypeConversion: MealTypeConversion

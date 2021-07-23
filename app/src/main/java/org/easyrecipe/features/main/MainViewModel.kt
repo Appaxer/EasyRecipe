@@ -37,18 +37,16 @@ class MainViewModel @Inject constructor(
     val searchResultList = MutableLiveData<List<Recipe>>(mutableListOf())
     val comesFromDetail = MutableLiveData(false)
 
-    fun onSearchRecipes() {
-        launch {
-            executeUseCase(
-                useCase = searchRecipes,
-                onBefore = { dialogManager.showLoadingDialog() },
-                onAfter = { dialogManager.cancelLoadingDialog() },
-                onPrepareInput = {
-                    SearchRecipes.Request("", emptyList())
-                }
-            ).onSuccess { result ->
-                recipeList.value = result.recipes
+    fun onSearchRecipes() = launch {
+        executeUseCase(
+            useCase = searchRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
+                SearchRecipes.Request("", emptyList())
             }
+        ).onSuccess { result ->
+            recipeList.value = result.recipes
         }
     }
 
