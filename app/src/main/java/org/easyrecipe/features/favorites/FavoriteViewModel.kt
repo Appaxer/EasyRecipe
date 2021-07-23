@@ -20,13 +20,13 @@ package org.easyrecipe.features.favorites
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
-import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.combine
-import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.extensions.navigateMainFragment
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
 import javax.inject.Inject
@@ -34,6 +34,9 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val getFavoriteRecipes: GetFavoriteRecipes,
+    private val navManager: NavManager,
+    private val favoriteNavigation: FavoriteNavigation,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(emptyList())
     val search = MutableLiveData("")
@@ -47,25 +50,23 @@ class FavoriteViewModel @Inject constructor(
 
     val isDisplayedRecipeListEmpty = recipesDisplayed.map { it.isEmpty() }
 
-    private val getFavoriteRecipesHandler = UseCaseResultHandler<GetFavoriteRecipes.Response>(
-        onSuccess = { result ->
+    fun onShowRecipeDetail(recipe: Recipe) {
+        val action = favoriteNavigation.navigateToRecipeDetail(recipe)
+        navManager.navigateMainFragment(action)
+    }
+
+    fun onGetFavoriteRecipes() = launch {
+        executeUseCase(
+            useCase = getFavoriteRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = {
+                GetFavoriteRecipes.Request()
+            }
+        ).onSuccess { result ->
             recipeList.value = result.recipes.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
             )
-            ScreenState.Nothing
-        },
-        onError = { ScreenState.OtherError }
-    )
-
-    fun onShowRecipeDetail(recipe: Recipe) {
-        loadState(FavoriteState.ShowRecipeDetail(recipe))
-    }
-
-    fun onGetFavoriteRecipes() {
-        viewModelScope.launch {
-            executeUseCase(getFavoriteRecipes, getFavoriteRecipesHandler) {
-                GetFavoriteRecipes.Request()
-            }
         }
     }
 }

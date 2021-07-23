@@ -68,7 +68,9 @@ class RemoteRecipeDaoImplTest {
         totalTime = 75.0F
     )
 
-    private val edamamRecipeList = listOf(EdamamHit(recipe = edamamRecipe))
+    private val edamamHit = EdamamHit(edamamRecipe)
+
+    private val edamamRecipeList = listOf(edamamHit)
 
     private val recipeIds = listOf("uri")
 
@@ -169,7 +171,7 @@ class RemoteRecipeDaoImplTest {
         runBlockingTest {
             coEvery { client.executeRequest(any()).statusCode } returns 200
             coEvery { client.executeRequest(any()).data } returns "".toByteArray()
-            coEvery { gson.fromJson<EdamamRecipe>(any()) } returns edamamRecipe
+            coEvery { gson.fromJson<EdamamHit>(any()) } returns edamamHit
 
             val result = remoteRecipeDaoImpl.getFavoriteRecipes(recipeIds)
 

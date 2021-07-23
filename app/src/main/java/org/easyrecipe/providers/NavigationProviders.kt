@@ -25,23 +25,33 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
 import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigationImpl
+import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
+import org.easyrecipe.features.favorites.navigation.FavoriteNavigationImpl
 import org.easyrecipe.features.recipes.navigation.RecipesNavigation
 import org.easyrecipe.features.recipes.navigation.RecipesNavigationImpl
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.features.search.navigation.SearchNavigationImpl
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class NavigationProviders {
 
     @Provides
+    @Singleton
     fun provideSearchNavigation(): SearchNavigation = SearchNavigationImpl()
 
     @Provides
+    @Singleton
+    fun provideFavoriteNavigation(): FavoriteNavigation = FavoriteNavigationImpl()
+
+    @Provides
+    @Singleton
     fun provideRecipesNavigation(
         @ApplicationContext context: Context,
     ): RecipesNavigation = RecipesNavigationImpl(context)
 
     @Provides
+    @Singleton
     fun provideCreateRecipeNavigation(): CreateRecipeNavigation = CreateRecipeNavigationImpl()
 }
