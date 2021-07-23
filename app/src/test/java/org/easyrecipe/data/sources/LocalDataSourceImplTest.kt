@@ -50,6 +50,7 @@ class LocalDataSourceImplTest {
         lastUpdate = lastUpdate
     )
 
+    private val recipeId = 1L
     private val recipeName = "Fish and chips"
     private val recipeDescription = "Delicious"
     private val recipeTime = 10
@@ -57,9 +58,8 @@ class LocalDataSourceImplTest {
     private val recipeIngredients = mutableMapOf("Fish" to "1", "Potato" to "2")
     private val recipeSteps = listOf("First", "Second")
     private val recipeImage = ""
-    private val remoteRecipeId = "uri"
 
-    private val recipeId = 1L
+    private val remoteRecipeId = "uri"
     private val ingredientEntity = IngredientEntity("Salt")
 
     private val ingredients = listOf(
@@ -73,7 +73,7 @@ class LocalDataSourceImplTest {
         description = recipeDescription,
         time = recipeTime,
         type = recipeTypes,
-        image = ""
+        image = recipeImage
     ).also {
         it.setSteps(recipeSteps)
     }

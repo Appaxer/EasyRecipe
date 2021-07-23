@@ -18,6 +18,7 @@
 package org.easyrecipe.data.dao
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import org.easyrecipe.common.CommonException
@@ -82,7 +83,7 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                     firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
 
                 runFirebaseTask(updateUserTask)
-            }
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
         }
     }
 
@@ -108,24 +109,42 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                     firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
 
                 runFirebaseTask(updateUserTask)
-            }
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
         }
     }
 
-    private suspend fun <I> runFirebaseTask(task: Task<I>) {
-        executeFirebaseTask(task)
+    private suspend fun <I> runFirebaseTask(
+        task: Task<I>,
+        skipExceptions: List<Exception> = emptyList(),
+    ) {
+        executeFirebaseTask(task, skipExceptions)
     }
 
-    private suspend fun <I, O> runFirebaseTask(task: Task<I>, onSuccess: suspend (I?) -> O): O {
-        val currentTask = executeFirebaseTask(task)
+    private suspend fun <I, O> runFirebaseTask(
+        task: Task<I>,
+        skipExceptions: List<Exception> = emptyList(),
+        onSuccess: suspend (I?) -> O,
+    ): O {
+        val currentTask = executeFirebaseTask(task, skipExceptions)
         return onSuccess(currentTask.result)
     }
 
-    private suspend fun <I> executeFirebaseTask(task: Task<I>): Task<I> {
-        task.await()
+    private suspend fun <I> executeFirebaseTask(
+        task: Task<I>,
+        skipExceptions: List<Exception>,
+    ): Task<I> {
+        try {
+            task.await()
+        } catch (e: Exception) {
+        }
 
         if (!task.isSuccessful) {
-            throw task.exception ?: CommonException.OtherError("Firebase error")
+            throw when (task.exception) {
+                null -> CommonException.OtherError("Firebase error")
+                in skipExceptions -> task.exception!!
+                is FirebaseNetworkException -> CommonException.NoInternetException
+                else -> CommonException.OtherError(task.exception!!.stackTraceToString())
+            }
         }
 
         return task
