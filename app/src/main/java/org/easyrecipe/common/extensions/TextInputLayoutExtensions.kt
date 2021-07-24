@@ -85,3 +85,41 @@ fun TextInputLayout.observeExposedMenu(
         (editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 }
+
+/**
+ * Observe the [TextInputLayout] for errors.
+ *
+ * @param lifecycleOwner The lifecycle of the fragment
+ * @param errorMsg The error message displayed in [TextInputLayout]
+ * @param liveData The [LiveData] to control whether the error should be displayed or not
+ */
+fun TextInputLayout.observeError(
+    lifecycleOwner: LifecycleOwner,
+    errorMsg: String,
+    liveData: LiveData<Boolean>,
+) {
+    liveData.observe(lifecycleOwner) { isDisplayed ->
+        showErrorIf(isDisplayed, errorMsg)
+    }
+}
+
+/**
+ * Observe multiple errors in a [TextInputLayout].
+ *
+ * @param lifecycleOwner The lifecycle of the fragment
+ * @param errors The errors that will be displayed, being the key an [Int] id and the value the
+ * message displayed
+ * @param liveData The [LiveData] to control which error should be displayed, and if null nothing
+ * will be shown
+ */
+fun TextInputLayout.observeMultipleErrors(
+    lifecycleOwner: LifecycleOwner,
+    errors: Map<Int, String>,
+    liveData: LiveData<Int?>,
+) {
+    liveData.observe(lifecycleOwner) { errorId ->
+        errorId?.let { currentErrorId ->
+            showErrorIf(true, errors[currentErrorId] ?: "")
+        } ?: showErrorIf(false, "")
+    }
+}
