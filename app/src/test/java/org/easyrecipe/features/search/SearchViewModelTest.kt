@@ -31,7 +31,6 @@ import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
-import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
@@ -60,8 +59,6 @@ class SearchViewModelTest {
         ingredients = listOf("3 cups Pecan Halves, Roughly Chopped"),
         time = 75
     ))
-
-    private lateinit var mainViewModel: MainViewModel
 
     @MockK
     private lateinit var searchRecipes: SearchRecipes
@@ -98,8 +95,6 @@ class SearchViewModelTest {
         every { dialogManager.showLoadingDialog() } returns Unit
         every { dialogManager.cancelLoadingDialog() } returns Unit
 
-        mainViewModel = MainViewModel(searchRecipes, navManager, dialogManager)
-
         viewModel = SearchViewModel(searchRecipes, navManager, searchNavigation, dialogManager)
     }
 
@@ -108,7 +103,7 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.NoInternetException)
 
-        viewModel.onSearchRecipes(mainViewModel)
+        viewModel.onSearchRecipes()
         val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
         assertThat(state, instanceOf(CommonException.NoInternetException::class.java))
     }
@@ -118,7 +113,7 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.OtherError(msg))
 
-        viewModel.onSearchRecipes(mainViewModel)
+        viewModel.onSearchRecipes()
         val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
         assertThat(state, instanceOf(CommonException.OtherError::class.java))
     }
@@ -128,14 +123,12 @@ class SearchViewModelTest {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Success(SearchRecipes.Response(recipes))
 
-        viewModel.onSearchRecipes(mainViewModel)
+        viewModel.onSearchRecipes()
 
         assertThat(
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)
         )
-
-        assertThat(mainViewModel.searchResultList.value, isEqualTo(recipes))
     }
 
     @Test

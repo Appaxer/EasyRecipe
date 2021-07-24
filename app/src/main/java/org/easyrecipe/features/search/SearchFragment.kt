@@ -83,12 +83,12 @@ class SearchFragment : BaseFragment() {
     private fun FragmentSearchBinding.setUpBasicInformation() {
         txtRecipeSearch.observeText(viewModel.search)
         txtRecipeSearch.setEndIconOnClickListener {
-            viewModel.onSearchRecipes(mainViewModel)
+            viewModel.onSearchRecipes()
         }
         txtRecipeSearch.editText?.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    viewModel.onSearchRecipes(mainViewModel)
+                    viewModel.onSearchRecipes()
                     true
                 }
                 else -> false
@@ -116,13 +116,19 @@ class SearchFragment : BaseFragment() {
             (binding.recipesRecyclerView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(0, 0)
         }
+        searchRecipeList.observe(viewLifecycleOwner) {
+            mainViewModel.searchResultList.value = it
+            mainViewModel.searchResultList.notify()
+        }
     }
 
     private fun MainViewModel.setUpObservers() {
         if (comesFromDetail.requireValue() && !searchResultList.value.isNullOrEmpty()) {
             searchResultList.observe(viewLifecycleOwner) {
-                viewModel.recipeList.value = it
-                viewModel.recipeList.notify()
+                if (it.isNotEmpty()) {
+                    viewModel.recipeList.value = it
+                    viewModel.recipeList.notify()
+                }
             }
             comesFromDetail.value = false
         } else {

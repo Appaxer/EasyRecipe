@@ -38,15 +38,17 @@ class MainViewModel @Inject constructor(
     val comesFromDetail = MutableLiveData(false)
 
     fun onSearchRecipes() = launch {
-        executeUseCase(
-            useCase = searchRecipes,
-            onBefore = { dialogManager.showLoadingDialog() },
-            onAfter = { dialogManager.cancelLoadingDialog() },
-            onPrepareInput = {
-                SearchRecipes.Request("", emptyList())
+        if (recipeList.value.isNullOrEmpty()) {
+            executeUseCase(
+                useCase = searchRecipes,
+                onBefore = { dialogManager.showLoadingDialog() },
+                onAfter = { dialogManager.cancelLoadingDialog() },
+                onPrepareInput = {
+                    SearchRecipes.Request("", emptyList())
+                }
+            ).onSuccess { result ->
+                recipeList.value = result.recipes
             }
-        ).onSuccess { result ->
-            recipeList.value = result.recipes
         }
     }
 
