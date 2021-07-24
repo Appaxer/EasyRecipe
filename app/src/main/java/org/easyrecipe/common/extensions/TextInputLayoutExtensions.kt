@@ -118,8 +118,8 @@ fun TextInputLayout.observeMultipleErrors(
     liveData: LiveData<Int?>,
 ) {
     liveData.observe(lifecycleOwner) { errorId ->
-        errorId?.let { currentErrorId ->
-            showErrorIf(true, errors[currentErrorId] ?: "")
+        errors[errorId]?.let { errorMessage ->
+            showErrorIf(true, errorMessage)
         } ?: showErrorIf(false, "")
     }
 }
