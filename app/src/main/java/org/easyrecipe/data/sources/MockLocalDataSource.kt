@@ -196,8 +196,8 @@ class MockLocalDataSource : LocalDataSource {
         lastUpdate: Long,
         recipes: List<Recipe>,
     ) {
-        (recipes as? List<LocalRecipe>)?.let { recipes ->
-            recipesData.addAll(recipes)
+        (recipes as? List<LocalRecipe>)?.let { localRecipes ->
+            recipesData.addAll(localRecipes)
         }
     }
 
