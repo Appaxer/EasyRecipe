@@ -18,11 +18,8 @@
 package org.easyrecipe.features.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.mockk.coEvery
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
@@ -124,6 +121,24 @@ class MainViewModelTest {
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)
         )
+    }
+
+    @Test
+    fun `when the recipeList is not null the search does not occur`() {
+        coEvery { searchRecipes.execute(any()) } returns
+            UseCaseResult.Success(SearchRecipes.Response(recipes))
+
+        viewModel.onSearchRecipes()
+        viewModel.onSearchRecipes()
+
+        assertThat(
+            viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
+            isEqualTo(recipes)
+        )
+
+        coVerify(exactly = 1) {
+             searchRecipes.execute(any())
+        }
     }
 
     @Test

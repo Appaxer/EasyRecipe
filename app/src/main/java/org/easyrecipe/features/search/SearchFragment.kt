@@ -31,11 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.easyrecipe.adapters.RecipeAdapter
 import org.easyrecipe.adapters.RecipeTypeManager
 import org.easyrecipe.common.BaseFragment
-import org.easyrecipe.common.extensions.notify
-import org.easyrecipe.common.extensions.observeList
-import org.easyrecipe.common.extensions.observeText
-import org.easyrecipe.common.extensions.observeVisibility
-import org.easyrecipe.common.handlers.ScreenStateHandler
+import org.easyrecipe.common.extensions.*
 import org.easyrecipe.databinding.FragmentSearchBinding
 import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.model.MealType
@@ -49,15 +45,6 @@ class SearchFragment : BaseFragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override val viewModel: SearchViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<SearchState> { context, state ->
-        when (state) {
-            is SearchState.ShowRecipeDetail -> {
-                val action = SearchFragmentDirections
-                    .actionSearchFragmentToRecipeDetail(state.recipe.name, state.recipe)
-                navigate(action)
-            }
-        }
-    }
 
     @Inject
     lateinit var mealTypeConversion: MealTypeConversion
@@ -77,6 +64,7 @@ class SearchFragment : BaseFragment() {
 
         runWithImagePermissions { isGranted ->
             adapter = RecipeAdapter(requireContext(), isGranted, RecipeTypeManager()) { recipe ->
+                mainViewModel.comesFromDetail.value = true
                 viewModel.onShowRecipeDetail(recipe)
             }
             binding.bind()
@@ -128,12 +116,27 @@ class SearchFragment : BaseFragment() {
             (binding.recipesRecyclerView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(0, 0)
         }
+        searchRecipeList.observe(viewLifecycleOwner) {
+            mainViewModel.searchResultList.value = it
+            mainViewModel.searchResultList.notify()
+        }
     }
 
     private fun MainViewModel.setUpObservers() {
-        recipeList.observe(viewLifecycleOwner) {
-            viewModel.recipeList.value = it
-            viewModel.recipeList.notify()
+        if (comesFromDetail.requireValue() && !searchResultList.value.isNullOrEmpty()) {
+            searchResultList.observe(viewLifecycleOwner) {
+                if (it.isNotEmpty()) {
+                    viewModel.recipeList.value = it
+                    viewModel.recipeList.notify()
+                }
+            }
+            comesFromDetail.value = false
+        } else {
+            recipeList.observe(viewLifecycleOwner) {
+                viewModel.recipeList.value = it
+                viewModel.recipeList.notify()
+            }
+            searchResultList.value = null
         }
     }
 
