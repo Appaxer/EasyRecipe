@@ -26,13 +26,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.easyrecipe.R
 import org.easyrecipe.common.BaseFragment
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentMainBinding
 
 @AndroidEntryPoint
@@ -41,9 +41,8 @@ class MainFragment : BaseFragment() {
     private lateinit var navController: NavController
 
     override val viewModel: MainViewModel by activityViewModels()
-    override val screenStateHandler = ScreenStateHandler<MainState> { context, state ->
 
-    }
+    private val args: MainFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +56,8 @@ class MainFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
+
+        viewModel.onGetCurrentUser("1")
     }
 
     private fun FragmentMainBinding.bind() {

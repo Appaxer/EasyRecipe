@@ -15,23 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.entities
+package org.easyrecipe.features.createrecipe.navigation
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import org.easyrecipe.features.createrecipe.CreateRecipeFragmentDirections
+import org.easyrecipe.model.LocalRecipe
 
-@Entity(
-    tableName = "users"
-)
-data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "user_id")
-    var userId: Long,
-
-    @ColumnInfo(name = "uid")
-    var uid: String? = null,
-
-    @ColumnInfo(name = "last_update")
-    var lastUpdate: Long?,
-)
+class CreateRecipeNavigationImpl : CreateRecipeNavigation {
+    override fun navigateToRecipeDetail(recipe: LocalRecipe) =
+        CreateRecipeFragmentDirections.actionCreateRecipeFragmentToRecipeDetail(
+            recipeName = recipe.name,
+            recipe = recipe
+        )
+}

@@ -21,6 +21,7 @@ import androidx.room.*
 import org.easyrecipe.data.entities.IngredientEntity
 import org.easyrecipe.data.entities.RecipeEntity
 import org.easyrecipe.data.entities.RecipeIngredient
+import org.easyrecipe.data.entities.UserRecipe
 
 @Dao
 interface RecipeDao {
@@ -57,4 +58,7 @@ interface RecipeDao {
 
     @Query("select * from recipe_ingredient where recipe_id = :recipeId")
     fun getAllIngredientsForRecipe(recipeId: Long): List<RecipeIngredient>
+
+    @Query("select * from user_recipes where user_id = :id")
+    fun getAllRecipesFromUser(id: Long): List<UserRecipe>
 }

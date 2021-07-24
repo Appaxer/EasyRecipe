@@ -17,6 +17,8 @@
 
 package org.easyrecipe.data.repositories.user
 
-interface UserRepository {
+import org.easyrecipe.model.User
 
+interface UserRepository {
+    suspend fun getOrCreateUser(uid: String): User
 }

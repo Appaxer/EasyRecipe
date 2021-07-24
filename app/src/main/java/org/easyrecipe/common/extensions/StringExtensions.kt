@@ -24,6 +24,8 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.httpPut
 import org.easyrecipe.common.http.HttpResponse
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 /**
  * Makes a get http request.
@@ -68,4 +70,20 @@ suspend fun String.putRequest(parameters: Parameters? = null): HttpResponse {
 suspend fun String.deleteRequest(parameters: Parameters? = null): HttpResponse {
     val (request, response, result) = httpDelete(parameters).responseString()
     return HttpResponse(request, response, result).logConnectionResults()
+}
+
+/**
+ * Calculates a hash from a String.
+ *
+ * @param algorithm The algorithm used to hash
+ * @return The string hash using the specified algorithm
+ */
+fun String.hash(algorithm: String): String? = try {
+    MessageDigest.getInstance(algorithm)
+        .digest(toByteArray())
+        .fold("") { total, actual ->
+            total + "%02x".format(actual)
+        }
+} catch (e: NoSuchAlgorithmException) {
+    null
 }

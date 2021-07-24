@@ -90,7 +90,8 @@ class GetAllRecipesImplTest {
     @Test
     fun `when there is an unexpected error then Error result is returned with the OtherError exception`() =
         runBlockingTest {
-            coEvery { recipeRepository.getAllLocalRecipes() } throws CommonException.OtherError(msg)
+            coEvery { recipeRepository.getAllLocalRecipes() } throws CommonException.OtherError(
+                msg)
 
             val result = getAllRecipes.execute(GetAllRecipes.Request())
             assertThat(result, isResultError())

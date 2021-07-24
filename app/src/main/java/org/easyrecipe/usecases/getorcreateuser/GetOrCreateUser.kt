@@ -15,23 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.entities
+package org.easyrecipe.usecases.getorcreateuser
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.User
 
-@Entity(
-    tableName = "users"
-)
-data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "user_id")
-    var userId: Long,
+interface GetOrCreateUser : UseCase<GetOrCreateUser.Request, GetOrCreateUser.Response> {
 
-    @ColumnInfo(name = "uid")
-    var uid: String? = null,
+    data class Request(
+        val uid: String,
+    ) : UseCase.UseCaseRequest
 
-    @ColumnInfo(name = "last_update")
-    var lastUpdate: Long?,
-)
+    data class Response(
+        val user: User,
+    ) : UseCase.UseCaseResponse
+}

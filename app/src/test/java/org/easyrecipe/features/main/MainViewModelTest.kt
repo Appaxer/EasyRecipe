@@ -24,7 +24,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.easyrecipe.MainCoroutineRule
+import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
@@ -33,8 +33,9 @@ import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
+import org.easyrecipe.model.User
+import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUser
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
-import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -56,8 +57,15 @@ class MainViewModelTest {
         time = 75
     ))
 
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
     @MockK
     private lateinit var searchRecipes: SearchRecipes
+
+    @MockK
+    private lateinit var getOrCreateUser: GetOrCreateUser
 
     @MockK
     private lateinit var navManager: NavManager
@@ -74,6 +82,8 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         searchRecipes = mockk()
+        getOrCreateUser = mockk()
+
         navManager = mockk()
         every { navManager.navigateUp(any()) } returns Unit
 
@@ -81,31 +91,32 @@ class MainViewModelTest {
         every { dialogManager.showLoadingDialog() } returns Unit
         every { dialogManager.cancelLoadingDialog() } returns Unit
 
-        viewModel = MainViewModel(searchRecipes, navManager, dialogManager)
+        viewModel = MainViewModel(searchRecipes, getOrCreateUser, navManager, dialogManager)
     }
 
     @Test
-    fun `when there is no internet then NoInternet state is loaded`() {
+    fun `when there is no internet then NoInternet is shown`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.NoInternetException)
 
         viewModel.onSearchRecipes()
-        val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
-        assertThat(state, instanceOf(CommonException.NoInternetException::class.java))
+
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, isNoInternetError())
     }
 
     @Test
-    fun `when there is an unexpected error then OtherError state is loaded`() {
+    fun `when there is an unexpected error then OtherError is shown`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Error(CommonException.OtherError(msg))
 
         viewModel.onSearchRecipes()
-        val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
-        assertThat(state, instanceOf(CommonException.OtherError::class.java))
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, isOtherError())
     }
 
     @Test
-    fun `when the recipes are found in the remote database then they are stored in the MainViewModel`() {
+    fun `when the recipes are found in the remote database then they are stored`() {
         coEvery { searchRecipes.execute(any()) } returns
             UseCaseResult.Success(SearchRecipes.Response(recipes))
 
@@ -123,5 +134,38 @@ class MainViewModelTest {
         verify {
             navManager.navigateUp(any())
         }
+    }
+
+    @Test
+    fun `when getting current user there is a network error then OtherError is shown`() {
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Error(CommonException.NoInternetException)
+        viewModel.onGetCurrentUser(uid)
+
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, isNoInternetError())
+    }
+
+    @Test
+    fun `when getting current user there is an unexpected error then OtherError is shown`() {
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
+        viewModel.onGetCurrentUser(uid)
+
+        val exception = viewModel.displayCommonError.getOrAwaitValue()
+        assertThat(exception, isOtherError())
+    }
+
+    @Test
+    fun `when getting current user there is not any error then user is stored`() {
+        coEvery {
+            getOrCreateUser.execute(any())
+        } returns UseCaseResult.Success(GetOrCreateUser.Response(user))
+        viewModel.onGetCurrentUser(uid)
+
+        val result = viewModel.user.getOrAwaitValue()
+        assertThat(result, isEqualTo(user))
     }
 }

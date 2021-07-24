@@ -53,10 +53,24 @@ class RecipeRepositoryImpl @Inject constructor(
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
-    ) {
-        val localRecipe =
-            localDataSource.insertRecipe(name, description, time, types, stepList, imageUri)
+        uid: String,
+    ): LocalRecipe {
+        val lastUpdate = System.currentTimeMillis()
+        val localRecipe = localDataSource.insertRecipe(
+            name,
+            description,
+            time,
+            types,
+            stepList,
+            imageUri,
+            uid,
+            lastUpdate
+        )
+
         localDataSource.addIngredients(localRecipe, ingredients)
+        remoteDataSource.insertRecipe(uid, localRecipe, lastUpdate)
+
+        return localRecipe
     }
 
     override suspend fun deleteRecipe(recipeId: Long) {
@@ -72,11 +86,27 @@ class RecipeRepositoryImpl @Inject constructor(
         ingredients: Map<String, String>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
     ) {
-        val localRecipe =
-            localDataSource.updateRecipe(id, name, description, time, types, stepList, imageUri)
+        val lastUpdate = System.currentTimeMillis()
+        val originalRecipe = localDataSource.getRecipeById(id)
+        val localRecipe = localDataSource.updateRecipe(
+            id,
+            name,
+            description,
+            time,
+            types,
+            stepList,
+            imageUri,
+            uid,
+            lastUpdate
+        )
 
         localDataSource.updateIngredients(localRecipe, ingredients)
+
+        originalRecipe?.let { recipe ->
+            remoteDataSource.updateRecipe(uid, recipe.name, localRecipe, lastUpdate)
+        }
     }
 
     override suspend fun getRecipeById(recipeId: Long): LocalRecipe =
@@ -100,5 +130,44 @@ class RecipeRepositoryImpl @Inject constructor(
         return localDataSource.getFavoriteRecipes()
             .union(remoteDataSource.getFavoriteRecipes(localDataSource.getAllRemoteFavorites()))
             .toList()
+    }
+
+    override suspend fun getAllRecipesFromUser(user: User): List<Recipe> {
+        val localRecipes = localDataSource.getAllRecipesFromUser(user.uid)
+        val remoteUser = remoteDataSource.getUser(user.uid)
+
+        return when {
+            user.lastUpdate > remoteUser.lastUpdate -> {
+                syncRemoteRecipesWithLocal(user, localRecipes)
+            }
+            user.lastUpdate < remoteUser.lastUpdate -> {
+                syncLocalRecipesWithRemote(user, remoteUser)
+            }
+            else -> localRecipes
+        }
+    }
+
+    private suspend fun syncRemoteRecipesWithLocal(
+        user: User,
+        localRecipes: List<LocalRecipe>,
+    ): List<LocalRecipe> {
+        remoteDataSource.addLocalRecipesToRemoteDataBaseUser(
+            user.uid,
+            user.lastUpdate,
+            localRecipes
+        )
+        return localRecipes
+    }
+
+    private suspend fun syncLocalRecipesWithRemote(
+        user: User,
+        remoteUser: User,
+    ): List<Recipe> {
+        localDataSource.addRemoteDatabaseRecipesToUser(
+            user.uid,
+            remoteUser.lastUpdate,
+            remoteUser.recipes
+        )
+        return remoteUser.recipes
     }
 }

@@ -23,6 +23,5 @@
     </string-array>
     <string-array name="remote_languages">
         <item>Inglés</item>
-        <!--        <item>Español (beta)</item>-->
     </string-array>
 </resources>

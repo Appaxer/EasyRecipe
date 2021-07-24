@@ -15,28 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.createrecipe
+package org.easyrecipe.features.recipes.navigation
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
+import android.content.Context
+import org.easyrecipe.R
+import org.easyrecipe.features.recipes.RecipesFragmentDirections
+import org.easyrecipe.model.Recipe
 import javax.inject.Inject
 
-class CreateRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : CreateRecipe {
-    override suspend fun execute(request: CreateRecipe.Request) = runUseCase {
-        val recipe = recipeRepository.createRecipe(
-            request.name,
-            request.description,
-            request.time,
-            request.types,
-            request.ingredients,
-            request.stepList,
-            request.imageUri,
-            request.user.uid
+class RecipesNavigationImpl @Inject constructor(
+    private val context: Context,
+) : RecipesNavigation {
+    override fun navigateToCreateRecipe() =
+        RecipesFragmentDirections.actionRecipesFragmentToCreateRecipeFragment(
+            context.getString(R.string.create_recipe_fragment)
         )
 
-        request.user.addRecipe(recipe)
-        CreateRecipe.Response()
-    }
+    override fun navigateToShowRecipeDetail(recipe: Recipe) =
+        RecipesFragmentDirections.actionRecipesFragmentToRecipeDetail(
+            recipeName = recipe.name,
+            recipe = recipe
+        )
 }

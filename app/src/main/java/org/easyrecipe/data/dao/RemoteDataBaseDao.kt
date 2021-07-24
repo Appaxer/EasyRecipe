@@ -15,23 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.entities
+package org.easyrecipe.data.dao
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.User
 
-@Entity(
-    tableName = "users"
-)
-data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "user_id")
-    var userId: Long,
+interface RemoteDataBaseDao {
+    suspend fun isUserExisting(uid: String): Boolean
+    suspend fun createUser(uid: String)
+    suspend fun getUser(uid: String): User
+    suspend fun addLocalRecipesToRemoteDataBaseUser(
+        uid: String,
+        lastUpdate: Long,
+        localRecipes: List<LocalRecipe>,
+    )
 
-    @ColumnInfo(name = "uid")
-    var uid: String? = null,
+    suspend fun insertRecipe(uid: String, localRecipe: LocalRecipe, lastUpdate: Long)
 
-    @ColumnInfo(name = "last_update")
-    var lastUpdate: Long?,
-)
+    suspend fun updateRecipe(
+        uid: String,
+        originalName: String,
+        localRecipe: LocalRecipe,
+        lastUpdate: Long,
+    )
+}

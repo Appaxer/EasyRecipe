@@ -32,9 +32,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.easyrecipe.data.LocalDatabase
-import org.easyrecipe.data.MIGRATION_1_2
-import org.easyrecipe.data.MIGRATION_2_3
+import org.easyrecipe.data.*
+import org.easyrecipe.data.dao.RemoteDataBaseDao
+import org.easyrecipe.data.dao.RemoteDataBaseDaoImpl
 import org.easyrecipe.data.dao.RemoteRecipeDao
 import org.easyrecipe.data.dao.RemoteRecipeDaoImpl
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
@@ -55,8 +55,9 @@ class DataProviders {
     @Provides
     @Singleton
     fun provideUserRepository(
-        localDataSource: LocalDataSource,
-    ): UserRepository = UserRepositoryImpl(localDataSource)
+        @LocalData localDataSource: LocalDataSource,
+        remoteDataSource: RemoteDataSource,
+    ): UserRepository = UserRepositoryImpl(localDataSource, remoteDataSource)
 
     @Provides
     @Singleton
@@ -81,7 +82,8 @@ class DataProviders {
     @Singleton
     fun provideRemoteDataSource(
         remoteRecipeDao: RemoteRecipeDao,
-    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao)
+        remoteDataBaseDao: RemoteDataBaseDao,
+    ): RemoteDataSource = RemoteDataSourceImpl(remoteRecipeDao, remoteDataBaseDao)
 
     @Provides
     @Singleton
@@ -89,6 +91,12 @@ class DataProviders {
         sharedPreferences: SharedPreferences,
         gson: Gson,
     ): RemoteRecipeDao = RemoteRecipeDaoImpl(sharedPreferences, gson)
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataBaseDao(
+        firestore: FirebaseFirestore,
+    ): RemoteDataBaseDao = RemoteDataBaseDaoImpl(firestore)
 
     @Provides
     @Singleton
@@ -108,7 +116,7 @@ class DataProviders {
         context,
         LocalDatabase::class.java,
         LocalDatabase.NAME
-    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
 
     @Provides
     @Singleton
