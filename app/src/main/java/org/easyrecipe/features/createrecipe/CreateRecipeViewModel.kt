@@ -65,7 +65,11 @@ class CreateRecipeViewModel @Inject constructor(
     val ingredientQuantity = MutableLiveData("")
     private val predefinedIngredients = MutableLiveData<List<Ingredient>>()
     val predefinedIngredientsNames = predefinedIngredients.map { ingredients ->
-        ingredients.map { it.name.capitalize(Locale.getDefault()) }
+        ingredients.map { ingredient ->
+            ingredient.name.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
+        }
     }
     val isIngredientInfoFilled =
         CombinedLiveData(ingredientName, ingredientQuantity) { name, quantity ->
