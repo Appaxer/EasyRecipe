@@ -189,12 +189,16 @@ class MockLocalDataSource : LocalDataSource {
     }
 
     override suspend fun getOrCreateUser(uid: String) = User(uid, System.currentTimeMillis())
+
+    @Suppress("UNCHECKED_CAST")
     override suspend fun addRemoteDatabaseRecipesToUser(
         uid: String,
         lastUpdate: Long,
         recipes: List<Recipe>,
     ) {
-
+        (recipes as? List<LocalRecipe>)?.let { recipes ->
+            recipesData.addAll(recipes)
+        }
     }
 
     override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> {

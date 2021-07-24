@@ -136,6 +136,7 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         try {
             task.await()
         } catch (e: Exception) {
+            // The exception should be ignored
         }
 
         if (!task.isSuccessful) {
