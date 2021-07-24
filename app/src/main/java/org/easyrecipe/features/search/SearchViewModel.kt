@@ -21,10 +21,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.easyrecipe.common.BaseViewModel
-import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.navigateMainFragment
 import org.easyrecipe.common.extensions.requireValue
-import org.easyrecipe.common.handlers.UseCaseResultHandler
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.features.search.navigation.SearchNavigation
@@ -41,18 +39,11 @@ class SearchViewModel @Inject constructor(
     private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
+    val searchRecipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val mealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
     val search = MutableLiveData(listOf("a", "e", "i", "o", "u").random())
 
     val isDisplayedRecipeListEmpty = recipeList.map { it.isEmpty() }
-
-    private val searchRandomRecipesResultHandler = UseCaseResultHandler<SearchRecipes.Response>(
-        onSuccess = { result ->
-            recipeList.value = result.recipes
-            ScreenState.Nothing
-        },
-        onError = { ScreenState.OtherError }
-    )
 
     fun onSearchRecipes() = launch {
         executeUseCase(
@@ -64,6 +55,7 @@ class SearchViewModel @Inject constructor(
             }
         ).onSuccess { result ->
             recipeList.value = result.recipes
+            searchRecipeList.value = result.recipes
         }
     }
 

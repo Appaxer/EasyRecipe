@@ -27,12 +27,14 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
 import org.easyrecipe.common.CommonException
+import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.features.search.navigation.SearchNavigation
 import org.easyrecipe.getOrAwaitValueExceptDefault
 import org.easyrecipe.isEqualTo
+import org.easyrecipe.model.MealType
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
@@ -127,6 +129,23 @@ class SearchViewModelTest {
             viewModel.recipeList.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)
         )
+    }
+
+    @Test
+    fun `when add meal type it is stored in mealType list`() {
+        viewModel.onAddMealType(MealType.Breakfast)
+
+        assertThat(viewModel.mealType.requireValue(), isEqualTo(listOf(MealType.Breakfast)))
+    }
+
+    @Test
+    fun `when remove meal type it is deleted from mealType list`() {
+        viewModel.onAddMealType(MealType.Breakfast)
+        viewModel.onAddMealType(MealType.Dinner)
+
+        viewModel.onRemoveMealType(MealType.Breakfast)
+
+        assertThat(viewModel.mealType.requireValue(), isEqualTo(listOf(MealType.Dinner)))
     }
 
     @Test
