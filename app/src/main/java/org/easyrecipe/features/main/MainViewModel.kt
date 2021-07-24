@@ -40,8 +40,9 @@ class MainViewModel @Inject constructor(
     private val _recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val recipeList: LiveData<List<Recipe>>
         get() = _recipeList
-    val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
+
     val searchResultList = MutableLiveData<List<Recipe>>(mutableListOf())
+
     val comesFromDetail = MutableLiveData(false)
 
     private val _user = MutableLiveData<User>()
@@ -49,24 +50,14 @@ class MainViewModel @Inject constructor(
         get() = _user
 
     fun onSearchRecipes() = launch {
-        executeUseCase(
-            useCase = searchRecipes,
-            onBefore = { dialogManager.showLoadingDialog() },
-            onAfter = { dialogManager.cancelLoadingDialog() },
-            onPrepareInput = { SearchRecipes.Request("", emptyList()) }
-        ).onSuccess { result ->
-            _recipeList.value = result.recipes
-    fun onSearchRecipes() = launch {
         if (recipeList.value.isNullOrEmpty()) {
             executeUseCase(
                 useCase = searchRecipes,
                 onBefore = { dialogManager.showLoadingDialog() },
                 onAfter = { dialogManager.cancelLoadingDialog() },
-                onPrepareInput = {
-                    SearchRecipes.Request("", emptyList())
-                }
+                onPrepareInput = { SearchRecipes.Request("", emptyList()) }
             ).onSuccess { result ->
-                recipeList.value = result.recipes
+                _recipeList.value = result.recipes
             }
         }
     }

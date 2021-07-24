@@ -29,8 +29,6 @@ import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
-import org.easyrecipe.getOrAwaitValueExceptDefault
-import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.model.User

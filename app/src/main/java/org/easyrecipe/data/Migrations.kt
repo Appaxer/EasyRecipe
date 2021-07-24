@@ -36,7 +36,7 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(database: SupportSQLiteDatabase) {
         val lastUpdate = System.currentTimeMillis()
         database.execSQL("alter table users add column last_update INTEGER default $lastUpdate")
-        database.execSQL("alter table users add column uid")
+        database.execSQL("alter table users add column uid TEXT")
     }
 }
 
