@@ -17,10 +17,7 @@
 
 package org.easyrecipe.data.sources
 
-import org.easyrecipe.model.Ingredient
-import org.easyrecipe.model.LocalRecipe
-import org.easyrecipe.model.Recipe
-import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.*
 
 class MockLocalDataSource : LocalDataSource {
     private val recipesData = mutableListOf(
@@ -84,6 +81,8 @@ class MockLocalDataSource : LocalDataSource {
         types: List<RecipeType>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
         val recipe = LocalRecipe(
             recipeId = recipesData.size.inc().toLong(),
@@ -127,6 +126,8 @@ class MockLocalDataSource : LocalDataSource {
         updateTypes: List<RecipeType>,
         updateStepList: List<String>,
         updateImageUri: String,
+        uid: String,
+        lastUpdate: Long,
     ): LocalRecipe {
         val recipe = recipesData.find { it.recipeId == recipeId }?.apply {
             name = updateName
@@ -184,6 +185,23 @@ class MockLocalDataSource : LocalDataSource {
     }
 
     override suspend fun getFavoriteRecipes(): List<Recipe> {
+        return recipesData
+    }
+
+    override suspend fun getOrCreateUser(uid: String) = User(uid, System.currentTimeMillis())
+
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun addRemoteDatabaseRecipesToUser(
+        uid: String,
+        lastUpdate: Long,
+        recipes: List<Recipe>,
+    ) {
+        (recipes as? List<LocalRecipe>)?.let { localRecipes ->
+            recipesData.addAll(localRecipes)
+        }
+    }
+
+    override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> {
         return recipesData
     }
 }

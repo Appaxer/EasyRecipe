@@ -20,13 +20,13 @@ package org.easyrecipe.features.recipes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import org.easyrecipe.common.BaseViewModel
-import org.easyrecipe.common.ScreenState
 import org.easyrecipe.common.extensions.combine
-import org.easyrecipe.common.handlers.UseCaseResultHandler
+import org.easyrecipe.common.extensions.navigateMainFragment
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.features.recipes.navigation.RecipesNavigation
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.usecases.getallrecipes.GetAllRecipes
 import javax.inject.Inject
@@ -34,6 +34,9 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipesViewModel @Inject constructor(
     private val getAllRecipes: GetAllRecipes,
+    private val navManager: NavManager,
+    private val recipesNavigation: RecipesNavigation,
+    private val dialogManager: DialogManager,
 ) : BaseViewModel() {
     private val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val search = MutableLiveData("")
@@ -47,29 +50,32 @@ class RecipesViewModel @Inject constructor(
 
     val isDisplayedRecipeListEmpty = recipesDisplayed.map { it.isEmpty() }
 
-    private val getAllRecipesResultHandler = UseCaseResultHandler<GetAllRecipes.Response>(
-        onSuccess = { result ->
-            recipeList.value = result.recipes.sortedWith(
-                compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
-            )
-            ScreenState.Nothing
-        },
-        onError = { ScreenState.OtherError }
-    )
-
     fun onCreateRecipe() {
-        loadState(RecipesState.CreateRecipe)
+        val action = recipesNavigation.navigateToCreateRecipe()
+        navManager.navigateMainFragment(action)
     }
 
     fun onShowRecipeDetail(recipe: Recipe) {
-        loadState(RecipesState.ShowRecipeDetail(recipe))
+        val action = recipesNavigation.navigateToShowRecipeDetail(recipe)
+        navManager.navigateMainFragment(action)
     }
 
-    fun onGetAllRecipes() {
-        viewModelScope.launch {
-            executeUseCase(getAllRecipes, getAllRecipesResultHandler) {
-                GetAllRecipes.Request()
-            }
+    fun onGetAllRecipes() = launch {
+        executeUseCase(
+            useCase = getAllRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = { GetAllRecipes.Request() }
+        ).onSuccess { result ->
+            recipeList.value = result.recipes.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            )
         }
+    }
+
+    fun onSetRecipeList(recipes: List<Recipe>) {
+        recipeList.value = recipes.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+        )
     }
 }

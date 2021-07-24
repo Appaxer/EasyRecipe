@@ -18,10 +18,19 @@
 package org.easyrecipe.data.repositories.user
 
 import org.easyrecipe.data.sources.LocalDataSource
+import org.easyrecipe.data.sources.RemoteDataSource
+import org.easyrecipe.model.User
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource,
 ) : UserRepository {
 
+    override suspend fun getOrCreateUser(uid: String): User {
+        val user = localDataSource.getOrCreateUser(uid)
+        remoteDataSource.createUserIfNotExisting(uid)
+
+        return user
+    }
 }

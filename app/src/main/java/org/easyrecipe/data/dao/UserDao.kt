@@ -24,7 +24,7 @@ import org.easyrecipe.data.entities.*
 interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertUser(userEntity: UserEntity)
+    suspend fun insertUser(userEntity: UserEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserRecipe(userRecipe: UserRecipe)
@@ -41,9 +41,18 @@ interface UserDao {
     @Delete
     suspend fun deleteFavoriteRemoteRecipe(favoriteRemoteRecipeEntity: FavoriteRemoteRecipeEntity)
 
+    @Update
+    suspend fun updateUser(userEntity: UserEntity)
+
     @Query("update recipes set is_favorite = :isFavorite where recipe_id = :recipeId")
     suspend fun updateFavoriteLocalRecipe(recipeId: Long, isFavorite: Int)
 
     @Query("select * from recipes where is_favorite = 1")
     suspend fun getFavoriteLocalRecipes(): List<RecipeEntity>
+
+    @Query("select * from users where uid = :uid")
+    suspend fun getUserByUid(uid: String): UserEntity?
+
+    @Query("select count(*) from users")
+    suspend fun getUserAmount(): Int
 }

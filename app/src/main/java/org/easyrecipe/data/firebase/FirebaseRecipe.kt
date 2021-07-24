@@ -15,23 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.entities
+package org.easyrecipe.data.firebase
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import java.io.Serializable
 
-@Entity(
-    tableName = "users"
-)
-data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "user_id")
-    var userId: Long,
-
-    @ColumnInfo(name = "uid")
-    var uid: String? = null,
-
-    @ColumnInfo(name = "last_update")
-    var lastUpdate: Long?,
-)
+data class FirebaseRecipe(
+    var name: String = "",
+    var types: List<String> = emptyList(),
+    var time: Int = 0,
+    var image: String = "",
+    var description: String = "",
+    var steps: List<String> = emptyList(),
+    var ingredients: Map<String, String> = emptyMap(),
+) : Serializable

@@ -17,10 +17,7 @@
 
 package org.easyrecipe.data.sources
 
-import org.easyrecipe.model.Ingredient
-import org.easyrecipe.model.LocalRecipe
-import org.easyrecipe.model.Recipe
-import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.*
 
 interface LocalDataSource {
     suspend fun getAllRecipes(): List<LocalRecipe>
@@ -32,6 +29,8 @@ interface LocalDataSource {
         types: List<RecipeType>,
         stepList: List<String>,
         imageUri: String,
+        uid: String,
+        lastUpdate: Long,
     ): LocalRecipe
 
     suspend fun addIngredients(recipe: LocalRecipe, ingredients: Map<String, String>)
@@ -46,6 +45,8 @@ interface LocalDataSource {
         updateTypes: List<RecipeType>,
         updateStepList: List<String>,
         updateImageUri: String,
+        uid: String,
+        lastUpdate: Long,
     ): LocalRecipe
 
     suspend fun updateIngredients(localRecipe: LocalRecipe, ingredients: Map<String, String>)
@@ -63,4 +64,10 @@ interface LocalDataSource {
     suspend fun removeFavoriteLocalRecipe(recipeId: Long)
 
     suspend fun getFavoriteRecipes(): List<Recipe>
+
+    suspend fun getOrCreateUser(uid: String): User
+
+    suspend fun addRemoteDatabaseRecipesToUser(uid: String, lastUpdate: Long, recipes: List<Recipe>)
+
+    suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe>
 }

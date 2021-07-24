@@ -43,7 +43,7 @@ import org.junit.Test
 class FavoriteViewModelTest {
     private lateinit var viewModel: FavoriteViewModel
 
-    private val msg = "Otherr error"
+    private val msg = "Other error"
     private var recipes = listOf(
         LocalRecipe(recipeId = 1,
             name = "Chicken Fried",

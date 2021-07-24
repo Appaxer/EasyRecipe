@@ -20,7 +20,7 @@ package org.easyrecipe.data.entities.relations
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 
-@Entity(tableName = "favorite", primaryKeys = ["user_id", "recipe_id"])
+@Entity(tableName = "user_recipes", primaryKeys = ["user_id", "recipe_id"])
 data class UserRecipeCrossRef(
     @ColumnInfo(name = "user_id")
     val userId: Long,
