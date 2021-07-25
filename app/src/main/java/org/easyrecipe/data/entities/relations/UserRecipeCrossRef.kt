@@ -27,4 +27,7 @@ data class UserRecipeCrossRef(
 
     @ColumnInfo(name = "recipe_id")
     val recipeId: Long,
+
+    @ColumnInfo(name = "is_favourite")
+    var isFavorite: Int? = 0,
 )

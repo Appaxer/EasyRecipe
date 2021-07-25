@@ -20,28 +20,49 @@ package org.easyrecipe.data
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("alter table recipes add column image TEXT")
+/**
+ * Create a migration between [startVersion] version to [endVersion] version using [onMigrate].
+ *
+ * @param startVersion The start version
+ * @param endVersion The end version
+ * @param onMigrate The migration that will be applied
+ * @return The [Migration] that has to be applied to database
+ * @throws IllegalArgumentException When [startVersion] is greater or equal to [endVersion]
+ */
+private fun createMigration(
+    startVersion: Int,
+    endVersion: Int,
+    onMigrate: SupportSQLiteDatabase.() -> Unit,
+): Migration {
+    require(startVersion < endVersion) {
+        "The startVersion should be lesser than endVersion ($startVersion >= $endVersion)"
+    }
+
+    return object : Migration(startVersion, endVersion) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.onMigrate()
+        }
     }
 }
 
-val MIGRATION_2_3 = object : Migration(2, 3) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("alter table recipes add column is_favorite INT default 0")
-    }
+val MIGRATION_1_2 = createMigration(1, 2) {
+    execSQL("alter table recipes add column image TEXT")
 }
 
-val MIGRATION_3_4 = object : Migration(3, 4) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        val lastUpdate = System.currentTimeMillis()
-        database.execSQL("alter table users add column last_update INTEGER default $lastUpdate")
-        database.execSQL("alter table users add column uid TEXT")
-    }
+val MIGRATION_2_3 = createMigration(2, 3) {
+    execSQL("alter table recipes add column is_favorite INT default 0")
 }
 
-val MIGRATION_4_5 = object : Migration(4, 5) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("alter table favorite rename to user_recipes")
-    }
+val MIGRATION_3_4 = createMigration(3, 4) {
+    val lastUpdate = System.currentTimeMillis()
+    execSQL("alter table users add column last_update INTEGER default $lastUpdate")
+    execSQL("alter table users add column uid TEXT")
+}
+
+val MIGRATION_4_5 = createMigration(4, 5) {
+    execSQL("alter table favorite rename to user_recipes")
+}
+
+val MIGRATION_5_6 = createMigration(5, 6) {
+    execSQL("alter table user_recipes add column is_favourite INT default 0")
 }
