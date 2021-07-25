@@ -18,6 +18,7 @@
 package org.easyrecipe.data.sources
 
 import org.easyrecipe.common.extensions.hash
+import org.easyrecipe.common.extensions.toBoolean
 import org.easyrecipe.data.LocalDatabase
 import org.easyrecipe.data.entities.*
 import org.easyrecipe.model.*
@@ -166,10 +167,17 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> {
         return getUser(uid)?.let { user ->
-            val recipes = recipeDao.getAllRecipesFromUser(user.userId).map { userRecipe ->
+            val userRecipes = recipeDao.getAllRecipesFromUser(user.userId)
+            val recipes = userRecipes.map { userRecipe ->
                 recipeDao.getRecipe(userRecipe.recipeId)
             }
-            parseLocalRecipeList(recipes)
+            parseLocalRecipeList(recipes).onEach { localRecipe ->
+                userRecipes.find { userRecipe ->
+                    userRecipe.recipeId == localRecipe.recipeId
+                }?.let { userRecipe ->
+                    localRecipe.isFavorite = userRecipe.isFavorite.toBoolean()
+                }
+            }
         } ?: emptyList()
     }
 

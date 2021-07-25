@@ -27,6 +27,7 @@ class LocalRecipe(
     image: String,
     var recipeId: Long = 0L,
     var description: String,
+    var isFavorite: Boolean = false,
 ) : Recipe(name, type, time, image), Serializable {
     private val _steps: MutableList<String> = mutableListOf()
     val steps: List<String>

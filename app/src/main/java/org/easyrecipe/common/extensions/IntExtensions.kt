@@ -34,3 +34,11 @@ fun Int.toDurationString(context: Context): String {
     }
 }
 
+/**
+ * Converts any non-null [Int] greater or equal to 0 into true. Otherwise, the result is false
+ *
+ * @return The boolean representation of the implicit parameter
+ */
+fun Int?.toBoolean(): Boolean =
+    this != null && this > 0
+
