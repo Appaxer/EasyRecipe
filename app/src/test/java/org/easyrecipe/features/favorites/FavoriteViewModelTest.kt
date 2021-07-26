@@ -32,6 +32,7 @@ import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
 import org.easyrecipe.usecases.getuserfavoriterecipes.GetUserFavoriteRecipes
 import org.hamcrest.CoreMatchers.instanceOf
@@ -44,7 +45,10 @@ import org.junit.Test
 class FavoriteViewModelTest {
     private lateinit var viewModel: FavoriteViewModel
 
-    private val msg = "Other error"
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
     private var recipes = listOf(
         LocalRecipe(recipeId = 1,
             name = "Chicken Fried",
@@ -131,8 +135,9 @@ class FavoriteViewModelTest {
 
     @Test
     fun `when there is an unexpected error then OtherError state is loaded`() {
-        coEvery { getFavoriteRecipes.execute(any()) } returns
-            UseCaseResult.Error(CommonException.OtherError(msg))
+        coEvery {
+            getFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
 
         viewModel.onGetFavoriteRecipes()
         val state = viewModel.displayCommonError.getOrAwaitValueExceptDefault(default = null)
@@ -141,8 +146,9 @@ class FavoriteViewModelTest {
 
     @Test
     fun `when favorite recipes are found in the database then they are stored in the ViewModel`() {
-        coEvery { getFavoriteRecipes.execute(any()) } returns
-            UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
+        coEvery {
+            getFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
 
         viewModel.onGetFavoriteRecipes()
 
@@ -154,8 +160,9 @@ class FavoriteViewModelTest {
 
     @Test
     fun `when favorite recipes are found and filter by name but not matching then list is empty`() {
-        coEvery { getFavoriteRecipes.execute(any()) } returns
-            UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
+        coEvery {
+            getFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
 
         viewModel.search.value = "Not Existing"
         viewModel.onGetFavoriteRecipes()
@@ -173,8 +180,9 @@ class FavoriteViewModelTest {
 
     @Test
     fun `when favorite recipes are found and filter by name then only selected are shown`() {
-        coEvery { getFavoriteRecipes.execute(any()) } returns
-            UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
+        coEvery {
+            getFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Success(GetFavoriteRecipes.Response(recipes))
 
         viewModel.search.value = "Spicy"
         viewModel.onGetFavoriteRecipes()
@@ -182,6 +190,28 @@ class FavoriteViewModelTest {
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(listOf(recipes[4]))
+        )
+    }
+
+    @Test
+    fun `when getting user favorite recipes there is an error then OtherError is shown`() {
+        coEvery {
+            getUserFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
+
+        viewModel.onGetFavoriteRecipes(user)
+    }
+
+    @Test
+    fun `when getting user favorite recipes there is no error then they are stored`() {
+        coEvery {
+            getUserFavoriteRecipes.execute(any())
+        } returns UseCaseResult.Success(GetUserFavoriteRecipes.Response(recipes))
+
+        viewModel.onGetFavoriteRecipes(user)
+        assertThat(
+            viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
+            isEqualTo(recipes)
         )
     }
 }
