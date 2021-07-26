@@ -15,25 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.model
+package org.easyrecipe.features.recipedetail.navigation
 
-import java.io.Serializable
+import androidx.navigation.NavDirections
+import org.easyrecipe.model.LocalRecipe
 
-abstract class Recipe(
-    var name: String,
-    var type: List<RecipeType>,
-    var time: Int,
-    var imageLocation: String = "",
-) : Serializable {
-    private var _favorite: Boolean = false
-    val favorite: Boolean
-        get() = _favorite
-
-    fun toggleFavorite() {
-        _favorite = !_favorite
-    }
-
-    fun setFavorite(isFavorite: Boolean) {
-        _favorite = isFavorite
-    }
+interface RecipeDetailNavigation {
+    fun navigateToCreateRecipe(localRecipe: LocalRecipe, screenTitle: String): NavDirections
 }

@@ -128,12 +128,16 @@ class LocalDataSourceImpl @Inject constructor(
 
     }
 
-    override suspend fun addFavoriteLocalRecipe(recipeId: Long) {
-        userDao.updateFavoriteLocalRecipe(recipeId, 1)
+    override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String) {
+        getUser(uid)?.let { userEntity ->
+            userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 1)
+        }
     }
 
-    override suspend fun removeFavoriteLocalRecipe(recipeId: Long) {
-        userDao.updateFavoriteLocalRecipe(recipeId, 0)
+    override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String) {
+        getUser(uid)?.let { userEntity ->
+            userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 0)
+        }
     }
 
     override suspend fun getFavoriteRecipes(): List<Recipe> {
@@ -175,7 +179,7 @@ class LocalDataSourceImpl @Inject constructor(
                 userRecipes.find { userRecipe ->
                     userRecipe.recipeId == localRecipe.recipeId
                 }?.let { userRecipe ->
-                    localRecipe.isFavorite = userRecipe.isFavorite.toBoolean()
+                    localRecipe.setFavorite(userRecipe.isFavorite.toBoolean())
                 }
             }
         } ?: emptyList()

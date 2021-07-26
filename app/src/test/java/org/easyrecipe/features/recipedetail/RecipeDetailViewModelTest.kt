@@ -18,14 +18,25 @@
 package org.easyrecipe.features.recipedetail
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.navigation.NavDirections
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.easyrecipe.MainCoroutineRule
-import org.easyrecipe.common.ScreenState
+import org.easyrecipe.await
+import org.easyrecipe.common.CommonException
+import org.easyrecipe.common.managers.dialog.DialogManager
+import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
-import org.easyrecipe.getAfterLoading
+import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigation
+import org.easyrecipe.getOrAwaitValue
+import org.easyrecipe.isTrue
+import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.deleterecipe.DeleteRecipe
 import org.easyrecipe.usecases.favoritelocalrecipe.FavoriteLocalRecipe
 import org.easyrecipe.usecases.favoriteremoterecipe.FavoriteRemoteRecipe
@@ -41,6 +52,33 @@ class RecipeDetailViewModelTest {
     private val recipeId = 1L
     private val remoteRecipeId = "uri"
     private val isFavorite = true
+
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
+    private val localRecipe = LocalRecipe(
+        name = "Fish and chips",
+        description = "Delicious",
+        type = listOf(RecipeType.Hot, RecipeType.Fish),
+        time = 10,
+        image = "",
+        recipeId = recipeId
+    ).also { recipe ->
+        recipe.setFavorite(isFavorite)
+    }
+
+    @MockK
+    private lateinit var navManager: NavManager
+
+    @MockK
+    private lateinit var recipeDetailNavigation: RecipeDetailNavigation
+
+    @MockK
+    private lateinit var navDirections: NavDirections
+
+    @MockK
+    private lateinit var dialogManager: DialogManager
 
     @MockK
     private lateinit var deleteRecipe: DeleteRecipe
@@ -59,87 +97,103 @@ class RecipeDetailViewModelTest {
 
     @Before
     fun setUp() {
+        navManager = mockk()
+        every { navManager.navigate(any(), any()) } returns Unit
+        every { navManager.navigateUp(any()) } returns Unit
+
+        navDirections = mockk()
+        recipeDetailNavigation = mockk()
+        every { recipeDetailNavigation.navigateToCreateRecipe(any(), any()) } returns navDirections
+
+        dialogManager = mockk()
+        every { dialogManager.showLoadingDialog() } returns Unit
+        every { dialogManager.cancelLoadingDialog() } returns Unit
+
         deleteRecipe = mockk()
         favoriteRemoteRecipe = mockk()
         favoriteLocalRecipe = mockk()
-        viewModel = RecipeDetailViewModel(deleteRecipe, favoriteRemoteRecipe, favoriteLocalRecipe)
-    }
-
-    @Test
-    fun `when deleting the recipe there is an error then the OtherError state is loaded`() {
-        coEvery {
-            deleteRecipe.execute(any())
-        } returns UseCaseResult.Error(Exception())
-
-        viewModel.onDeleteRecipe(recipeId)
-        assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(ScreenState.OtherError::class.java)
+        viewModel = RecipeDetailViewModel(
+            deleteRecipe,
+            favoriteRemoteRecipe,
+            favoriteLocalRecipe,
+            navManager,
+            recipeDetailNavigation,
+            dialogManager
         )
     }
 
     @Test
-    fun `when deleting the recipe if there is no error then the RecipeDeleted state is loaded`() {
+    fun `when deleting the recipe there is an error then OtherError is shown`() {
+        coEvery {
+            deleteRecipe.execute(any())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
+
+        viewModel.onDeleteRecipe(recipeId)
+
+        assertThat(
+            viewModel.displayCommonError.getOrAwaitValue(),
+            instanceOf(CommonException.OtherError::class.java)
+        )
+    }
+
+    @Test
+    fun `when deleting the recipe if there is no error then we navigate up`() {
         coEvery {
             deleteRecipe.execute(any())
         } returns UseCaseResult.Success(DeleteRecipe.Response())
 
         viewModel.onDeleteRecipe(recipeId)
-        assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(RecipeDetailState.RecipeDeleted::class.java)
-        )
+
+        await(4)
+        verify {
+            navManager.navigateUp(any())
+        }
     }
 
     @Test
-    fun `when favorite a remote recipe and there is an error then OtherError state is loaded`() {
+    fun `when favorite a remote recipe and there is an error then OtherError is shown`() {
         coEvery {
             favoriteRemoteRecipe.execute(any())
-        } returns UseCaseResult.Error(Exception())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
 
-        viewModel.onFavoriteRecipe(remoteRecipeId, isFavorite)
+        viewModel.onFavoriteRemoteRecipe(user, remoteRecipeId, isFavorite)
+
         assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(ScreenState.OtherError::class.java)
+            viewModel.displayCommonError.getOrAwaitValue(),
+            instanceOf(CommonException.OtherError::class.java)
         )
     }
 
     @Test
-    fun `when favorite a remote recipe if there is no error then Nothing state is loaded`() {
+    fun `when favorite a remote recipe if there is no error then it is marked as favorite`() {
         coEvery {
             favoriteRemoteRecipe.execute(any())
         } returns UseCaseResult.Success(FavoriteRemoteRecipe.Response())
 
-        viewModel.onFavoriteRecipe(remoteRecipeId, isFavorite)
-        assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(ScreenState.Nothing::class.java)
-        )
+        viewModel.onFavoriteRemoteRecipe(user, remoteRecipeId, isFavorite)
     }
 
     @Test
-    fun `when favorite local recipe there is an error then OtherError state is loaded`() {
+    fun `when favorite local recipe there is an error then OtherError state is shown`() {
         coEvery {
             favoriteLocalRecipe.execute(any())
-        } returns UseCaseResult.Error(Exception())
+        } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
 
-        viewModel.onFavoriteLocalRecipe(recipeId, isFavorite)
+        viewModel.onFavoriteLocalRecipe(user, localRecipe) {}
+
         assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(ScreenState.OtherError::class.java)
+            viewModel.displayCommonError.getOrAwaitValue(),
+            instanceOf(CommonException.OtherError::class.java)
         )
     }
 
     @Test
-    fun `when favorite local recipe there is no error then Nothing state is loaded`() {
+    fun `when favorite local recipe there is no error then it is marked as favorite`() {
         coEvery {
             favoriteLocalRecipe.execute(any())
         } returns UseCaseResult.Success(FavoriteLocalRecipe.Response())
 
-        viewModel.onFavoriteLocalRecipe(recipeId, isFavorite)
-        assertThat(
-            viewModel.screenState.getAfterLoading(),
-            instanceOf(ScreenState.Nothing::class.java)
-        )
+        viewModel.onFavoriteLocalRecipe(user, localRecipe) {}
+        assertThat(localRecipe.favorite, isTrue())
     }
 }

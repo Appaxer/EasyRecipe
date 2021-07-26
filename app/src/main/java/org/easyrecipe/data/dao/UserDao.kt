@@ -47,6 +47,9 @@ interface UserDao {
     @Query("update recipes set is_favorite = :isFavorite where recipe_id = :recipeId")
     suspend fun updateFavoriteLocalRecipe(recipeId: Long, isFavorite: Int)
 
+    @Query("update user_recipes set is_favourite = :isFavorite where user_id = :userId and recipe_id = :recipeId")
+    suspend fun updateUserFavoriteLocalRecipe(userId: Long, recipeId: Long, isFavorite: Int)
+
     @Query("select * from recipes where is_favorite = 1")
     suspend fun getFavoriteLocalRecipes(): List<RecipeEntity>
 

@@ -45,8 +45,8 @@ fun <T> isOtherError(): Matcher<T> = instanceOf(CommonException.OtherError::clas
 
 private val liveData = MutableLiveData<Unit>()
 
-fun await() {
-    val latch = CountDownLatch(1)
+fun await(countDown: Int = 2) {
+    val latch = CountDownLatch(countDown)
     val observer = object : Observer<Unit> {
         override fun onChanged(o: Unit?) {
             latch.countDown()

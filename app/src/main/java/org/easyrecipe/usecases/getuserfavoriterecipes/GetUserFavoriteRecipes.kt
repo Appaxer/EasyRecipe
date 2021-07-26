@@ -15,25 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.model
+package org.easyrecipe.usecases.getuserfavoriterecipes
 
-import java.io.Serializable
+import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.Recipe
+import org.easyrecipe.model.User
 
-abstract class Recipe(
-    var name: String,
-    var type: List<RecipeType>,
-    var time: Int,
-    var imageLocation: String = "",
-) : Serializable {
-    private var _favorite: Boolean = false
-    val favorite: Boolean
-        get() = _favorite
+interface GetUserFavoriteRecipes :
+    UseCase<GetUserFavoriteRecipes.Request, GetUserFavoriteRecipes.Response> {
 
-    fun toggleFavorite() {
-        _favorite = !_favorite
-    }
+    data class Request(
+        val user: User,
+    ) : UseCase.UseCaseRequest
 
-    fun setFavorite(isFavorite: Boolean) {
-        _favorite = isFavorite
-    }
+    data class Response(
+        val favoriteRecipes: List<Recipe>,
+    ) : UseCase.UseCaseResponse
 }

@@ -15,25 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.model
+package org.easyrecipe.usecases.getuserfavoriterecipes
 
-import java.io.Serializable
+import org.easyrecipe.common.usecases.runUseCase
+import javax.inject.Inject
 
-abstract class Recipe(
-    var name: String,
-    var type: List<RecipeType>,
-    var time: Int,
-    var imageLocation: String = "",
-) : Serializable {
-    private var _favorite: Boolean = false
-    val favorite: Boolean
-        get() = _favorite
+class GetUserFavoriteRecipesImpl @Inject constructor(
 
-    fun toggleFavorite() {
-        _favorite = !_favorite
-    }
+) : GetUserFavoriteRecipes {
 
-    fun setFavorite(isFavorite: Boolean) {
-        _favorite = isFavorite
+    override suspend fun execute(request: GetUserFavoriteRecipes.Request) = runUseCase {
+        val recipes = request.user.favoriteRecipes
+        GetUserFavoriteRecipes.Response(recipes)
     }
 }

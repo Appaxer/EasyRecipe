@@ -421,40 +421,40 @@ class RecipeRepositoryImplTest {
     @Test(expected = Exception::class)
     fun `when favorite local recipe there is an unexpected error then exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } throws Exception()
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } throws Exception()
-            recipeRepository.favoriteLocalRecipe(recipeId, false)
+            coEvery { localDataSource.addFavoriteLocalRecipe(any(), any()) } throws Exception()
+            coEvery { localDataSource.removeFavoriteLocalRecipe(any(), any()) } throws Exception()
+            recipeRepository.favoriteLocalRecipe(recipeId, false, "")
         }
 
     @Test
     fun `when adding favorite local recipe then addFavoriteLocalRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } returns Unit
-            recipeRepository.favoriteLocalRecipe(recipeId, false)
+            coEvery { localDataSource.addFavoriteLocalRecipe(any(), any()) } returns Unit
+            coEvery { localDataSource.removeFavoriteLocalRecipe(any(), any()) } returns Unit
+            recipeRepository.favoriteLocalRecipe(recipeId, false, uid)
 
             coVerify {
-                localDataSource.addFavoriteLocalRecipe(recipeId)
+                localDataSource.addFavoriteLocalRecipe(recipeId, uid)
             }
 
             coVerify(exactly = 0) {
-                localDataSource.removeFavoriteLocalRecipe(any())
+                localDataSource.removeFavoriteLocalRecipe(any(), uid)
             }
         }
 
     @Test
     fun `when removing favorite local recipe then removeFavoriteLocalRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } returns Unit
-            recipeRepository.favoriteLocalRecipe(recipeId, true)
+            coEvery { localDataSource.addFavoriteLocalRecipe(any(), uid) } returns Unit
+            coEvery { localDataSource.removeFavoriteLocalRecipe(any(), any()) } returns Unit
+            recipeRepository.favoriteLocalRecipe(recipeId, true, uid)
 
             coVerify {
-                localDataSource.removeFavoriteLocalRecipe(any())
+                localDataSource.removeFavoriteLocalRecipe(any(), uid)
             }
 
             coVerify(exactly = 0) {
-                localDataSource.addFavoriteLocalRecipe(recipeId)
+                localDataSource.addFavoriteLocalRecipe(recipeId, uid)
             }
         }
 

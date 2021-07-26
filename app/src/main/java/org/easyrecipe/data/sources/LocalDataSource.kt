@@ -59,9 +59,9 @@ interface LocalDataSource {
 
     suspend fun removeFavoriteRemoteRecipe(recipeId: String)
 
-    suspend fun addFavoriteLocalRecipe(recipeId: Long)
+    suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String)
 
-    suspend fun removeFavoriteLocalRecipe(recipeId: Long)
+    suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String)
 
     suspend fun getFavoriteRecipes(): List<Recipe>
 

@@ -27,6 +27,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,9 +38,10 @@ import org.easyrecipe.adapters.IconManager
 import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.common.OpenUrlContract
 import org.easyrecipe.common.extensions.dpToPixels
+import org.easyrecipe.common.extensions.requireValue
 import org.easyrecipe.common.extensions.toDurationString
-import org.easyrecipe.common.handlers.ScreenStateHandler
 import org.easyrecipe.databinding.FragmentRecipeDetailBinding
+import org.easyrecipe.features.main.MainViewModel
 import org.easyrecipe.features.recipedetail.recyclerview.IngredientDetailListAdapter
 import org.easyrecipe.features.recipedetail.recyclerview.StepDetailListAdapter
 import org.easyrecipe.model.LocalRecipe
@@ -61,21 +63,7 @@ class RecipeDetailFragment : BaseFragment() {
     lateinit var iconManager: IconManager<RecipeType>
 
     override val viewModel: RecipeDetailViewModel by viewModels()
-    override val screenStateHandler = ScreenStateHandler<RecipeDetailState> { context, state ->
-        when (state) {
-            RecipeDetailState.RecipeDeleted -> navigateUp()
-            is RecipeDetailState.EditLocalRecipe -> {
-                val screenTitle = getString(R.string.editing_recipe, args.recipeName)
-                val action = RecipeDetailFragmentDirections
-                    .actionRecipeDetailToCreateRecipeFragment(
-                        title = screenTitle,
-                        isEditing = true,
-                        recipe = state.localRecipe
-                    )
-                navigate(action)
-            }
-        }
-    }
+    private val mainVieModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -139,9 +127,13 @@ class RecipeDetailFragment : BaseFragment() {
             ) { item ->
                 when (item.itemId) {
                     R.id.favoriteRecipe -> {
-                        viewModel.onFavoriteLocalRecipe(localRecipe.recipeId, localRecipe.favorite)
-                        setFavouriteIcon(localRecipe, item)
-                        localRecipe.toggleFavorite()
+                        viewModel.onFavoriteLocalRecipe(
+                            mainVieModel.user.requireValue(),
+                            localRecipe
+                        ) { currentLocalRecipe ->
+                            setFavouriteIcon(currentLocalRecipe, item)
+                        }
+
                         true
                     }
                     R.id.deleteRecipe -> {
@@ -149,7 +141,10 @@ class RecipeDetailFragment : BaseFragment() {
                         true
                     }
                     R.id.editRecipe -> {
-                        viewModel.onEditRecipe(localRecipe)
+                        viewModel.onEditRecipe(
+                            localRecipe,
+                            getString(R.string.editing_recipe, localRecipe.name)
+                        )
                         true
                     }
                     else -> false
@@ -167,7 +162,11 @@ class RecipeDetailFragment : BaseFragment() {
             ) { item ->
                 when (item.itemId) {
                     R.id.favorite -> {
-                        viewModel.onFavoriteRecipe(remoteRecipe.recipeId, remoteRecipe.favorite)
+                        viewModel.onFavoriteRemoteRecipe(
+                            mainVieModel.user.requireValue(),
+                            remoteRecipe.recipeId,
+                            remoteRecipe.favorite
+                        )
                         setFavouriteIcon(remoteRecipe, item)
                         remoteRecipe.toggleFavorite()
                         true
@@ -183,8 +182,8 @@ class RecipeDetailFragment : BaseFragment() {
         item: MenuItem,
     ) {
         when (recipe.favorite) {
-            true -> item.setIcon(R.drawable.ic_not_favorite)
-            false -> item.setIcon(R.drawable.ic_favourite)
+            true -> item.setIcon(R.drawable.ic_favourite)
+            false -> item.setIcon(R.drawable.ic_not_favorite)
         }
     }
 

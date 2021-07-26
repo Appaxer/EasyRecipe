@@ -26,7 +26,13 @@ class FavoriteLocalRecipeImpl @Inject constructor(
 ) : FavoriteLocalRecipe {
 
     override suspend fun execute(request: FavoriteLocalRecipe.Request) = runUseCase {
-        recipeRepository.favoriteLocalRecipe(request.recipeId, request.isFavorite)
+        recipeRepository.favoriteLocalRecipe(
+            request.localRecipe.recipeId,
+            request.localRecipe.favorite,
+            request.user.uid
+        )
+        request.localRecipe.toggleFavorite()
+
         FavoriteLocalRecipe.Response()
     }
 }

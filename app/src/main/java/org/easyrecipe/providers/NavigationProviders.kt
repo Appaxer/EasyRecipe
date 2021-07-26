@@ -27,6 +27,8 @@ import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigation
 import org.easyrecipe.features.createrecipe.navigation.CreateRecipeNavigationImpl
 import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.features.favorites.navigation.FavoriteNavigationImpl
+import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigation
+import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigationImpl
 import org.easyrecipe.features.recipes.navigation.RecipesNavigation
 import org.easyrecipe.features.recipes.navigation.RecipesNavigationImpl
 import org.easyrecipe.features.search.navigation.SearchNavigation
@@ -54,4 +56,8 @@ class NavigationProviders {
     @Provides
     @Singleton
     fun provideCreateRecipeNavigation(): CreateRecipeNavigation = CreateRecipeNavigationImpl()
+
+    @Provides
+    @Singleton
+    fun provideRecipeDetailNavigation(): RecipeDetailNavigation = RecipeDetailNavigationImpl()
 }

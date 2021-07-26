@@ -33,6 +33,7 @@ import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
+import org.easyrecipe.usecases.getuserfavoriterecipes.GetUserFavoriteRecipes
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -78,9 +79,6 @@ class FavoriteViewModelTest {
     )
 
     @MockK
-    private lateinit var getFavoriteRecipes: GetFavoriteRecipes
-
-    @MockK
     private lateinit var navManager: NavManager
 
     @MockK
@@ -92,6 +90,12 @@ class FavoriteViewModelTest {
     @MockK
     private lateinit var dialogManager: DialogManager
 
+    @MockK
+    private lateinit var getFavoriteRecipes: GetFavoriteRecipes
+
+    @MockK
+    private lateinit var getUserFavoriteRecipes: GetUserFavoriteRecipes
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -100,8 +104,6 @@ class FavoriteViewModelTest {
 
     @Before
     fun setUp() {
-        getFavoriteRecipes = mockk()
-
         navManager = mockk()
         every { navManager.navigate(any(), any()) } returns Unit
 
@@ -113,8 +115,16 @@ class FavoriteViewModelTest {
         every { dialogManager.showLoadingDialog() } returns Unit
         every { dialogManager.cancelLoadingDialog() } returns Unit
 
-        viewModel =
-            FavoriteViewModel(getFavoriteRecipes, navManager, favoriteNavigation, dialogManager)
+        getFavoriteRecipes = mockk()
+        getUserFavoriteRecipes = mockk()
+
+        viewModel = FavoriteViewModel(
+            navManager,
+            favoriteNavigation,
+            dialogManager,
+            getFavoriteRecipes,
+            getUserFavoriteRecipes
+        )
 
         recipes.forEach { recipe -> recipe.toggleFavorite() }
     }

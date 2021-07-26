@@ -396,20 +396,34 @@ class LocalDataSourceImplTest {
                 userDao.updateFavoriteLocalRecipe(any(), any())
             } throws Exception()
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite local recipe there is user error then it is set as favorite`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
         }
 
     @Test
     fun `when adding favorite local recipe there is no error then it is set as favorite`() =
         runBlockingTest {
             coEvery {
-                userDao.updateFavoriteLocalRecipe(any(), any())
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
 
             coVerify {
-                userDao.updateFavoriteLocalRecipe(recipeId, 1)
+                userDao.updateUserFavoriteLocalRecipe(userId, recipeId, any())
             }
         }
 
@@ -420,20 +434,34 @@ class LocalDataSourceImplTest {
                 userDao.updateFavoriteLocalRecipe(any(), any())
             } throws Exception()
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite local recipe there is user error then it is set as not favorite`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws CommonException.OtherError("Other error")
+
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
         }
 
     @Test
     fun `when removing favorite local recipe there is no error then it is set as not favorite`() =
         runBlockingTest {
             coEvery {
-                userDao.updateFavoriteLocalRecipe(any(), any())
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
 
             coVerify {
-                userDao.updateFavoriteLocalRecipe(recipeId, 0)
+                userDao.updateUserFavoriteLocalRecipe(userId, recipeId, any())
             }
         }
 

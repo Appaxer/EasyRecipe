@@ -176,11 +176,11 @@ class MockLocalDataSource : LocalDataSource {
         favoriteRemoteRecipes.remove(recipeId)
     }
 
-    override suspend fun addFavoriteLocalRecipe(recipeId: Long) {
+    override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String) {
         recipesData.find { it.recipeId == recipeId }?.toggleFavorite()
     }
 
-    override suspend fun removeFavoriteLocalRecipe(recipeId: Long) {
+    override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String) {
         recipesData.find { it.recipeId == recipeId }?.toggleFavorite()
     }
 
