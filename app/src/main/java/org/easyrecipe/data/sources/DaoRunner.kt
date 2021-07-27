@@ -17,7 +17,6 @@
 
 package org.easyrecipe.data.sources
 
-import android.database.SQLException
 import org.easyrecipe.common.CommonException
 
 /**
@@ -30,8 +29,6 @@ import org.easyrecipe.common.CommonException
  */
 suspend fun <T> runDao(onExecuteDao: suspend () -> T): T = try {
     onExecuteDao()
-} catch (e: SQLException) {
-    throw CommonException.OtherError("SQL Error: ${e.stackTraceToString()}")
 } catch (e: Exception) {
-    throw CommonException.OtherError("Dao error: ${e.stackTraceToString()}")
+    throw CommonException.OtherError(e.stackTraceToString())
 }

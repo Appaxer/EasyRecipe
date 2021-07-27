@@ -130,13 +130,13 @@ class LocalDataSourceImpl @Inject constructor(
     override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String): Unit = runDao {
         getUser(uid)?.let { userEntity ->
             userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 1)
-        }
+        } ?: throw Exception("User with uid = $uid not existing")
     }
 
     override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String): Unit = runDao {
         getUser(uid)?.let { userEntity ->
             userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 0)
-        }
+        } ?: throw Exception("User with uid = $uid not existing")
     }
 
     override suspend fun getFavoriteRecipes(): List<Recipe> = runDao {
@@ -144,10 +144,8 @@ class LocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getOrCreateUser(uid: String): User = runDao {
-        uid.toUid()?.let { currentUid ->
-            userDao.getUserByUid(currentUid)?.let { userEntity ->
-                User.fromEntity(userEntity, uid)
-            }
+        getUser(uid)?.let { user ->
+            User.fromEntity(user, uid)
         } ?: createUser(uid)
     }
 
@@ -185,12 +183,11 @@ class LocalDataSourceImpl @Inject constructor(
     }
 
     private suspend fun updateUser(uid: String, lastUpdate: Long): UserEntity? = runDao {
-        val user = getUser(uid)
-        user?.let { currentUser ->
+        getUser(uid)?.let { currentUser ->
             currentUser.lastUpdate = lastUpdate
             userDao.updateUser(currentUser)
+            currentUser
         }
-        user
     }
 
     private suspend fun parseLocalRecipeList(

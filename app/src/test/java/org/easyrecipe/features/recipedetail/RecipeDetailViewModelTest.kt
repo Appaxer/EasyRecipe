@@ -25,15 +25,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.easyrecipe.MainCoroutineRule
-import org.easyrecipe.await
+import org.easyrecipe.*
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigation
-import org.easyrecipe.getOrAwaitValue
-import org.easyrecipe.isTrue
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
 import org.easyrecipe.model.User
@@ -57,8 +54,10 @@ class RecipeDetailViewModelTest {
     private val lastUpdate = 0L
     private val user = User(uid, lastUpdate)
 
+    private val recipeName = "Fish and chips"
+
     private val localRecipe = LocalRecipe(
-        name = "Fish and chips",
+        name = recipeName,
         description = "Delicious",
         type = listOf(RecipeType.Hot, RecipeType.Fish),
         time = 10,
@@ -67,6 +66,9 @@ class RecipeDetailViewModelTest {
     ).also { recipe ->
         recipe.setFavorite(isFavorite)
     }
+
+    private val screenTitle: String
+        get() = "Editing $recipeName"
 
     @MockK
     private lateinit var navManager: NavManager
@@ -123,6 +125,11 @@ class RecipeDetailViewModelTest {
     }
 
     @Test
+    fun `when checking if local recipe is favorite then the default value is false`() {
+        assertThat(viewModel.isLocalRecipeFavorite, isFalse())
+    }
+
+    @Test
     fun `when deleting the recipe there is an error then OtherError is shown`() {
         coEvery {
             deleteRecipe.execute(any())
@@ -147,6 +154,16 @@ class RecipeDetailViewModelTest {
         await(4)
         verify {
             navManager.navigateUp(any())
+        }
+    }
+
+    @Test
+    fun `when editing recipe then we navigate to create recipe`() {
+        viewModel.onEditRecipe(localRecipe, screenTitle)
+
+        verify {
+            recipeDetailNavigation.navigateToCreateRecipe(localRecipe, screenTitle)
+            navManager.navigate(any(), navDirections)
         }
     }
 
