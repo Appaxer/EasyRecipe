@@ -113,6 +113,29 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         }
     }
 
+    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String) {
+        updateRecipeFavorite(name, uid, false)
+    }
+
+    override suspend fun addFavoriteLocalRecipe(name: String, uid: String) {
+        updateRecipeFavorite(name, uid, true)
+    }
+
+    private suspend fun updateRecipeFavorite(name: String, uid: String, isFavorite: Boolean) {
+        val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(userTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.recipes.find { recipe -> recipe.name == name }?.let { firebaseRecipe ->
+                    firebaseRecipe.favorite = isFavorite
+
+                    val updateTask = firestore.collection(COLLECTION_USERS).document(uid)
+                        .set(firebaseUser)
+                    runFirebaseTask(updateTask)
+                }
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
+        }
+    }
+
     private suspend fun <I> runFirebaseTask(
         task: Task<I>,
         skipExceptions: List<Exception> = emptyList(),
@@ -166,6 +189,7 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                     }
 
                     localRecipe.setSteps(steps)
+                    localRecipe.setFavorite(favorite)
                 }
             }
         }
@@ -183,7 +207,8 @@ class RemoteDataBaseDaoImpl @Inject constructor(
             image = imageLocation,
             description = description,
             ingredients = ingredients.mapKeys { entry -> entry.key.name },
-            steps = steps
+            steps = steps,
+            favorite = favorite
         )
 
     companion object {

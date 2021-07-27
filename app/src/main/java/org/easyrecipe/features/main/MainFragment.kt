@@ -57,7 +57,7 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
 
-        viewModel.onGetCurrentUser("1")
+        viewModel.onGetCurrentUser("2") // This value should be changed for each new user
     }
 
     private fun FragmentMainBinding.bind() {

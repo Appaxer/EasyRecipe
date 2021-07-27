@@ -53,7 +53,7 @@ interface RecipeRepository {
 
     suspend fun favoriteRemoteRecipe(recipeId: String, isFavorite: Boolean)
 
-    suspend fun favoriteLocalRecipe(recipeId: Long, isFavorite: Boolean, uid: String = "")
+    suspend fun favoriteLocalRecipe(localRecipe: LocalRecipe, uid: String = "")
 
     suspend fun getFavoriteRecipes(): List<Recipe>
 
