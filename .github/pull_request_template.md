@@ -20,9 +20,17 @@ Explain how you have solved the problem (if it is not straight-forward)
 
 ## Type of change *
 - [ ] New feature (enhancement)
+- [ ] New feature (enhancement) causing some functionalities to stop working
 - [ ] Bug fix
 - [ ] Documentation update  
 - [ ] Other (build scripts, metadata, assets, etc.)
+
+### Affected functionalities
+If there are some functionalities that will stop working, add them here explaining why they will fail and the issues that will fix them. You should use the following format:
+
+- Feature description: Why it will stop working
+    - Issue 1
+    - Issue 2
 
 
 ## Checklist *
