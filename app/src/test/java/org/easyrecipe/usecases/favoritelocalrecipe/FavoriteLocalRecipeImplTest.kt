@@ -70,7 +70,7 @@ class FavoriteLocalRecipeImplTest {
     @Test
     fun `when there is an unexpected error then the use case fails`() = runBlockingTest {
         coEvery {
-            recipeRepository.favoriteLocalRecipe(any(), any(), "")
+            recipeRepository.favoriteLocalRecipe(any(), any())
         } throws Exception()
 
         val result = favoriteLocalRecipeImpl.execute(request)
@@ -83,7 +83,7 @@ class FavoriteLocalRecipeImplTest {
     @Test
     fun `when there is no error then the use case succeed`() = runBlockingTest {
         coEvery {
-            recipeRepository.favoriteLocalRecipe(any(), any(), any())
+            recipeRepository.favoriteLocalRecipe(any(), any())
         } returns Unit
 
         val result = favoriteLocalRecipeImpl.execute(request)
