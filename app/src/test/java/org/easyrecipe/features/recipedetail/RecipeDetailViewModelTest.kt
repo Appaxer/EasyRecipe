@@ -151,7 +151,7 @@ class RecipeDetailViewModelTest {
 
         viewModel.onDeleteRecipe(recipeId)
 
-        await(4)
+        await(10)
         verify {
             navManager.navigateUp(any())
         }
