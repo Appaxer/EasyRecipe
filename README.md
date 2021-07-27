@@ -22,11 +22,17 @@
 This is an Android app where you can store all your recipes and take them with you anywhere. It also allows you to search for hundreds of recipes thanks to [Edamam's Recipe API](https://developer.edamam.com/edamam-docs-recipe-api).
 
 ## Building
+### Edamam API key
 You need to add the following lines to your `local.properties` file:
 ```gradle
 edamam.appId=YOUR_EDAMAM_APP_ID
 edamam.apiKey=YOUR_EDAMAM_APP_KEY
 ```
+
+### Firebase
+You need to set up a firebase project and add the *google-services.json* file to the *app* folder. You should enable at least the following services:
+- Authentication: email/password and google sign in
+- Firestore Database
 
 ## Download the app
 
