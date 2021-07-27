@@ -17,13 +17,11 @@
 
 package org.easyrecipe.data.dao
 
-import com.google.android.gms.tasks.Task
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.data.firebase.FirebaseRecipe
 import org.easyrecipe.data.firebase.FirebaseUser
+import org.easyrecipe.data.firebase.runFirebaseTask
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
@@ -134,44 +132,6 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                 }
             } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
         }
-    }
-
-    private suspend fun <I> runFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception> = emptyList(),
-    ) {
-        executeFirebaseTask(task, skipExceptions)
-    }
-
-    private suspend fun <I, O> runFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception> = emptyList(),
-        onSuccess: suspend (I?) -> O,
-    ): O {
-        val currentTask = executeFirebaseTask(task, skipExceptions)
-        return onSuccess(currentTask.result)
-    }
-
-    private suspend fun <I> executeFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception>,
-    ): Task<I> {
-        try {
-            task.await()
-        } catch (e: Exception) {
-            // The exception should be ignored
-        }
-
-        if (!task.isSuccessful) {
-            throw when (task.exception) {
-                null -> CommonException.OtherError("Firebase error")
-                in skipExceptions -> task.exception!!
-                is FirebaseNetworkException -> CommonException.NoInternetException
-                else -> CommonException.OtherError(task.exception!!.stackTraceToString())
-            }
-        }
-
-        return task
     }
 
     private fun List<FirebaseRecipe>.toLocalRecipes(): List<LocalRecipe> =
