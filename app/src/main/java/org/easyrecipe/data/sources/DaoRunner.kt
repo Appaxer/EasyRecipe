@@ -15,23 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.favoritelocalrecipe
+package org.easyrecipe.data.sources
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import org.easyrecipe.common.CommonException
 
-class FavoriteLocalRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : FavoriteLocalRecipe {
-
-    override suspend fun execute(request: FavoriteLocalRecipe.Request) = runUseCase {
-        recipeRepository.favoriteLocalRecipe(
-            request.localRecipe,
-            request.user.uid
-        )
-        request.localRecipe.toggleFavorite()
-
-        FavoriteLocalRecipe.Response()
-    }
+/**
+ * Executes a dao method
+ *
+ * @param T The return type of dao method
+ * @param onExecuteDao The execution of the dao method
+ * @return The result of the dao method
+ * @throws CommonException.OtherError if there is any error
+ */
+suspend fun <T> runDao(onExecuteDao: suspend () -> T): T = try {
+    onExecuteDao()
+} catch (e: Exception) {
+    throw CommonException.OtherError(e.stackTraceToString())
 }

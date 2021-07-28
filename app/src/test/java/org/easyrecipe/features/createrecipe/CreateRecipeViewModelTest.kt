@@ -392,8 +392,9 @@ class CreateRecipeViewModelTest {
 
     @Test
     fun `when createRecipe is executed and there is no error then we navigate up`() {
-        coEvery { createRecipe.execute(any()) } returns
-            UseCaseResult.Success(CreateRecipe.Response())
+        coEvery {
+            createRecipe.execute(any())
+        } returns UseCaseResult.Success(CreateRecipe.Response())
 
         viewModel.name.value = recipeName
         viewModel.description.value = recipeDescription
@@ -411,6 +412,7 @@ class CreateRecipeViewModelTest {
 
         viewModel.onCreateRecipe(user)
 
+        await(10)
         verify {
             navManager.navigateUp(any())
         }

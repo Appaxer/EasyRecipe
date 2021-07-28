@@ -119,10 +119,16 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun favoriteLocalRecipe(recipeId: Long, isFavorite: Boolean) {
-        when (isFavorite) {
-            true -> localDataSource.removeFavoriteLocalRecipe(recipeId)
-            false -> localDataSource.addFavoriteLocalRecipe(recipeId)
+    override suspend fun favoriteLocalRecipe(localRecipe: LocalRecipe, uid: String) {
+        when (localRecipe.favorite) {
+            true -> {
+                localDataSource.removeFavoriteLocalRecipe(localRecipe.recipeId, uid)
+                remoteDataSource.removeFavoriteLocalRecipe(localRecipe.name, uid)
+            }
+            false -> {
+                localDataSource.addFavoriteLocalRecipe(localRecipe.recipeId, uid)
+                remoteDataSource.addFavoriteLocalRecipe(localRecipe.name, uid)
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +32,7 @@ import org.easyrecipe.common.extensions.observeList
 import org.easyrecipe.common.extensions.observeText
 import org.easyrecipe.common.extensions.observeVisibility
 import org.easyrecipe.databinding.FragmentFavoriteBinding
+import org.easyrecipe.features.main.MainViewModel
 
 @AndroidEntryPoint
 class FavoriteFragment : BaseFragment() {
@@ -38,6 +40,7 @@ class FavoriteFragment : BaseFragment() {
     private lateinit var adapter: RecipeAdapter
 
     override val viewModel: FavoriteViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,8 +60,7 @@ class FavoriteFragment : BaseFragment() {
             }
             binding.bind()
             viewModel.setUpObservers()
-
-            viewModel.onGetFavoriteRecipes()
+            mainViewModel.setUpObservers()
         }
     }
 
@@ -78,6 +80,12 @@ class FavoriteFragment : BaseFragment() {
         recipesDisplayed.observe(viewLifecycleOwner) {
             (binding.recipesRecyclerView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(0, 0)
+        }
+    }
+
+    private fun MainViewModel.setUpObservers() {
+        user.observe(viewLifecycleOwner) { user ->
+            viewModel.onGetFavoriteRecipes(user)
         }
     }
 }

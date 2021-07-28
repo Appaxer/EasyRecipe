@@ -35,7 +35,7 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class RecipeRepositoryImplTest {
-    private lateinit var recipeRepository: RecipeRepository
+    private lateinit var recipeRepositoryImpl: RecipeRepositoryImpl
 
     private val uid = "1"
     private val lastUpdate = 0L
@@ -90,15 +90,7 @@ class RecipeRepositoryImplTest {
     private val localFavorites = recipes.take(3)
     private val remoteFavorites = recipes.takeLast(2)
 
-    private val localRecipe = LocalRecipe(
-        name = recipeName,
-        description = recipeDescription,
-        time = recipeTime,
-        type = recipeTypes,
-        image = recipeImage
-    ).also {
-        it.setSteps(recipeSteps)
-    }
+    private lateinit var localRecipe: LocalRecipe
 
     private val ingredientEntityList = listOf(
         Ingredient("Fish"),
@@ -133,37 +125,58 @@ class RecipeRepositoryImplTest {
     fun setUp() {
         localDataSource = mockk()
         remoteDataSource = mockk()
-        recipeRepository = RecipeRepositoryImpl(localDataSource, remoteDataSource)
+        recipeRepositoryImpl = RecipeRepositoryImpl(localDataSource, remoteDataSource)
+
+        localRecipe = LocalRecipe(
+            name = recipeName,
+            description = recipeDescription,
+            time = recipeTime,
+            type = recipeTypes,
+            image = recipeImage
+        ).also { recipe ->
+            recipe.setSteps(recipeSteps)
+        }
     }
 
     @Test(expected = CommonException.OtherError::class)
-    fun `when there is an unexpected error then OtherError state is loaded`() = runBlockingTest {
-        coEvery { localDataSource.getAllRecipes() } throws CommonException.OtherError(msg)
-        recipeRepository.getAllLocalRecipes()
-    }
+    fun `when there is an unexpected error then OtherError state is loaded`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRecipes()
+            } throws CommonException.OtherError(msg)
+
+            recipeRepositoryImpl.getAllLocalRecipes()
+        }
 
     @Test
     fun `when the recipes are found in the database then the recipe list is returned`() =
         runBlockingTest {
-            coEvery { localDataSource.getAllRecipes() } returns recipes
+            coEvery {
+                localDataSource.getAllRecipes()
+            } returns recipes
 
-            val recipeList = recipeRepository.getAllLocalRecipes()
+            val recipeList = recipeRepositoryImpl.getAllLocalRecipes()
             assertThat(recipeList, `is`(recipes))
         }
 
     @Test(expected = Exception::class)
     fun `when getting all ingredients there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.getAllIngredients() } throws Exception(msg)
-            recipeRepository.getAllIngredients()
+            coEvery {
+                localDataSource.getAllIngredients()
+            } throws Exception(msg)
+
+            recipeRepositoryImpl.getAllIngredients()
         }
 
     @Test
     fun `when getting all ingredients there is no error then a list of ingredients is returned`() =
         runBlockingTest {
-            coEvery { localDataSource.getAllIngredients() } returns ingredientEntityList
+            coEvery {
+                localDataSource.getAllIngredients()
+            } returns ingredientEntityList
 
-            val result = recipeRepository.getAllIngredients()
+            val result = recipeRepositoryImpl.getAllIngredients()
             assertThat(result.size, isEqualTo(ingredientEntityList.size))
         }
 
@@ -180,7 +193,8 @@ class RecipeRepositoryImplTest {
                     any(),
                     any())
             } throws Exception(msg)
-            recipeRepository.createRecipe(
+
+            recipeRepositoryImpl.createRecipe(
                 recipeName,
                 recipeDescription,
                 recipeTime,
@@ -196,23 +210,27 @@ class RecipeRepositoryImplTest {
     fun `when creating a recipe there is no error then the recipe is created`() =
         runBlockingTest {
             coEvery {
-                localDataSource.insertRecipe(any(),
+                localDataSource.insertRecipe(
                     any(),
                     any(),
                     any(),
                     any(),
                     any(),
                     any(),
-                    any())
+                    any(),
+                    any()
+                )
             } returns localRecipe
 
-            coEvery { remoteDataSource.insertRecipe(any(), any(), any()) } returns Unit
+            coEvery {
+                remoteDataSource.insertRecipe(any(), any(), any())
+            } returns Unit
 
             coEvery {
                 localDataSource.addIngredients(any(), any())
             } returns Unit
 
-            recipeRepository.createRecipe(
+            recipeRepositoryImpl.createRecipe(
                 recipeName,
                 recipeDescription,
                 recipeTime,
@@ -231,45 +249,65 @@ class RecipeRepositoryImplTest {
     @Test(expected = CommonException.NoInternetException::class)
     fun `when there is no internet connection it should throw NoInternetConnectionException`() =
         runBlockingTest {
-            coEvery { localDataSource.getAllRemoteFavorites() } returns favoriteRemoteRecipes
+            coEvery {
+                localDataSource.getAllRemoteFavorites()
+            } returns favoriteRemoteRecipes
+
             coEvery {
                 remoteDataSource.getRecipes(recipeName, mealType)
             } throws CommonException.NoInternetException
-            recipeRepository.getRemoteRecipes(recipeName, mealType)
+
+            recipeRepositoryImpl.getRemoteRecipes(recipeName, mealType)
         }
 
     @Test(expected = CommonException.OtherError::class)
-    fun `when there is an unexpected error it should throw OtherError`() = runBlockingTest {
-        coEvery {
-            localDataSource.getAllRemoteFavorites()
-        } throws CommonException.OtherError(msg)
-        coEvery {
-            remoteDataSource.getRecipes(recipeName, mealType)
-        } throws CommonException.OtherError(msg)
-        recipeRepository.getRemoteRecipes(recipeName, mealType)
-    }
+    fun `when there is an unexpected error it should throw OtherError`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRemoteFavorites()
+            } throws CommonException.OtherError(msg)
+
+            coEvery {
+                remoteDataSource.getRecipes(recipeName, mealType)
+            } throws CommonException.OtherError(msg)
+
+            recipeRepositoryImpl.getRemoteRecipes(recipeName, mealType)
+        }
 
     @Test
-    fun `when there is no error then it should return a list of recipes`() = runBlockingTest {
-        coEvery { localDataSource.getAllRemoteFavorites() } returns favoriteRemoteRecipes
-        coEvery { remoteDataSource.getRecipes(recipeName, mealType) } returns remoteRecipes
-        val result = recipeRepository.getRemoteRecipes(recipeName, mealType)
+    fun `when there is no error then it should return a list of recipes`() =
+        runBlockingTest {
+            coEvery {
+                localDataSource.getAllRemoteFavorites()
+            } returns favoriteRemoteRecipes
 
-        assertThat(result, isEqualTo(favoriteRemoteRecipeList))
-    }
+            coEvery {
+                remoteDataSource.getRecipes(recipeName, mealType)
+            } returns remoteRecipes
+
+            val result = recipeRepositoryImpl.getRemoteRecipes(recipeName, mealType)
+
+            assertThat(result, isEqualTo(favoriteRemoteRecipeList))
+        }
 
     @Test(expected = Exception::class)
     fun `when deleting the recipe there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.deleteRecipe(any()) } throws Exception()
-            recipeRepository.deleteRecipe(recipeId)
+            coEvery {
+                localDataSource.deleteRecipe(any())
+            } throws Exception()
+
+            recipeRepositoryImpl.deleteRecipe(recipeId)
         }
 
     @Test
     fun `when deleting the recipe there is no error then the delete recipe method is called`() =
         runBlockingTest {
-            coEvery { localDataSource.deleteRecipe(any()) } returns Unit
-            recipeRepository.deleteRecipe(recipeId)
+            coEvery {
+                localDataSource.deleteRecipe(any())
+            } returns Unit
+
+            recipeRepositoryImpl.deleteRecipe(recipeId)
 
             coVerify {
                 localDataSource.deleteRecipe(any())
@@ -291,7 +329,7 @@ class RecipeRepositoryImplTest {
                     any())
             } throws Exception()
 
-            recipeRepository.updateRecipe(
+            recipeRepositoryImpl.updateRecipe(
                 recipeId,
                 recipeName,
                 recipeDescription,
@@ -331,7 +369,7 @@ class RecipeRepositoryImplTest {
                 remoteDataSource.updateRecipe(any(), any(), any(), any())
             } returns Unit
 
-            recipeRepository.updateRecipe(
+            recipeRepositoryImpl.updateRecipe(
                 recipeId,
                 recipeName,
                 recipeDescription,
@@ -364,7 +402,7 @@ class RecipeRepositoryImplTest {
                 localDataSource.getRecipeById(any())
             } throws Exception()
 
-            recipeRepository.getRecipeById(recipeId)
+            recipeRepositoryImpl.getRecipeById(recipeId)
         }
 
     @Test
@@ -374,32 +412,50 @@ class RecipeRepositoryImplTest {
                 localDataSource.getRecipeById(any())
             } returns localRecipe
 
-            val result = recipeRepository.getRecipeById(recipeId)
+            val result = recipeRepositoryImpl.getRecipeById(recipeId)
             assertThat(result.recipeId, isEqualTo(localRecipe.recipeId))
         }
 
     @Test(expected = Exception::class)
     fun `when adding a favorite recipe and there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteRemoteRecipe(any()) } throws Exception()
-            coEvery { localDataSource.removeFavoriteRemoteRecipe(any()) } throws Exception()
-            recipeRepository.favoriteRemoteRecipe(remoteRecipeId, true)
+            coEvery {
+                localDataSource.addFavoriteRemoteRecipe(any())
+            } throws Exception()
+
+            coEvery {
+                localDataSource.removeFavoriteRemoteRecipe(any())
+            } throws Exception()
+
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, true)
         }
 
     @Test(expected = Exception::class)
     fun `when removing a favorite recipe and there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteRemoteRecipe(any()) } throws Exception()
-            coEvery { localDataSource.removeFavoriteRemoteRecipe(any()) } throws Exception()
-            recipeRepository.favoriteRemoteRecipe(remoteRecipeId, false)
+            coEvery {
+                localDataSource.addFavoriteRemoteRecipe(any())
+            } throws Exception()
+
+            coEvery {
+                localDataSource.removeFavoriteRemoteRecipe(any())
+            } throws Exception()
+
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, false)
         }
 
     @Test
     fun `when adding favorite remote recipe there is no error then addFavoriteRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteRemoteRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteRemoteRecipe(any()) } returns Unit
-            recipeRepository.favoriteRemoteRecipe(remoteRecipeId, false)
+            coEvery {
+                localDataSource.addFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                localDataSource.removeFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, false)
 
             coVerify {
                 localDataSource.addFavoriteRemoteRecipe(remoteRecipeId)
@@ -409,9 +465,15 @@ class RecipeRepositoryImplTest {
     @Test
     fun `when removing favorite recipe there is no error then removeFavoriteRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteRemoteRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteRemoteRecipe(any()) } returns Unit
-            recipeRepository.favoriteRemoteRecipe(remoteRecipeId, true)
+            coEvery {
+                localDataSource.addFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                localDataSource.removeFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, true)
 
             coVerify {
                 localDataSource.removeFavoriteRemoteRecipe(remoteRecipeId)
@@ -421,69 +483,137 @@ class RecipeRepositoryImplTest {
     @Test(expected = Exception::class)
     fun `when favorite local recipe there is an unexpected error then exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } throws Exception()
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } throws Exception()
-            recipeRepository.favoriteLocalRecipe(recipeId, false)
+            coEvery {
+                localDataSource.addFavoriteLocalRecipe(any(), any())
+            } throws Exception()
+
+            coEvery {
+                localDataSource.removeFavoriteLocalRecipe(any(), any())
+            } throws Exception()
+
+            coEvery {
+                remoteDataSource.addFavoriteLocalRecipe(any(), any())
+            } throws Exception()
+
+            coEvery {
+                remoteDataSource.removeFavoriteLocalRecipe(any(), any())
+            } throws Exception()
+
+
+            recipeRepositoryImpl.favoriteLocalRecipe(localRecipe, uid)
         }
 
     @Test
     fun `when adding favorite local recipe then addFavoriteLocalRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } returns Unit
-            recipeRepository.favoriteLocalRecipe(recipeId, false)
+            coEvery {
+                localDataSource.addFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                localDataSource.removeFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                remoteDataSource.addFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                remoteDataSource.removeFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+
+            recipeRepositoryImpl.favoriteLocalRecipe(localRecipe, uid)
 
             coVerify {
-                localDataSource.addFavoriteLocalRecipe(recipeId)
+                localDataSource.addFavoriteLocalRecipe(any(), uid)
+                remoteDataSource.addFavoriteLocalRecipe(any(), uid)
             }
 
             coVerify(exactly = 0) {
-                localDataSource.removeFavoriteLocalRecipe(any())
+                localDataSource.removeFavoriteLocalRecipe(any(), uid)
+                remoteDataSource.removeFavoriteLocalRecipe(any(), uid)
             }
         }
 
     @Test
     fun `when removing favorite local recipe then removeFavoriteLocalRecipe is called`() =
         runBlockingTest {
-            coEvery { localDataSource.addFavoriteLocalRecipe(any()) } returns Unit
-            coEvery { localDataSource.removeFavoriteLocalRecipe(any()) } returns Unit
-            recipeRepository.favoriteLocalRecipe(recipeId, true)
+            coEvery {
+                localDataSource.addFavoriteLocalRecipe(any(), uid)
+            } returns Unit
+
+            coEvery {
+                localDataSource.removeFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                remoteDataSource.addFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                remoteDataSource.removeFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+
+            localRecipe.setFavorite(true)
+            recipeRepositoryImpl.favoriteLocalRecipe(localRecipe, uid)
 
             coVerify {
-                localDataSource.removeFavoriteLocalRecipe(any())
+                localDataSource.removeFavoriteLocalRecipe(any(), uid)
+                remoteDataSource.removeFavoriteLocalRecipe(recipeName, uid)
             }
 
             coVerify(exactly = 0) {
-                localDataSource.addFavoriteLocalRecipe(recipeId)
+                localDataSource.addFavoriteLocalRecipe(recipeId, uid)
+                remoteDataSource.addFavoriteLocalRecipe(recipeName, uid)
             }
         }
 
     @Test(expected = Exception::class)
     fun `when getting local favorites recipes there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.getFavoriteRecipes() } throws Exception()
-            coEvery { remoteDataSource.getFavoriteRecipes(any()) } returns emptyList()
+            coEvery {
+                localDataSource.getFavoriteRecipes()
+            } throws Exception()
 
-            recipeRepository.getFavoriteRecipes()
+            coEvery {
+                remoteDataSource.getFavoriteRecipes(any())
+            } returns emptyList()
+
+            recipeRepositoryImpl.getFavoriteRecipes()
         }
 
     @Test(expected = Exception::class)
     fun `when getting remote favorites recipes there is an error then an exception is thrown`() =
         runBlockingTest {
-            coEvery { localDataSource.getFavoriteRecipes() } returns emptyList()
-            coEvery { remoteDataSource.getFavoriteRecipes(any()) } throws Exception()
+            coEvery {
+                localDataSource.getFavoriteRecipes()
+            } returns emptyList()
 
-            recipeRepository.getFavoriteRecipes()
+            coEvery {
+                remoteDataSource.getFavoriteRecipes(any())
+            } throws Exception()
+
+            recipeRepositoryImpl.getFavoriteRecipes()
         }
 
     @Test
     fun `when there are no error then the list of favorites recipes is returned`() =
         runBlockingTest {
-            coEvery { localDataSource.getFavoriteRecipes() } returns localFavorites
-            coEvery { localDataSource.getAllRemoteFavorites() } returns favoriteRemoteRecipes
-            coEvery { remoteDataSource.getFavoriteRecipes(any()) } returns remoteFavorites
+            coEvery {
+                localDataSource.getFavoriteRecipes()
+            } returns localFavorites
 
-            val recipes = recipeRepository.getFavoriteRecipes()
+            coEvery {
+                localDataSource.getAllRemoteFavorites()
+            } returns favoriteRemoteRecipes
+
+            coEvery {
+                remoteDataSource.getFavoriteRecipes(any())
+            } returns remoteFavorites
+
+            val recipes = recipeRepositoryImpl.getFavoriteRecipes()
             assertThat(recipes, isEqualTo(localFavorites.union(remoteFavorites).toList()))
         }
 
@@ -494,7 +624,7 @@ class RecipeRepositoryImplTest {
                 localDataSource.getAllRecipesFromUser(any())
             } throws CommonException.OtherError("Other error")
 
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test(expected = CommonException.NoInternetException::class)
@@ -508,7 +638,7 @@ class RecipeRepositoryImplTest {
                 remoteDataSource.getUser(any())
             } throws CommonException.NoInternetException
 
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -522,7 +652,7 @@ class RecipeRepositoryImplTest {
                 remoteDataSource.getUser(any())
             } throws CommonException.OtherError("Other error")
 
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test(expected = CommonException.NoInternetException::class)
@@ -541,7 +671,7 @@ class RecipeRepositoryImplTest {
             } throws CommonException.NoInternetException
 
             localUser.lastUpdate = newLastUpdate
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -560,7 +690,7 @@ class RecipeRepositoryImplTest {
             } throws CommonException.OtherError("Other error")
 
             localUser.lastUpdate = newLastUpdate
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test
@@ -580,7 +710,7 @@ class RecipeRepositoryImplTest {
 
             localUser.lastUpdate = newLastUpdate
 
-            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            val result = recipeRepositoryImpl.getAllRecipesFromUser(localUser)
             assertThat(result, isEqualTo(recipes))
 
             coVerify {
@@ -604,7 +734,7 @@ class RecipeRepositoryImplTest {
             } throws CommonException.OtherError("Other error")
 
             remoteUser.lastUpdate = newLastUpdate
-            recipeRepository.getAllRecipesFromUser(localUser)
+            recipeRepositoryImpl.getAllRecipesFromUser(localUser)
         }
 
     @Test
@@ -625,7 +755,7 @@ class RecipeRepositoryImplTest {
             remoteUser.lastUpdate = newLastUpdate
             remoteUser.addRecipes(recipes)
 
-            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            val result = recipeRepositoryImpl.getAllRecipesFromUser(localUser)
             assertThat(result, isEqualTo(recipes))
 
             coVerify {
@@ -648,7 +778,7 @@ class RecipeRepositoryImplTest {
                 localDataSource.addRemoteDatabaseRecipesToUser(any(), any(), any())
             } returns Unit
 
-            val result = recipeRepository.getAllRecipesFromUser(localUser)
+            val result = recipeRepositoryImpl.getAllRecipesFromUser(localUser)
             assertThat(result, isEqualTo(recipes))
 
             coVerify(exactly = 0) {

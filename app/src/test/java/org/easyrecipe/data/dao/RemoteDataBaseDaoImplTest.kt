@@ -45,14 +45,6 @@ import org.junit.Test
 class RemoteDataBaseDaoImplTest {
     private lateinit var remoteDataBaseDaoImpl: RemoteDataBaseDaoImpl
 
-    private val uid = "1"
-    private val lastUpdate = 1L
-    private val firebaseUser = FirebaseUser(
-        recipes = mutableListOf(
-            FirebaseRecipe("Fish and chips")
-        )
-    )
-
     private val recipeId = 1L
     private val recipeName = "Fish and chips"
     private val recipeDescription = "Delicious"
@@ -73,6 +65,17 @@ class RemoteDataBaseDaoImplTest {
             it.setSteps(recipeSteps)
         }
     )
+
+    private val uid = "1"
+    private val lastUpdate = 1L
+    private val firebaseRecipe = FirebaseRecipe(recipeName)
+    private val firebaseUser = FirebaseUser(
+        recipes = mutableListOf(
+            firebaseRecipe
+        )
+    )
+
+    private val notExistingRecipeName = "Pizza"
 
     @MockK
     private lateinit var firestore: FirebaseFirestore
@@ -540,10 +543,263 @@ class RemoteDataBaseDaoImplTest {
             remoteDataBaseDaoImpl.updateRecipe(uid,
                 localRecipes.first().name,
                 localRecipes.first(),
-                lastUpdate)
+                lastUpdate
+            )
 
             verify {
                 document.set(any<FirebaseUser>())
+            }
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when removing favorite recipe there is a user network error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                isSuccessful = false,
+                exception = FirebaseNetworkException("Internet error")
+            )
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite recipe there is an user other error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                isSuccessful = false,
+                exception = Exception("Other error")
+            )
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite recipe document is null then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(documentTask)
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite recipe there is a parsing error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns null
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite recipe it does not exist then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(notExistingRecipeName, uid)
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when removing favorite recipe and updating user network error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(
+                task = voidTask,
+                isSuccessful = false,
+                exception = FirebaseNetworkException("Internet error")
+            )
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite recipe and updating user other error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(
+                task = voidTask,
+                isSuccessful = false,
+                exception = Exception("Other error")
+            )
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test
+    fun `when removing favorite recipe there is no error then recipe is marked as not favorite`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(voidTask)
+
+            remoteDataBaseDaoImpl.removeFavoriteLocalRecipe(recipeName, uid)
+
+            assertThat(firebaseRecipe.favorite, isFalse())
+
+            verify {
+                document.set(any())
+            }
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when adding favorite recipe there is a user network error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                isSuccessful = false,
+                exception = FirebaseNetworkException("Internet error")
+            )
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite recipe there is an user other error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                isSuccessful = false,
+                exception = Exception("Other error")
+            )
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite recipe document is null then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(documentTask)
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite recipe there is a parsing error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns null
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite recipe it does not exist then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(notExistingRecipeName, uid)
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when adding favorite recipe and updating user network error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(
+                task = voidTask,
+                isSuccessful = false,
+                exception = FirebaseNetworkException("Internet error")
+            )
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite recipe and updating user other error then exception is thrown`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(
+                task = voidTask,
+                isSuccessful = false,
+                exception = Exception("Other error")
+            )
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+        }
+
+    @Test
+    fun `when adding favorite recipe there is no error then recipe is marked as not favorite`() =
+        runBlockingTest {
+            setUpMockTask(
+                task = documentTask,
+                result = documentSnapshot
+            )
+
+            every {
+                documentSnapshot.toObject(FirebaseUser::class.java)
+            } returns firebaseUser
+
+            setUpMockTask(voidTask)
+
+            remoteDataBaseDaoImpl.addFavoriteLocalRecipe(recipeName, uid)
+
+            assertThat(firebaseRecipe.favorite, isTrue())
+
+            verify {
+                document.set(any())
             }
         }
 

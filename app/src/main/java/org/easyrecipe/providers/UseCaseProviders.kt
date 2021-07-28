@@ -39,6 +39,8 @@ import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipesImpl
 import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUser
 import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUserImpl
+import org.easyrecipe.usecases.getuserfavoriterecipes.GetUserFavoriteRecipes
+import org.easyrecipe.usecases.getuserfavoriterecipes.GetUserFavoriteRecipesImpl
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipes
 import org.easyrecipe.usecases.searchrandomrecipes.SearchRecipesImpl
 import org.easyrecipe.usecases.updaterecipe.UpdateRecipe
@@ -112,4 +114,8 @@ class UseCaseProviders {
         userRepository: UserRepository,
         recipeRepository: RecipeRepository,
     ): GetOrCreateUser = GetOrCreateUserImpl(userRepository, recipeRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetUserFavoriteRecipes(): GetUserFavoriteRecipes = GetUserFavoriteRecipesImpl()
 }

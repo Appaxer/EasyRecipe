@@ -28,15 +28,18 @@ import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.features.favorites.navigation.FavoriteNavigation
 import org.easyrecipe.model.Recipe
+import org.easyrecipe.model.User
 import org.easyrecipe.usecases.getfavoriterecipes.GetFavoriteRecipes
+import org.easyrecipe.usecases.getuserfavoriterecipes.GetUserFavoriteRecipes
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val getFavoriteRecipes: GetFavoriteRecipes,
     private val navManager: NavManager,
     private val favoriteNavigation: FavoriteNavigation,
     private val dialogManager: DialogManager,
+    private val getFavoriteRecipes: GetFavoriteRecipes,
+    private val getUserFavoriteRecipes: GetUserFavoriteRecipes,
 ) : BaseViewModel() {
     val recipeList = MutableLiveData<List<Recipe>>(emptyList())
     val search = MutableLiveData("")
@@ -65,6 +68,19 @@ class FavoriteViewModel @Inject constructor(
             }
         ).onSuccess { result ->
             recipeList.value = result.recipes.sortedWith(
+                compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            )
+        }
+    }
+
+    fun onGetFavoriteRecipes(user: User) = launch {
+        executeUseCase(
+            useCase = getUserFavoriteRecipes,
+            onBefore = { dialogManager.showLoadingDialog() },
+            onAfter = { dialogManager.cancelLoadingDialog() },
+            onPrepareInput = { GetUserFavoriteRecipes.Request(user) }
+        ).onSuccess { result ->
+            recipeList.value = result.favoriteRecipes.sortedWith(
                 compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
             )
         }

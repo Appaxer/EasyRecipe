@@ -17,13 +17,11 @@
 
 package org.easyrecipe.data.dao
 
-import com.google.android.gms.tasks.Task
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 import org.easyrecipe.common.CommonException
 import org.easyrecipe.data.firebase.FirebaseRecipe
 import org.easyrecipe.data.firebase.FirebaseUser
+import org.easyrecipe.data.firebase.runFirebaseTask
 import org.easyrecipe.model.Ingredient
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
@@ -113,42 +111,27 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         }
     }
 
-    private suspend fun <I> runFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception> = emptyList(),
-    ) {
-        executeFirebaseTask(task, skipExceptions)
+    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String) {
+        updateRecipeFavorite(name, uid, false)
     }
 
-    private suspend fun <I, O> runFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception> = emptyList(),
-        onSuccess: suspend (I?) -> O,
-    ): O {
-        val currentTask = executeFirebaseTask(task, skipExceptions)
-        return onSuccess(currentTask.result)
+    override suspend fun addFavoriteLocalRecipe(name: String, uid: String) {
+        updateRecipeFavorite(name, uid, true)
     }
 
-    private suspend fun <I> executeFirebaseTask(
-        task: Task<I>,
-        skipExceptions: List<Exception>,
-    ): Task<I> {
-        try {
-            task.await()
-        } catch (e: Exception) {
-            // The exception should be ignored
-        }
+    private suspend fun updateRecipeFavorite(name: String, uid: String, isFavorite: Boolean) {
+        val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(userTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.recipes.find { recipe -> recipe.name == name }?.let { firebaseRecipe ->
+                    firebaseRecipe.favorite = isFavorite
 
-        if (!task.isSuccessful) {
-            throw when (task.exception) {
-                null -> CommonException.OtherError("Firebase error")
-                in skipExceptions -> task.exception!!
-                is FirebaseNetworkException -> CommonException.NoInternetException
-                else -> CommonException.OtherError(task.exception!!.stackTraceToString())
-            }
+                    val updateTask = firestore.collection(COLLECTION_USERS).document(uid)
+                        .set(firebaseUser)
+                    runFirebaseTask(updateTask)
+                }
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
         }
-
-        return task
     }
 
     private fun List<FirebaseRecipe>.toLocalRecipes(): List<LocalRecipe> =
@@ -166,6 +149,7 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                     }
 
                     localRecipe.setSteps(steps)
+                    localRecipe.setFavorite(favorite)
                 }
             }
         }
@@ -183,7 +167,8 @@ class RemoteDataBaseDaoImpl @Inject constructor(
             image = imageLocation,
             description = description,
             ingredients = ingredients.mapKeys { entry -> entry.key.name },
-            steps = steps
+            steps = steps,
+            favorite = favorite
         )
 
     companion object {

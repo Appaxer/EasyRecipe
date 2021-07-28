@@ -28,6 +28,9 @@ class User(
     val recipes: List<Recipe>
         get() = _recipes
 
+    val favoriteRecipes: List<Recipe>
+        get() = recipes.filter { recipe -> recipe.favorite }
+
     fun addRecipe(recipe: Recipe) {
         _recipes.add(recipe)
     }
@@ -41,6 +44,12 @@ class User(
         if (index >= 0) {
             _recipes[index] = recipe
         }
+    }
+
+    fun toggleRecipeFavorite(recipeId: Long) {
+        recipes.find { recipe ->
+            (recipe as? LocalRecipe)?.recipeId == recipeId
+        }?.toggleFavorite()
     }
 
     companion object {

@@ -15,23 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.favoritelocalrecipe
+package org.easyrecipe.usecases.getuserfavoriterecipes
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.Recipe
+import org.easyrecipe.model.User
 
-class FavoriteLocalRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : FavoriteLocalRecipe {
+interface GetUserFavoriteRecipes :
+    UseCase<GetUserFavoriteRecipes.Request, GetUserFavoriteRecipes.Response> {
 
-    override suspend fun execute(request: FavoriteLocalRecipe.Request) = runUseCase {
-        recipeRepository.favoriteLocalRecipe(
-            request.localRecipe,
-            request.user.uid
-        )
-        request.localRecipe.toggleFavorite()
+    data class Request(
+        val user: User,
+    ) : UseCase.UseCaseRequest
 
-        FavoriteLocalRecipe.Response()
-    }
+    data class Response(
+        val favoriteRecipes: List<Recipe>,
+    ) : UseCase.UseCaseResponse
 }

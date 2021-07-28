@@ -72,4 +72,12 @@ class RemoteDataSourceImpl @Inject constructor(
     ) {
         remoteDataBaseDao.updateRecipe(uid, originalName, localRecipe, lastUpdate)
     }
+
+    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String) {
+        remoteDataBaseDao.removeFavoriteLocalRecipe(name, uid)
+    }
+
+    override suspend fun addFavoriteLocalRecipe(name: String, uid: String) {
+        remoteDataBaseDao.addFavoriteLocalRecipe(name, uid)
+    }
 }

@@ -15,23 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.favoritelocalrecipe
+package org.easyrecipe.features.recipedetail.navigation
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import androidx.navigation.NavDirections
+import org.easyrecipe.model.LocalRecipe
 
-class FavoriteLocalRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : FavoriteLocalRecipe {
-
-    override suspend fun execute(request: FavoriteLocalRecipe.Request) = runUseCase {
-        recipeRepository.favoriteLocalRecipe(
-            request.localRecipe,
-            request.user.uid
-        )
-        request.localRecipe.toggleFavorite()
-
-        FavoriteLocalRecipe.Response()
-    }
+interface RecipeDetailNavigation {
+    fun navigateToCreateRecipe(localRecipe: LocalRecipe, screenTitle: String): NavDirections
 }

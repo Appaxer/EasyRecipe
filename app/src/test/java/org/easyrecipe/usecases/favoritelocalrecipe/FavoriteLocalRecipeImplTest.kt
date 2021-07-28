@@ -26,6 +26,9 @@ import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
 import org.easyrecipe.isResultError
 import org.easyrecipe.isResultSuccess
+import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.User
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -35,9 +38,25 @@ import org.junit.Test
 class FavoriteLocalRecipeImplTest {
     private lateinit var favoriteLocalRecipeImpl: FavoriteLocalRecipeImpl
 
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
     private val recipeId = 1L
     private val isFavorite = false
-    private val request = FavoriteLocalRecipe.Request(recipeId, isFavorite)
+
+    private val localRecipe = LocalRecipe(
+        name = "Fish and chips",
+        description = "Delicious",
+        type = listOf(RecipeType.Hot, RecipeType.Fish),
+        time = 10,
+        image = "",
+        recipeId = recipeId
+    ).also { recipe ->
+        recipe.setFavorite(isFavorite)
+    }
+
+    private val request = FavoriteLocalRecipe.Request(user, localRecipe)
 
     @MockK
     private lateinit var recipeRepository: RecipeRepository

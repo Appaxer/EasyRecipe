@@ -27,4 +27,5 @@ data class FirebaseRecipe(
     var description: String = "",
     var steps: List<String> = emptyList(),
     var ingredients: Map<String, String> = emptyMap(),
+    var favorite: Boolean = false,
 ) : Serializable

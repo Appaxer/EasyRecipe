@@ -18,11 +18,13 @@
 package org.easyrecipe.usecases.favoritelocalrecipe
 
 import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.User
 
 interface FavoriteLocalRecipe : UseCase<FavoriteLocalRecipe.Request, FavoriteLocalRecipe.Response> {
     data class Request(
-        val recipeId: Long,
-        val isFavorite: Boolean,
+        val user: User,
+        val localRecipe: LocalRecipe,
     ) : UseCase.UseCaseRequest
 
     class Response : UseCase.UseCaseResponse

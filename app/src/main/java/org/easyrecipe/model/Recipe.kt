@@ -32,4 +32,8 @@ abstract class Recipe(
     fun toggleFavorite() {
         _favorite = !_favorite
     }
+
+    fun setFavorite(isFavorite: Boolean) {
+        _favorite = isFavorite
+    }
 }
