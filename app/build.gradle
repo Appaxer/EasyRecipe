@@ -19,7 +19,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'androidx.navigation.safeargs.kotlin'
-    id 'org.jetbrains.dokka'
+    id 'org.jetbrains.dokka' version "1.5.0"
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id "org.sonarqube" version "3.3"
@@ -179,4 +179,13 @@ dependencies {
     debugImplementation libs.fragment_debug
     androidTestImplementation libs.hilt_android_test
     kaptAndroidTest libs.hilt_kapt_android_test
+}
+
+dokkaHtml.configure {
+    moduleName.set("EasyRecipe")
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+        }
+    }
 }
