@@ -59,12 +59,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "EDAMAM_KEY", "\"" + localProperties['edamam.apiKey'] + "\"")
             buildConfigField("String", "EDAMAM_ID", "\"" + localProperties['edamam.appId'] + "\"")
+            buildConfigField("String", "USER_UID", "\"" + localProperties['user.uid'] + "\"")
         }
 
         debug {
 //            testCoverageEnabled true
             buildConfigField("String", "EDAMAM_KEY", "\"" + localProperties['edamam.apiKey'] + "\"")
             buildConfigField("String", "EDAMAM_ID", "\"" + localProperties['edamam.appId'] + "\"")
+            buildConfigField("String", "USER_UID", "\"" + localProperties['user.uid'] + "\"")
         }
     }
 

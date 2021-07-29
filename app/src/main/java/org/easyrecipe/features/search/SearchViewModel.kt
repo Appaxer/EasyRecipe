@@ -66,9 +66,11 @@ class SearchViewModel @Inject constructor(
 
     fun onAddMealType(type: MealType) {
         mealType.value?.add(type)
+        onSearchRecipes()
     }
 
     fun onRemoveMealType(type: MealType) {
         mealType.value?.remove(type)
+        onSearchRecipes()
     }
 }
