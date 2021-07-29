@@ -159,6 +159,12 @@ class SearchFragment : BaseFragment() {
                     } else {
                         viewModel.onRemoveMealType(type)
                     }
+
+                    if (viewModel.mealType.requireValue().isNotEmpty()) {
+                        viewModel.onSearchRecipes()
+                    } else {
+                        viewModel.recipeList.value = mainViewModel.recipeList.value
+                    }
                 }
             }
         }
