@@ -5,7 +5,7 @@ on:
     branches-ignore: [ main, develop ]
 
   pull_request:
-    branches: main
+    branches: [ main ]
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -31,6 +31,7 @@ jobs:
         run: |
           echo "edamam.appId=$EDAMAM_APP_ID" > local.properties
           echo "edamam.apiKey=$EDAMAM_API_KEY" >> local.properties
+          echo "user.uid=1" >> local.properties
         env:
           EDAMAM_APP_ID: ${{ secrets.EDAMAM_APP_ID }}
           EDAMAM_API_KEY: ${{ secrets.EDAMAM_API_KEY }}

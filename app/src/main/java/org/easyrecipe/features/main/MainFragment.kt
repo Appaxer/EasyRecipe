@@ -31,12 +31,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
+import org.easyrecipe.BuildConfig
 import org.easyrecipe.R
 import org.easyrecipe.common.BaseFragment
 import org.easyrecipe.databinding.FragmentMainBinding
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment() {
+    private val uid = BuildConfig.USER_UID
     private lateinit var binding: FragmentMainBinding
     private lateinit var navController: NavController
 
@@ -57,7 +59,7 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
 
-        viewModel.onGetCurrentUser("2") // This value should be changed for each new user
+        viewModel.onGetCurrentUser(uid) // This value should be changed for each new user
     }
 
     private fun FragmentMainBinding.bind() {
