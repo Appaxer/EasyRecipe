@@ -38,7 +38,7 @@ import org.easyrecipe.databinding.FragmentMainBinding
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment() {
-    private val UID = BuildConfig.USER_UID
+    private val uid = BuildConfig.USER_UID
     private lateinit var binding: FragmentMainBinding
     private lateinit var navController: NavController
 
@@ -59,7 +59,7 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.bind()
 
-        viewModel.onGetCurrentUser(UID) // This value should be changed for each new user
+        viewModel.onGetCurrentUser(uid) // This value should be changed for each new user
     }
 
     private fun FragmentMainBinding.bind() {
