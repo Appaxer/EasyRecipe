@@ -29,5 +29,5 @@ data class UserFavoriteRemoteRecipeCrossRef(
     val userId: Long,
 
     @ColumnInfo(name = "favorite_remote_recipe_id")
-    val favoriteRemoteRecipeId: Long,
+    val favoriteRemoteRecipeId: Long = 0L,
 )

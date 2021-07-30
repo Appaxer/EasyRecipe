@@ -15,22 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.favoriteremoterecipe
+package org.easyrecipe.data.entities.relations
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
+import androidx.room.ColumnInfo
+import androidx.room.Entity
 
-class FavoriteRemoteRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : FavoriteRemoteRecipe {
-    override suspend fun execute(request: FavoriteRemoteRecipe.Request) = runUseCase {
-        recipeRepository.favoriteRemoteRecipe(
-            request.remoteRecipe,
-            request.user.uid
-        )
+@Entity(
+    tableName = "user_remote_recipes",
+    primaryKeys = ["user_id", "remote_recipe_id"]
+)
+data class UserRemoteRecipeCrossRef(
+    @ColumnInfo(name = "user_id")
+    val userId: Long,
 
-        request.remoteRecipe.toggleFavorite()
-        FavoriteRemoteRecipe.Response()
-    }
-}
+    @ColumnInfo(name = "remote_recipe_id")
+    val remoteRecipeId: String,
+)

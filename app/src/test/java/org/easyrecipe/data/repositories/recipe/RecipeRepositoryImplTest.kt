@@ -101,18 +101,10 @@ class RecipeRepositoryImplTest {
         "uri"
     )
 
-    private val remoteRecipes = listOf(RemoteRecipe(
-        recipeId = "uri",
-        name = "Salted Pecan Caramel Corn",
-        image = "image",
-        source = "source",
-        url = "url",
-        type = listOf(RecipeType.Vegetarian, RecipeType.GlutenFree),
-        ingredients = listOf("3 cups Pecan Halves, Roughly Chopped"),
-        time = 75
-    ))
+    private lateinit var remoteRecipe: RemoteRecipe
+    private lateinit var remoteRecipes: List<RemoteRecipe>
+    private lateinit var favoriteRemoteRecipeList: List<RemoteRecipe>
 
-    private val favoriteRemoteRecipeList = remoteRecipes.onEach { it.toggleFavorite() }
     private val mealType = mutableListOf<MealType>()
 
     @MockK
@@ -136,6 +128,20 @@ class RecipeRepositoryImplTest {
         ).also { recipe ->
             recipe.setSteps(recipeSteps)
         }
+
+        remoteRecipe = RemoteRecipe(
+            recipeId = "uri",
+            name = "Salted Pecan Caramel Corn",
+            image = "image",
+            source = "source",
+            url = "url",
+            type = listOf(RecipeType.Vegetarian, RecipeType.GlutenFree),
+            ingredients = listOf("3 cups Pecan Halves, Roughly Chopped"),
+            time = 75
+        )
+
+        remoteRecipes = listOf(remoteRecipe)
+        favoriteRemoteRecipeList = remoteRecipes.onEach { it.toggleFavorite() }
     }
 
     @Test(expected = CommonException.OtherError::class)
@@ -420,45 +426,46 @@ class RecipeRepositoryImplTest {
     fun `when adding a favorite recipe and there is an error then an exception is thrown`() =
         runBlockingTest {
             coEvery {
-                localDataSource.addFavoriteRemoteRecipe(any())
+                localDataSource.addFavoriteRemoteRecipe(any(), uid)
             } throws Exception()
 
             coEvery {
-                localDataSource.removeFavoriteRemoteRecipe(any())
+                localDataSource.removeFavoriteRemoteRecipe(any(), uid)
             } throws Exception()
 
-            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, true)
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipe, uid)
         }
 
     @Test(expected = Exception::class)
     fun `when removing a favorite recipe and there is an error then an exception is thrown`() =
         runBlockingTest {
             coEvery {
-                localDataSource.addFavoriteRemoteRecipe(any())
+                localDataSource.addFavoriteRemoteRecipe(any(), uid)
             } throws Exception()
 
             coEvery {
-                localDataSource.removeFavoriteRemoteRecipe(any())
+                localDataSource.removeFavoriteRemoteRecipe(any(), uid)
             } throws Exception()
 
-            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, false)
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipe, uid)
         }
 
     @Test
     fun `when adding favorite remote recipe there is no error then addFavoriteRecipe is called`() =
         runBlockingTest {
             coEvery {
-                localDataSource.addFavoriteRemoteRecipe(any())
+                localDataSource.addFavoriteRemoteRecipe(any(), uid)
             } returns Unit
 
             coEvery {
-                localDataSource.removeFavoriteRemoteRecipe(any())
+                localDataSource.removeFavoriteRemoteRecipe(any(), uid)
             } returns Unit
 
-            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, false)
+            remoteRecipe.setFavorite(false)
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipe, uid)
 
             coVerify {
-                localDataSource.addFavoriteRemoteRecipe(remoteRecipeId)
+                localDataSource.addFavoriteRemoteRecipe(remoteRecipeId, uid)
             }
         }
 
@@ -466,17 +473,17 @@ class RecipeRepositoryImplTest {
     fun `when removing favorite recipe there is no error then removeFavoriteRecipe is called`() =
         runBlockingTest {
             coEvery {
-                localDataSource.addFavoriteRemoteRecipe(any())
+                localDataSource.addFavoriteRemoteRecipe(any(), uid)
             } returns Unit
 
             coEvery {
-                localDataSource.removeFavoriteRemoteRecipe(any())
+                localDataSource.removeFavoriteRemoteRecipe(any(), uid)
             } returns Unit
 
-            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipeId, true)
+            recipeRepositoryImpl.favoriteRemoteRecipe(remoteRecipe, uid)
 
             coVerify {
-                localDataSource.removeFavoriteRemoteRecipe(remoteRecipeId)
+                localDataSource.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
             }
         }
 

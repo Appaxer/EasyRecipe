@@ -29,8 +29,11 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserRecipe(userRecipe: UserRecipe)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavoriteRemoteRecipe(favoriteRemoteRecipeEntity: FavoriteRemoteRecipeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUserRemoteRecipe(userRemoteRecipe: UserRemoteRecipe)
 
     @Query("select * from favorite_remote_recipe")
     suspend fun getAllFavoriteRemoteRecipes(): List<FavoriteRemoteRecipeEntity>
@@ -40,6 +43,9 @@ interface UserDao {
 
     @Delete
     suspend fun deleteFavoriteRemoteRecipe(favoriteRemoteRecipeEntity: FavoriteRemoteRecipeEntity)
+
+    @Delete
+    suspend fun deleteUserRemoteRecipe(userRemoteRecipe: UserRemoteRecipe)
 
     @Update
     suspend fun updateUser(userEntity: UserEntity)

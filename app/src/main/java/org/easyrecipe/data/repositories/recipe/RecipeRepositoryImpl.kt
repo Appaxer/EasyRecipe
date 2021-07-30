@@ -103,19 +103,16 @@ class RecipeRepositoryImpl @Inject constructor(
         )
 
         localDataSource.updateIngredients(localRecipe, ingredients)
-
-        originalRecipe?.let { recipe ->
-            remoteDataSource.updateRecipe(uid, recipe.name, localRecipe, lastUpdate)
-        }
+        remoteDataSource.updateRecipe(uid, originalRecipe.name, localRecipe, lastUpdate)
     }
 
     override suspend fun getRecipeById(recipeId: Long): LocalRecipe =
         localDataSource.getRecipeById(recipeId)
 
-    override suspend fun favoriteRemoteRecipe(recipeId: String, isFavorite: Boolean) {
-        when (isFavorite) {
-            true -> localDataSource.removeFavoriteRemoteRecipe(recipeId)
-            false -> localDataSource.addFavoriteRemoteRecipe(recipeId)
+    override suspend fun favoriteRemoteRecipe(remoteRecipe: RemoteRecipe, uid: String) {
+        when (remoteRecipe.favorite) {
+            true -> localDataSource.removeFavoriteRemoteRecipe(remoteRecipe.recipeId, uid)
+            false -> localDataSource.addFavoriteRemoteRecipe(remoteRecipe.recipeId, uid)
         }
     }
 

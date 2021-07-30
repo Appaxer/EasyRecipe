@@ -32,9 +32,10 @@ import org.easyrecipe.data.entities.*
         IngredientEntity::class,
         RecipeIngredient::class,
         FavoriteRemoteRecipeEntity::class,
-        UserFavoriteRemoteRecipe::class
+        UserFavoriteRemoteRecipe::class,
+        UserRemoteRecipe::class,
     ],
-    version = 6
+    version = 7
 )
 @TypeConverters(Converters::class)
 abstract class LocalDatabase : RoomDatabase() {

@@ -25,6 +25,7 @@ import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
 import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigation
 import org.easyrecipe.model.LocalRecipe
+import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.model.User
 import org.easyrecipe.usecases.deleterecipe.DeleteRecipe
 import org.easyrecipe.usecases.favoritelocalrecipe.FavoriteLocalRecipe
@@ -58,11 +59,17 @@ class RecipeDetailViewModel @Inject constructor(
         navManager.navigateMainFragment(action)
     }
 
-    fun onFavoriteRemoteRecipe(user: User, recipeId: String, isFavorite: Boolean) = launch {
+    fun onFavoriteRemoteRecipe(
+        user: User,
+        remoteRecipe: RemoteRecipe,
+        onChangeFavorite: (RemoteRecipe) -> Unit,
+    ) = launch {
         executeUseCase(
             useCase = favoriteRemoteRecipe,
-            onPrepareInput = { FavoriteRemoteRecipe.Request(recipeId, isFavorite) }
-        )
+            onPrepareInput = { FavoriteRemoteRecipe.Request(user, remoteRecipe) }
+        ).onSuccess {
+            onChangeFavorite(remoteRecipe)
+        }
     }
 
     fun onFavoriteLocalRecipe(

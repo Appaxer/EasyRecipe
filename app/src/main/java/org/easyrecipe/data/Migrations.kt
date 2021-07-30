@@ -66,3 +66,7 @@ val MIGRATION_4_5 = createMigration(4, 5) {
 val MIGRATION_5_6 = createMigration(5, 6) {
     execSQL("alter table user_recipes add column is_favourite INT default 0")
 }
+
+val MIGRATION_6_7 = createMigration(6, 7) {
+    execSQL("delete from user_favorite_remote_recipes")
+}

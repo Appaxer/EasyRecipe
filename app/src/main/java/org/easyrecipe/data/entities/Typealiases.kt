@@ -20,7 +20,9 @@ package org.easyrecipe.data.entities
 import org.easyrecipe.data.entities.relations.RecipeIngredientCrossRef
 import org.easyrecipe.data.entities.relations.UserFavoriteRemoteRecipeCrossRef
 import org.easyrecipe.data.entities.relations.UserRecipeCrossRef
+import org.easyrecipe.data.entities.relations.UserRemoteRecipeCrossRef
 
 typealias UserRecipe = UserRecipeCrossRef
 typealias RecipeIngredient = RecipeIngredientCrossRef
 typealias UserFavoriteRemoteRecipe = UserFavoriteRemoteRecipeCrossRef
+typealias UserRemoteRecipe = UserRemoteRecipeCrossRef

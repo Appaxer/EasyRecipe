@@ -26,6 +26,9 @@ import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.data.repositories.recipe.RecipeRepository
 import org.easyrecipe.isResultError
 import org.easyrecipe.isResultSuccess
+import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.RemoteRecipe
+import org.easyrecipe.model.User
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -34,7 +37,25 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class FavoriteRemoteRecipeImplTest {
     private lateinit var favoriteRemoteRecipe: FavoriteRemoteRecipe
-    private val request = FavoriteRemoteRecipe.Request("uri", true)
+
+    private val uid = "1"
+    private val lastUpdate = 0L
+    private val user = User(uid, lastUpdate)
+
+    private val recipeName = "Fish and chips"
+    private val remoteRecipeId = "uri"
+    private val remoteRecipe = RemoteRecipe(
+        name = recipeName,
+        type = listOf(RecipeType.Hot, RecipeType.Fish),
+        ingredients = emptyList(),
+        time = 10,
+        image = "",
+        recipeId = remoteRecipeId,
+        source = "",
+        url = ""
+    )
+
+    private val request = FavoriteRemoteRecipe.Request(user, remoteRecipe)
 
     @MockK
     private lateinit var recipeRepository: RecipeRepository

@@ -164,11 +164,10 @@ class RecipeDetailFragment : BaseFragment() {
                     R.id.favorite -> {
                         viewModel.onFavoriteRemoteRecipe(
                             mainVieModel.user.requireValue(),
-                            remoteRecipe.recipeId,
-                            remoteRecipe.favorite
-                        )
-                        setFavouriteIcon(remoteRecipe, item)
-                        remoteRecipe.toggleFavorite()
+                            remoteRecipe
+                        ) {
+                            setFavouriteIcon(remoteRecipe, item)
+                        }
                         true
                     }
                     else -> false
