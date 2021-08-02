@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.data.firebase
+package org.easyrecipe.common.extensions
 
-import java.io.Serializable
-
-data class FirebaseUser(
-    var lastUpdate: Long = 0,
-    var recipes: MutableList<FirebaseRecipe> = mutableListOf(),
-    var favoriteRemoteRecipes: MutableList<String> = mutableListOf(),
-) : Serializable
+/**
+ * Makes the union of two lists and returns the result as a list.
+ *
+ * @param T The type of the list
+ * @param other The other list
+ * @return The union of both lists
+ */
+fun <T> List<T>.unionList(other: List<T>): List<T> = union(other).toList()

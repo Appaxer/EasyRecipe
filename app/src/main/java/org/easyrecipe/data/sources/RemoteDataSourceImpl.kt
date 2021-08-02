@@ -49,7 +49,16 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getUser(uid: String): User {
-        return remoteDataBaseDao.getUser(uid)
+        val user = remoteDataBaseDao.getUser(uid)
+        val remoteFavoriteRecipesIds = remoteDataBaseDao.getUserFavoriteRemoteRecipes(uid)
+        val remoteFavoriteRecipes = try {
+            remoteRecipeDao.getFavoriteRecipes(remoteFavoriteRecipesIds)
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        user.addRecipes(remoteFavoriteRecipes)
+        return user
     }
 
     override suspend fun addLocalRecipesToRemoteDataBaseUser(
@@ -73,11 +82,21 @@ class RemoteDataSourceImpl @Inject constructor(
         remoteDataBaseDao.updateRecipe(uid, originalName, localRecipe, lastUpdate)
     }
 
-    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String) {
-        remoteDataBaseDao.removeFavoriteLocalRecipe(name, uid)
+    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long) {
+        remoteDataBaseDao.removeFavoriteLocalRecipe(name, uid, lastUpdate)
     }
 
-    override suspend fun addFavoriteLocalRecipe(name: String, uid: String) {
-        remoteDataBaseDao.addFavoriteLocalRecipe(name, uid)
+    override suspend fun addFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long) {
+        remoteDataBaseDao.addFavoriteLocalRecipe(name, uid, lastUpdate)
+    }
+
+    override suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
+        uid: String,
+        favoriteRemoteRecipesIds: List<String>,
+    ) {
+        remoteDataBaseDao.addFavoriteRemoteRecipesToRemoteDatabaseUser(
+            uid,
+            favoriteRemoteRecipesIds
+        )
     }
 }

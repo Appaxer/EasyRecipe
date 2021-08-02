@@ -111,18 +111,50 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String) {
-        updateRecipeFavorite(name, uid, false)
+    override suspend fun removeFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long) {
+        updateRecipeFavorite(name, uid, lastUpdate, false)
     }
 
-    override suspend fun addFavoriteLocalRecipe(name: String, uid: String) {
-        updateRecipeFavorite(name, uid, true)
+    override suspend fun addFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long) {
+        updateRecipeFavorite(name, uid, lastUpdate, true)
     }
 
-    private suspend fun updateRecipeFavorite(name: String, uid: String, isFavorite: Boolean) {
+    override suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
+        uid: String,
+        favoriteRemoteRecipesIds: List<String>,
+    ) {
         val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
         runFirebaseTask(userTask) { document ->
             document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.favoriteRemoteRecipes.addAll(favoriteRemoteRecipesIds)
+
+                val updateTask =
+                    firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
+                runFirebaseTask(updateTask)
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
+        }
+    }
+
+    override suspend fun getUserFavoriteRemoteRecipes(uid: String): List<String> {
+        val task = firestore.collection(COLLECTION_USERS).document(uid).get()
+        return runFirebaseTask(task) { document ->
+            document?.toObject(FirebaseUser::class.java)?.favoriteRemoteRecipes
+                ?: throw CommonException.OtherError(
+                    "Error parsing document: $COLLECTION_USERS/$uid"
+                )
+        }
+    }
+
+    private suspend fun updateRecipeFavorite(
+        name: String,
+        uid: String,
+        lastUpdate: Long,
+        isFavorite: Boolean,
+    ) {
+        val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(userTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                firebaseUser.lastUpdate = lastUpdate
                 firebaseUser.recipes.find { recipe -> recipe.name == name }?.let { firebaseRecipe ->
                     firebaseRecipe.favorite = isFavorite
 
