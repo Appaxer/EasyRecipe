@@ -97,8 +97,10 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun FragmentSearchBinding.setUpTypeChips() {
-        val typeChips = MealType.values().getChips()
-        typeChips.forEach { mealTypes.addView(it) }
+        val typeChips = MealType.values().getChips(mainViewModel.mealTypes.requireValue())
+        typeChips.forEach {
+            mealTypes.addView(it)
+        }
     }
 
     private fun FragmentSearchBinding.setUpRecyclerView() {
@@ -120,6 +122,10 @@ class SearchFragment : BaseFragment() {
             mainViewModel.searchResultList.value = it
             mainViewModel.searchResultList.notify()
         }
+        searchMealType.observe(viewLifecycleOwner) {
+            mainViewModel.mealTypes.value = it
+            mainViewModel.mealTypes.notify()
+        }
     }
 
     private fun MainViewModel.setUpObservers() {
@@ -128,6 +134,12 @@ class SearchFragment : BaseFragment() {
                 if (it.isNotEmpty()) {
                     viewModel.recipeList.value = it
                     viewModel.recipeList.notify()
+                }
+            }
+            mealTypes.observe(viewLifecycleOwner) {
+                if (it.isNotEmpty()) {
+                    viewModel.mealType.value = it.toMutableList()
+                    viewModel.mealType.notify()
                 }
             }
             comesFromDetail.value = false
@@ -140,32 +152,34 @@ class SearchFragment : BaseFragment() {
         }
     }
 
-    private fun Array<MealType>.getChips(): List<Chip> = sortedBy { it.name.length }
-        .map { type ->
-            val typeNameId = mealTypeConversion.convertToStringRes(type)
-            val typeName = getString(typeNameId)
+    private fun Array<MealType>.getChips(selectedMealTypes: List<MealType>): List<Chip> =
+        sortedBy { it.name.length }
+            .map { type ->
+                val typeNameId = mealTypeConversion.convertToStringRes(type)
+                val typeName = getString(typeNameId)
 
-            Chip(requireContext()).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                isCheckable = true
-                text = typeName
-            }.also {
-                it.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        viewModel.onAddMealType(type)
-                    } else {
-                        viewModel.onRemoveMealType(type)
-                    }
+                Chip(requireContext()).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    isCheckable = true
+                    isChecked = type in selectedMealTypes
+                    text = typeName
+                }.also {
+                    it.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            viewModel.onAddMealType(type)
+                        } else {
+                            viewModel.onRemoveMealType(type)
+                        }
 
-                    if (viewModel.mealType.requireValue().isNotEmpty()) {
-                        viewModel.onSearchRecipes()
-                    } else {
-                        viewModel.recipeList.value = mainViewModel.recipeList.value
+                        if (viewModel.mealType.requireValue().isNotEmpty()) {
+                            viewModel.onSearchRecipes()
+                        } else {
+                            viewModel.recipeList.value = mainViewModel.recipeList.value
+                        }
                     }
                 }
             }
-        }
 }

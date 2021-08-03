@@ -17,7 +17,6 @@
 
 package org.easyrecipe.data.dao
 
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import org.easyrecipe.BuildConfig
 import org.easyrecipe.common.CommonException
@@ -26,7 +25,6 @@ import org.easyrecipe.common.extensions.getRequest
 import org.easyrecipe.common.http.HttpResponse
 import org.easyrecipe.data.edamam.EdamamHit
 import org.easyrecipe.data.edamam.EdamamResponse
-import org.easyrecipe.features.settings.SettingsFragment.Companion.API_LANGUAGE
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.RemoteRecipe
 import java.net.HttpURLConnection.HTTP_OK
@@ -34,7 +32,6 @@ import java.util.*
 import javax.inject.Inject
 
 class RemoteRecipeDaoImpl @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
     private val gson: Gson,
 ) : RemoteRecipeDao {
     private val appId = BuildConfig.EDAMAM_ID
@@ -46,11 +43,6 @@ class RemoteRecipeDaoImpl @Inject constructor(
     )
 
     private var parameters: MutableList<Pair<String, Any>> = defaultParameters.toMutableList()
-    private val url: String
-        get() = when (sharedPreferences.getString(API_LANGUAGE, EN)) {
-            ES -> ES_URL
-            else -> EN_URL
-        }
 
     override suspend fun getRecipes(name: String): List<RemoteRecipe> {
         resetParameters()
@@ -61,7 +53,7 @@ class RemoteRecipeDaoImpl @Inject constructor(
             addQueryParameter(name)
         }
         addRandomParameter()
-        val response = url.getRequest(parameters)
+        val response = URL.getRequest(parameters)
 
         checkResponseCode(response)
 
@@ -78,7 +70,7 @@ class RemoteRecipeDaoImpl @Inject constructor(
         resetParameters()
         addQueryParameter(name, mealTypes)
         addRandomParameter()
-        val response = url.getRequest(parameters)
+        val response = URL.getRequest(parameters)
 
         checkResponseCode(response)
 
@@ -92,7 +84,7 @@ class RemoteRecipeDaoImpl @Inject constructor(
     override suspend fun getFavoriteRecipes(recipeIds: List<String>): List<RemoteRecipe> {
         resetParameters()
         return recipeIds.map {
-            val reqUrl = "$url/${it.substringAfter('#')}"
+            val reqUrl = "$URL/${it.substringAfter('#')}"
             val response = reqUrl.getRequest(parameters)
 
             checkResponseCode(response)
@@ -134,9 +126,6 @@ class RemoteRecipeDaoImpl @Inject constructor(
     }
 
     companion object {
-        private const val EN_URL = "https://api.edamam.com/api/recipes/v2"
-        private const val ES_URL = "https://test-es.edamam.com/search"
-        private const val ES = "es"
-        private const val EN = "en"
+        private const val URL = "https://api.edamam.com/api/recipes/v2"
     }
 }

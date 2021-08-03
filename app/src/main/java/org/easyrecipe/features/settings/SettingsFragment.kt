@@ -34,7 +34,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         findPreference<DropDownPreference>(APP_LANGUAGE)?.onPreferenceChangeListener = this
-        findPreference<DropDownPreference>(API_LANGUAGE)?.onPreferenceChangeListener = this
         findPreference<SwitchPreference>(ENABLE_DARK_THEME)?.apply {
             onPreferenceChangeListener = this@SettingsFragment
             isChecked = getUiMode() == Configuration.UI_MODE_NIGHT_YES
@@ -58,7 +57,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     companion object {
         const val APP_LANGUAGE = "app_language"
-        const val API_LANGUAGE = "api_language"
         const val ENABLE_DARK_THEME = "enable_dark_theme"
         const val VERSION = "version"
     }

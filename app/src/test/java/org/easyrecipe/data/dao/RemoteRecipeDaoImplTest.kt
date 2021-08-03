@@ -98,7 +98,7 @@ class RemoteRecipeDaoImplTest {
         client = mockk()
         FuelManager.instance.client = client
 
-        remoteRecipeDaoImpl = RemoteRecipeDaoImpl(sharedPreferences, gson)
+        remoteRecipeDaoImpl = RemoteRecipeDaoImpl(gson)
     }
 
     @Test(expected = CommonException.NoInternetException::class)

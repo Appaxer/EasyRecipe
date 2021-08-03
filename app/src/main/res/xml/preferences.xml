@@ -33,14 +33,6 @@
             app:summary="@string/select_app_language_summary"
             app:title="@string/select_app_language_title" />
 
-        <androidx.preference.DropDownPreference
-            app:entries="@array/remote_languages"
-            app:entryValues="@array/remote_languages_values"
-            app:icon="@drawable/ic_api_language"
-            app:key="api_language"
-            app:summary="@string/select_remote_recipes_language_summary"
-            app:title="@string/select_remote_recipes_language_title" />
-
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
