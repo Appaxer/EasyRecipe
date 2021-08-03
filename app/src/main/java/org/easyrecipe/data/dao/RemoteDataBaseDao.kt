@@ -48,4 +48,8 @@ interface RemoteDataBaseDao {
     )
 
     suspend fun getUserFavoriteRemoteRecipes(uid: String): List<String>
+
+    suspend fun removeFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long)
+
+    suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long)
 }

@@ -369,7 +369,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
             } throws CommonException.NoInternetException
 
-            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -379,7 +379,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
             } throws CommonException.OtherError("Other error")
 
-            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
         }
 
     @Test
@@ -389,7 +389,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
             } returns Unit
 
-            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
 
             coVerify {
                 remoteDataBaseDao.addFavoriteLocalRecipe(recipeName, uid)
@@ -403,7 +403,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
             } throws CommonException.NoInternetException
 
-            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -413,7 +413,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
             } throws CommonException.OtherError("Other error")
 
-            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
         }
 
     @Test
@@ -423,7 +423,7 @@ class RemoteDataSourceImplTest {
                 remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
             } returns Unit
 
-            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid)
+            remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
 
             coVerify {
                 remoteDataBaseDao.removeFavoriteLocalRecipe(recipeName, uid)

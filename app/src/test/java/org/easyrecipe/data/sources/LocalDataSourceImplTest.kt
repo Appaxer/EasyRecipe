@@ -505,7 +505,7 @@ class LocalDataSourceImplTest {
                 userDao.insertFavoriteRemoteRecipe(any())
             } throws Exception()
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -515,7 +515,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } returns null
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -529,7 +529,7 @@ class LocalDataSourceImplTest {
                 userDao.insertFavoriteRemoteRecipe(any())
             } throws Exception()
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -543,7 +543,7 @@ class LocalDataSourceImplTest {
                 userDao.insertFavoriteRemoteRecipe(any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
 
             coVerify { userDao.insertFavoriteRemoteRecipe(remoteFavoriteEntity) }
         }
@@ -563,7 +563,7 @@ class LocalDataSourceImplTest {
                 userDao.insertUserRemoteRecipe(any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
 
             coVerify { userDao.insertFavoriteRemoteRecipe(remoteFavoriteEntity) }
         }
@@ -583,7 +583,7 @@ class LocalDataSourceImplTest {
                 userDao.insertUserRemoteRecipe(any())
             } returns Unit
 
-            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
 
             coVerify {
                 userDao.insertUserRemoteRecipe(any())
@@ -597,7 +597,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } throws Exception("Other error")
 
-            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -607,7 +607,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } returns null
 
-            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -621,7 +621,7 @@ class LocalDataSourceImplTest {
                 userDao.deleteFavoriteRemoteRecipe(any())
             } throws Exception()
 
-            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -635,7 +635,7 @@ class LocalDataSourceImplTest {
                 userDao.deleteUserRemoteRecipe(any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
 
             coVerify {
                 userDao.deleteUserRemoteRecipe(any())
@@ -653,7 +653,7 @@ class LocalDataSourceImplTest {
                 userDao.deleteUserRemoteRecipe(any())
             } returns Unit
 
-            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid)
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
 
             coVerify {
                 userDao.deleteUserRemoteRecipe(any())
@@ -667,7 +667,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -677,7 +677,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } returns null
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -691,7 +691,7 @@ class LocalDataSourceImplTest {
                 userDao.updateFavoriteLocalRecipe(any(), any())
             } throws Exception()
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test
@@ -705,7 +705,7 @@ class LocalDataSourceImplTest {
                 userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
-            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
 
             coVerify {
                 userDao.updateUserFavoriteLocalRecipe(userId, recipeId, any())
@@ -719,7 +719,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -729,7 +729,7 @@ class LocalDataSourceImplTest {
                 userDao.getUserByUid(any())
             } returns null
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test(expected = CommonException.OtherError::class)
@@ -743,7 +743,7 @@ class LocalDataSourceImplTest {
                 userDao.updateFavoriteLocalRecipe(any(), any())
             } throws Exception("Database error")
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
     @Test
@@ -757,7 +757,7 @@ class LocalDataSourceImplTest {
                 userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
-            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid)
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
 
             coVerify {
                 userDao.updateUserFavoriteLocalRecipe(userId, recipeId, any())

@@ -31,6 +31,7 @@ class FavoriteRemoteRecipeImpl @Inject constructor(
         )
 
         request.remoteRecipe.toggleFavorite()
+        request.user.addRecipe(request.remoteRecipe)
         FavoriteRemoteRecipe.Response()
     }
 }

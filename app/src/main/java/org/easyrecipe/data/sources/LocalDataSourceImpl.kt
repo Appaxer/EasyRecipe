@@ -117,15 +117,29 @@ class LocalDataSourceImpl @Inject constructor(
         userDao.getAllFavoriteRemoteRecipes().map { it.remoteRecipeId }
     }
 
-    override suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String): Unit = runDao {
+    override suspend fun addFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
         val user = getUser(uid)
         insertUserFavoriteRemoteRecipe(user.userId, recipeId)
+
+        user.lastUpdate = lastUpdate
+        userDao.updateUser(user)
     }
 
-    override suspend fun removeFavoriteRemoteRecipe(recipeId: String, uid: String): Unit = runDao {
+    override suspend fun removeFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
         val user = getUser(uid)
         val userRemoteRecipeEntity = UserRemoteRecipe(user.userId, recipeId)
         userDao.deleteUserRemoteRecipe(userRemoteRecipeEntity)
+
+        user.lastUpdate = lastUpdate
+        userDao.updateUser(user)
     }
 
     override suspend fun addFavoriteLocalRecipe(

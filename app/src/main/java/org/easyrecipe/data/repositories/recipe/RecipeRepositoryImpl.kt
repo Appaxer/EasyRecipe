@@ -111,9 +111,16 @@ class RecipeRepositoryImpl @Inject constructor(
         localDataSource.getRecipeById(recipeId)
 
     override suspend fun favoriteRemoteRecipe(remoteRecipe: RemoteRecipe, uid: String) {
+        val lastUpdate = System.currentTimeMillis()
         when (remoteRecipe.favorite) {
-            true -> localDataSource.removeFavoriteRemoteRecipe(remoteRecipe.recipeId, uid)
-            false -> localDataSource.addFavoriteRemoteRecipe(remoteRecipe.recipeId, uid)
+            true -> {
+                localDataSource.removeFavoriteRemoteRecipe(remoteRecipe.recipeId, uid, lastUpdate)
+                remoteDataSource.removeFavoriteRemoteRecipe(remoteRecipe.recipeId, uid, lastUpdate)
+            }
+            false -> {
+                localDataSource.addFavoriteRemoteRecipe(remoteRecipe.recipeId, uid, lastUpdate)
+                remoteDataSource.addFavoriteRemoteRecipe(remoteRecipe.recipeId, uid, lastUpdate)
+            }
         }
     }
 

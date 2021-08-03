@@ -46,11 +46,15 @@ interface RemoteDataSource {
         lastUpdate: Long,
     )
 
-    suspend fun removeFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long = 0L)
+    suspend fun removeFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long)
 
-    suspend fun addFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long = 0L)
+    suspend fun addFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long)
     suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
         uid: String,
         favoriteRemoteRecipesIds: List<String>,
     )
+
+    suspend fun removeFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long)
+
+    suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long)
 }

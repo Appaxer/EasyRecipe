@@ -99,4 +99,16 @@ class RemoteDataSourceImpl @Inject constructor(
             favoriteRemoteRecipesIds
         )
     }
+
+    override suspend fun removeFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ) {
+        remoteDataBaseDao.removeFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+    }
+
+    override suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long) {
+        remoteDataBaseDao.addFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+    }
 }

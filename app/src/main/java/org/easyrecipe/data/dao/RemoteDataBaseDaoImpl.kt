@@ -123,15 +123,8 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         uid: String,
         favoriteRemoteRecipesIds: List<String>,
     ) {
-        val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
-        runFirebaseTask(userTask) { document ->
-            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
-                firebaseUser.favoriteRemoteRecipes.addAll(favoriteRemoteRecipesIds)
-
-                val updateTask =
-                    firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
-                runFirebaseTask(updateTask)
-            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
+        updateFavoriteRemoteRecipe(uid) { firebaseUser ->
+            firebaseUser.favoriteRemoteRecipes.addAll(favoriteRemoteRecipesIds)
         }
     }
 
@@ -142,6 +135,24 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                 ?: throw CommonException.OtherError(
                     "Error parsing document: $COLLECTION_USERS/$uid"
                 )
+        }
+    }
+
+    override suspend fun removeFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ) {
+        updateFavoriteRemoteRecipe(uid) { firebaseUser ->
+            firebaseUser.lastUpdate = lastUpdate
+            firebaseUser.favoriteRemoteRecipes.remove(recipeId)
+        }
+    }
+
+    override suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long) {
+        updateFavoriteRemoteRecipe(uid) { firebaseUser ->
+            firebaseUser.lastUpdate = lastUpdate
+            firebaseUser.favoriteRemoteRecipes.add(recipeId)
         }
     }
 
@@ -162,6 +173,19 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                         .set(firebaseUser)
                     runFirebaseTask(updateTask)
                 }
+            } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
+        }
+    }
+
+    private suspend fun updateFavoriteRemoteRecipe(uid: String, onUpdate: (FirebaseUser) -> Unit) {
+        val userTask = firestore.collection(COLLECTION_USERS).document(uid).get()
+        runFirebaseTask(userTask) { document ->
+            document?.toObject(FirebaseUser::class.java)?.let { firebaseUser ->
+                onUpdate(firebaseUser)
+
+                val updateTask =
+                    firestore.collection(COLLECTION_USERS).document(uid).set(firebaseUser)
+                runFirebaseTask(updateTask)
             } ?: throw CommonException.OtherError("Error parsing document: $COLLECTION_USERS/$uid")
         }
     }
