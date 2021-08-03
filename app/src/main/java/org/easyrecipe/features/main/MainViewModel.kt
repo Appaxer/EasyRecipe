@@ -24,6 +24,7 @@ import org.easyrecipe.common.BaseViewModel
 import org.easyrecipe.common.extensions.navigateUpMainFragment
 import org.easyrecipe.common.managers.dialog.DialogManager
 import org.easyrecipe.common.managers.navigation.NavManager
+import org.easyrecipe.model.MealType
 import org.easyrecipe.model.Recipe
 import org.easyrecipe.model.User
 import org.easyrecipe.usecases.getorcreateuser.GetOrCreateUser
@@ -44,6 +45,8 @@ class MainViewModel @Inject constructor(
     val searchResultList = MutableLiveData<List<Recipe>>(mutableListOf())
 
     val comesFromDetail = MutableLiveData(false)
+
+    val mealTypes = MutableLiveData<List<MealType>>(mutableListOf())
 
     private val _user = MutableLiveData<User>()
     val user: LiveData<User>

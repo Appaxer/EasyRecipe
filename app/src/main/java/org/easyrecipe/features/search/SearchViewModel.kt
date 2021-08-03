@@ -41,6 +41,7 @@ class SearchViewModel @Inject constructor(
     val recipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val searchRecipeList = MutableLiveData<List<Recipe>>(mutableListOf())
     val mealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
+    val searchMealType = MutableLiveData<MutableList<MealType>>(mutableListOf())
     val search = MutableLiveData(listOf("a", "e", "i", "o", "u").random())
 
     val isDisplayedRecipeListEmpty = recipeList.map { it.isEmpty() }
@@ -66,9 +67,11 @@ class SearchViewModel @Inject constructor(
 
     fun onAddMealType(type: MealType) {
         mealType.value?.add(type)
+        searchMealType.value?.add(type)
     }
 
     fun onRemoveMealType(type: MealType) {
         mealType.value?.remove(type)
+        searchMealType.value?.remove(type)
     }
 }
