@@ -119,15 +119,6 @@ class RemoteDataBaseDaoImpl @Inject constructor(
         updateRecipeFavorite(name, uid, lastUpdate, true)
     }
 
-    override suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
-        uid: String,
-        favoriteRemoteRecipesIds: List<String>,
-    ) {
-        updateFavoriteRemoteRecipe(uid) { firebaseUser ->
-            firebaseUser.favoriteRemoteRecipes.addAll(favoriteRemoteRecipesIds)
-        }
-    }
-
     override suspend fun getUserFavoriteRemoteRecipes(uid: String): List<String> {
         val task = firestore.collection(COLLECTION_USERS).document(uid).get()
         return runFirebaseTask(task) { document ->
@@ -135,6 +126,15 @@ class RemoteDataBaseDaoImpl @Inject constructor(
                 ?: throw CommonException.OtherError(
                     "Error parsing document: $COLLECTION_USERS/$uid"
                 )
+        }
+    }
+
+    override suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
+        uid: String,
+        favoriteRemoteRecipesIds: List<String>,
+    ) {
+        updateFavoriteRemoteRecipe(uid) { firebaseUser ->
+            firebaseUser.favoriteRemoteRecipes.addAll(favoriteRemoteRecipesIds)
         }
     }
 

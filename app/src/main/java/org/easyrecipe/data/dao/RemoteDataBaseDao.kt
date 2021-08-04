@@ -42,12 +42,12 @@ interface RemoteDataBaseDao {
     suspend fun removeFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long)
 
     suspend fun addFavoriteLocalRecipe(name: String, uid: String, lastUpdate: Long)
+    suspend fun getUserFavoriteRemoteRecipes(uid: String): List<String>
+
     suspend fun addFavoriteRemoteRecipesToRemoteDatabaseUser(
         uid: String,
         favoriteRemoteRecipesIds: List<String>,
     )
-
-    suspend fun getUserFavoriteRemoteRecipes(uid: String): List<String>
 
     suspend fun removeFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long)
 
