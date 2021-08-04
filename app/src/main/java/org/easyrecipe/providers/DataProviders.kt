@@ -18,8 +18,6 @@
 package org.easyrecipe.providers
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -88,21 +86,14 @@ class DataProviders {
     @Provides
     @Singleton
     fun provideRemoteRecipeDao(
-        sharedPreferences: SharedPreferences,
         gson: Gson,
-    ): RemoteRecipeDao = RemoteRecipeDaoImpl(sharedPreferences, gson)
+    ): RemoteRecipeDao = RemoteRecipeDaoImpl(gson)
 
     @Provides
     @Singleton
     fun provideRemoteDataBaseDao(
         firestore: FirebaseFirestore,
     ): RemoteDataBaseDao = RemoteDataBaseDaoImpl(firestore)
-
-    @Provides
-    @Singleton
-    fun provideSharedPreferences(
-        @ApplicationContext context: Context,
-    ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     @Provides
     @Singleton

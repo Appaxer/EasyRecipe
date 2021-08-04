@@ -136,6 +136,7 @@ class SearchViewModelTest {
         viewModel.onAddMealType(MealType.Breakfast)
 
         assertThat(viewModel.mealType.requireValue(), isEqualTo(listOf(MealType.Breakfast)))
+        assertThat(viewModel.searchMealType.requireValue(), isEqualTo(viewModel.mealType.requireValue()))
     }
 
     @Test
@@ -146,6 +147,7 @@ class SearchViewModelTest {
         viewModel.onRemoveMealType(MealType.Breakfast)
 
         assertThat(viewModel.mealType.requireValue(), isEqualTo(listOf(MealType.Dinner)))
+        assertThat(viewModel.searchMealType.requireValue(), isEqualTo(viewModel.mealType.requireValue()))
     }
 
     @Test
