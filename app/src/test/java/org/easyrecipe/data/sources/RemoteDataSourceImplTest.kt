@@ -77,6 +77,7 @@ class RemoteDataSourceImplTest {
     }
 
     private val recipes = listOf(localRecipe)
+    private val remoteRecipeIds = listOf("a", "b")
 
     @MockK
     private lateinit var remoteRecipeDao: RemoteRecipeDao
@@ -249,12 +250,86 @@ class RemoteDataSourceImplTest {
             remoteDataSourceImpl.getUser(uid)
         }
 
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when getting user remote favorites ids there is network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.getUser(any())
+            } returns user
+
+            coEvery {
+                remoteDataBaseDao.getUserFavoriteRemoteRecipes(any())
+            } throws CommonException.NoInternetException
+
+            remoteDataSourceImpl.getUser(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user remote favorites ids there is other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.getUser(any())
+            } returns user
+
+            coEvery {
+                remoteDataBaseDao.getUserFavoriteRemoteRecipes(any())
+            } throws CommonException.OtherError("Other error")
+
+            remoteDataSourceImpl.getUser(uid)
+        }
+
+    @Test
+    fun `when getting user remote favorites there is network error then remote recipes is empty`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.getUser(any())
+            } returns user
+
+            coEvery {
+                remoteDataBaseDao.getUserFavoriteRemoteRecipes(any())
+            } returns remoteRecipeIds
+
+            coEvery {
+                remoteRecipeDao.getFavoriteRecipes(any())
+            } throws CommonException.NoInternetException
+
+            val user = remoteDataSourceImpl.getUser(uid)
+            assertThat(user.remoteRecipes.size, isEqualTo(0))
+        }
+
+    @Test
+    fun `when getting user remote favorites there is other error then remote recipes is empty`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.getUser(any())
+            } returns user
+
+            coEvery {
+                remoteDataBaseDao.getUserFavoriteRemoteRecipes(any())
+            } returns remoteRecipeIds
+
+            coEvery {
+                remoteRecipeDao.getFavoriteRecipes(any())
+            } throws CommonException.OtherError("Other error")
+
+            val user = remoteDataSourceImpl.getUser(uid)
+            assertThat(user.remoteRecipes.size, isEqualTo(0))
+        }
+
     @Test
     fun `when getting user there is no error then it is returned`() =
         runBlockingTest {
             coEvery {
                 remoteDataBaseDao.getUser(any())
             } returns user
+
+            coEvery {
+                remoteDataBaseDao.getUserFavoriteRemoteRecipes(any())
+            } returns remoteRecipeIds
+
+            coEvery {
+                remoteRecipeDao.getFavoriteRecipes(any())
+            } returns remoteRecipes
 
             val result = remoteDataSourceImpl.getUser(uid)
             assertThat(result, isEqualTo(user))
@@ -366,7 +441,7 @@ class RemoteDataSourceImplTest {
     fun `when adding favorite recipe there is network error then exception is thrown`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any(), any())
             } throws CommonException.NoInternetException
 
             remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
@@ -376,7 +451,7 @@ class RemoteDataSourceImplTest {
     fun `when adding favorite recipe there is other error then exception is thrown`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any(), any())
             } throws CommonException.OtherError("Other error")
 
             remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
@@ -386,13 +461,13 @@ class RemoteDataSourceImplTest {
     fun `when adding favorite recipe there is no error then it is returned`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.addFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
             remoteDataSourceImpl.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
 
             coVerify {
-                remoteDataBaseDao.addFavoriteLocalRecipe(recipeName, uid)
+                remoteDataBaseDao.addFavoriteLocalRecipe(recipeName, uid, lastUpdate)
             }
         }
 
@@ -400,7 +475,7 @@ class RemoteDataSourceImplTest {
     fun `when removing favorite recipe there is network error then exception is thrown`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any(), any())
             } throws CommonException.NoInternetException
 
             remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
@@ -410,7 +485,7 @@ class RemoteDataSourceImplTest {
     fun `when removing favorite recipe there is other error then exception is thrown`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any(), any())
             } throws CommonException.OtherError("Other error")
 
             remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
@@ -420,13 +495,121 @@ class RemoteDataSourceImplTest {
     fun `when removing favorite recipe there is no error then it is returned`() =
         runBlockingTest {
             coEvery {
-                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any())
+                remoteDataBaseDao.removeFavoriteLocalRecipe(any(), any(), any())
             } returns Unit
 
             remoteDataSourceImpl.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
 
             coVerify {
-                remoteDataBaseDao.removeFavoriteLocalRecipe(recipeName, uid)
+                remoteDataBaseDao.removeFavoriteLocalRecipe(recipeName, uid, lastUpdate)
+            }
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when adding remote recipe list there is network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipesToRemoteDatabaseUser(any(), any())
+            } throws CommonException.NoInternetException
+
+            remoteDataSourceImpl.addFavoriteRemoteRecipesToRemoteDatabaseUser(uid, remoteRecipeIds)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding remote recipe list there is other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipesToRemoteDatabaseUser(any(), any())
+            } throws CommonException.OtherError("Other error")
+
+            remoteDataSourceImpl.addFavoriteRemoteRecipesToRemoteDatabaseUser(uid, remoteRecipeIds)
+        }
+
+    @Test
+    fun `when adding remote recipe list there is no error then it is returned`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipesToRemoteDatabaseUser(any(), any())
+            } returns Unit
+
+            remoteDataSourceImpl.addFavoriteRemoteRecipesToRemoteDatabaseUser(uid, remoteRecipeIds)
+
+            coVerify {
+                remoteDataBaseDao.addFavoriteRemoteRecipesToRemoteDatabaseUser(uid, remoteRecipeIds)
+            }
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when removing favorite remote recipe there is network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.removeFavoriteRemoteRecipe(any(), any(), any())
+            } throws CommonException.NoInternetException
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.removeFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite remote recipe there is other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.removeFavoriteRemoteRecipe(any(), any(), any())
+            } throws CommonException.OtherError("Other error")
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.removeFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+        }
+
+    @Test
+    fun `when removing favorite remote recipe there is no error then it is returned`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.removeFavoriteRemoteRecipe(any(), any(), any())
+            } returns Unit
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.removeFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+
+            coVerify {
+                remoteDataBaseDao.removeFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+            }
+        }
+
+    @Test(expected = CommonException.NoInternetException::class)
+    fun `when adding favorite remote recipe there is network error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipe(any(), any(), any())
+            } throws CommonException.NoInternetException
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.addFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite remote recipe there is other error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipe(any(), any(), any())
+            } throws CommonException.OtherError("Other error")
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.addFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+        }
+
+    @Test
+    fun `when adding favorite remote recipe there is no error then it is returned`() =
+        runBlockingTest {
+            coEvery {
+                remoteDataBaseDao.addFavoriteRemoteRecipe(any(), any(), any())
+            } returns Unit
+
+            val recipeId = remoteRecipeIds.first()
+            remoteDataSourceImpl.addFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
+
+            coVerify {
+                remoteDataBaseDao.addFavoriteRemoteRecipe(recipeId, uid, lastUpdate)
             }
         }
 }
