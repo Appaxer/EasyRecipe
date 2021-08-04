@@ -204,9 +204,9 @@ class LocalDataSourceImpl @Inject constructor(
         } ?: emptyList()
     }
 
-    override suspend fun getUserRemoteFavoriteRecipes(uid: String): List<String> {
+    override suspend fun getUserRemoteFavoriteRecipes(uid: String): List<String> = runDao {
         val user = getUser(uid)
-        return userDao.getUserFavoriteRemoteRecipes(user.userId)
+        userDao.getUserFavoriteRemoteRecipes(user.userId)
     }
 
     override suspend fun addFavoriteRemoteRecipesToUser(
@@ -309,13 +309,14 @@ class LocalDataSourceImpl @Inject constructor(
         userDao.insertUserRecipe(userRecipe)
     }
 
-    private suspend fun insertUserFavoriteRemoteRecipe(userId: Long, remoteRecipeId: String) {
-        val favoriteRemoteRecipe = FavoriteRemoteRecipeEntity(remoteRecipeId)
-        userDao.insertFavoriteRemoteRecipe(favoriteRemoteRecipe)
+    private suspend fun insertUserFavoriteRemoteRecipe(userId: Long, remoteRecipeId: String) =
+        runDao {
+            val favoriteRemoteRecipe = FavoriteRemoteRecipeEntity(remoteRecipeId)
+            userDao.insertFavoriteRemoteRecipe(favoriteRemoteRecipe)
 
-        val userRemoteRecipe = UserRemoteRecipe(userId, remoteRecipeId)
-        userDao.insertUserRemoteRecipe(userRemoteRecipe)
-    }
+            val userRemoteRecipe = UserRemoteRecipe(userId, remoteRecipeId)
+            userDao.insertUserRemoteRecipe(userRemoteRecipe)
+        }
 
     private suspend fun getUser(uid: String) = runDao {
         uid.toUid()?.let { currentUid ->

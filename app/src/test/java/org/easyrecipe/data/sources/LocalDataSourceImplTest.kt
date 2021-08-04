@@ -32,6 +32,7 @@ import org.easyrecipe.data.entities.*
 import org.easyrecipe.isEqualTo
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.RemoteRecipe
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -101,6 +102,22 @@ class LocalDataSourceImplTest {
 
     private val remoteFavoriteEntity = FavoriteRemoteRecipeEntity(remoteRecipeId)
     private val remoteFavoriteEntities = listOf(remoteFavoriteEntity)
+    private val remoteFavoriteIds = remoteFavoriteEntities.map { remoteRecipe ->
+        remoteRecipe.remoteRecipeId
+    }
+
+    private val remoteRecipe = RemoteRecipe(
+        name = recipeName,
+        type = recipeTypes,
+        time = 10,
+        image = "",
+        recipeId = remoteRecipeId,
+        source = "",
+        url = "",
+        ingredients = emptyList()
+    )
+
+    private val remoteRecipes = listOf(remoteRecipe)
 
     @MockK
     private lateinit var userDao: UserDao
@@ -568,6 +585,50 @@ class LocalDataSourceImplTest {
             coVerify { userDao.insertFavoriteRemoteRecipe(remoteFavoriteEntity) }
         }
 
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding a user remote recipe there is a user remote error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.insertFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.insertUserRemoteRecipe(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
+
+            coVerify { userDao.insertFavoriteRemoteRecipe(remoteFavoriteEntity) }
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding a user remote recipe there is update error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.insertFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.insertUserRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
+            } throws Exception("Other error")
+
+            localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
+
+            coVerify { userDao.insertFavoriteRemoteRecipe(remoteFavoriteEntity) }
+        }
+
     @Test
     fun `when adding a favorite remote recipe then it is created`() =
         runBlockingTest {
@@ -581,6 +642,10 @@ class LocalDataSourceImplTest {
 
             coEvery {
                 userDao.insertUserRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
             } returns Unit
 
             localDataSourceImpl.addFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
@@ -642,6 +707,29 @@ class LocalDataSourceImplTest {
             }
         }
 
+    @Test(expected = CommonException.OtherError::class)
+    fun `when deleting a favorite remote recipe there is update error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.deleteUserRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
+
+            coVerify {
+                userDao.deleteUserRemoteRecipe(any())
+            }
+        }
+
+
     @Test
     fun `when deleting a favorite remote recipe if it exists then it is deleted`() =
         runBlockingTest {
@@ -651,6 +739,10 @@ class LocalDataSourceImplTest {
 
             coEvery {
                 userDao.deleteUserRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
             } returns Unit
 
             localDataSourceImpl.removeFavoriteRemoteRecipe(remoteRecipeId, uid, lastUpdate)
@@ -694,6 +786,24 @@ class LocalDataSourceImplTest {
             localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite local recipe there is update error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
+        }
+
     @Test
     fun `when adding favorite local recipe there is no error then it is set as favorite`() =
         runBlockingTest {
@@ -703,6 +813,10 @@ class LocalDataSourceImplTest {
 
             coEvery {
                 userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
             } returns Unit
 
             localDataSourceImpl.addFavoriteLocalRecipe(recipeId, uid, lastUpdate)
@@ -746,6 +860,24 @@ class LocalDataSourceImplTest {
             localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
         }
 
+    @Test(expected = CommonException.OtherError::class)
+    fun `when removing favorite local recipe there is update error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.updateFavoriteLocalRecipe(any(), any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
+        }
+
     @Test
     fun `when removing favorite local recipe there is no error then it is set as not favorite`() =
         runBlockingTest {
@@ -755,6 +887,10 @@ class LocalDataSourceImplTest {
 
             coEvery {
                 userDao.updateUserFavoriteLocalRecipe(any(), any(), any())
+            } returns Unit
+
+            coEvery {
+                userDao.updateUser(any())
             } returns Unit
 
             localDataSourceImpl.removeFavoriteLocalRecipe(recipeId, uid, lastUpdate)
@@ -1155,6 +1291,130 @@ class LocalDataSourceImplTest {
 
             coVerify(exactly = userRecipes.size) {
                 recipeDao.getRecipe(any())
+            }
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user favorite remote recipes there is user error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.getUserRemoteFavoriteRecipes(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user favorite remote recipes it is not found then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            localDataSourceImpl.getUserRemoteFavoriteRecipes(uid)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when getting user favorite remote recipes there is an error then exception is thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.getUserFavoriteRemoteRecipes(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.getUserRemoteFavoriteRecipes(uid)
+        }
+
+    @Test
+    fun `when getting user favorite remote recipes there is no error then list is returned`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.getUserFavoriteRemoteRecipes(any())
+            } returns remoteFavoriteIds
+
+            val result = localDataSourceImpl.getUserRemoteFavoriteRecipes(uid)
+            assertThat(result, isEqualTo(remoteFavoriteIds))
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite remote recipes there is user error then exception thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.addFavoriteRemoteRecipesToUser(uid, remoteRecipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite remote recipes user is not found then exception thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns null
+
+            localDataSourceImpl.addFavoriteRemoteRecipesToUser(uid, remoteRecipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite remote recipe there is a recipe error then exception thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.insertFavoriteRemoteRecipe(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.addFavoriteRemoteRecipesToUser(uid, remoteRecipes)
+        }
+
+    @Test(expected = CommonException.OtherError::class)
+    fun `when adding favorite remote recipe there is a user remote error then exception thrown`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.insertFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.insertUserRemoteRecipe(any())
+            } throws Exception("Database error")
+
+            localDataSourceImpl.addFavoriteRemoteRecipesToUser(uid, remoteRecipes)
+        }
+
+    @Test
+    fun `when adding favorite remote recipe there is no error then it is added`() =
+        runBlockingTest {
+            coEvery {
+                userDao.getUserByUid(any())
+            } returns userEntity
+
+            coEvery {
+                userDao.insertFavoriteRemoteRecipe(any())
+            } returns Unit
+
+            coEvery {
+                userDao.insertUserRemoteRecipe(any())
+            } returns Unit
+
+            localDataSourceImpl.addFavoriteRemoteRecipesToUser(uid, remoteRecipes)
+
+            coVerify {
+                userDao.insertFavoriteRemoteRecipe(any())
+                userDao.insertUserRemoteRecipe(any())
             }
         }
 }
