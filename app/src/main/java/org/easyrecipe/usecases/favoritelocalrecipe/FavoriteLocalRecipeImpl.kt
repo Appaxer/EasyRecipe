@@ -30,8 +30,8 @@ class FavoriteLocalRecipeImpl @Inject constructor(
             request.localRecipe,
             request.user.uid
         )
-        request.localRecipe.toggleFavorite()
 
+        request.localRecipe.toggleFavorite()
         FavoriteLocalRecipe.Response()
     }
 }

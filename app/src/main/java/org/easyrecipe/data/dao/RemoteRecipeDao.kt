@@ -17,11 +17,9 @@
 
 package org.easyrecipe.data.dao
 
-import androidx.room.Dao
 import org.easyrecipe.model.MealType
 import org.easyrecipe.model.RemoteRecipe
 
-@Dao
 interface RemoteRecipeDao {
     suspend fun getRecipes(name: String): List<RemoteRecipe>
     suspend fun getRecipesByMealType(name: String, mealTypes: List<MealType>): List<RemoteRecipe>

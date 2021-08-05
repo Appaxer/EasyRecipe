@@ -17,6 +17,7 @@
 
 package org.easyrecipe.model
 
+import org.easyrecipe.common.extensions.unionList
 import org.easyrecipe.data.entities.UserEntity
 import java.io.Serializable
 
@@ -24,25 +25,40 @@ class User(
     val uid: String,
     var lastUpdate: Long,
 ) : Serializable {
-    private val _recipes: MutableList<Recipe> = mutableListOf()
+    private val _localRecipes: MutableList<LocalRecipe> = mutableListOf()
+    val localRecipes: List<LocalRecipe>
+        get() = _localRecipes
+
+    private val _remoteRecipes: MutableList<RemoteRecipe> = mutableListOf()
+    val remoteRecipes: List<RemoteRecipe>
+        get() = _remoteRecipes
+
     val recipes: List<Recipe>
-        get() = _recipes
+        get() = localRecipes.unionList(remoteRecipes)
 
     val favoriteRecipes: List<Recipe>
-        get() = recipes.filter { recipe -> recipe.favorite }
+        get() = _localRecipes.union(_remoteRecipes).filter { recipe -> recipe.favorite }
 
     fun addRecipe(recipe: Recipe) {
-        _recipes.add(recipe)
+        (recipe as? LocalRecipe)?.let { localRecipe ->
+            _localRecipes.add(localRecipe)
+        }
+
+        (recipe as? RemoteRecipe)?.let { remoteRecipe ->
+            _remoteRecipes.add(remoteRecipe)
+        }
     }
 
     fun addRecipes(recipes: List<Recipe>) {
-        _recipes.addAll(recipes)
+        recipes.forEach { recipe ->
+            addRecipe(recipe)
+        }
     }
 
     fun updateRecipe(name: String, recipe: LocalRecipe) {
-        val index = _recipes.indexOfFirst { currentRecipe -> currentRecipe.name == name }
+        val index = _localRecipes.indexOfFirst { currentRecipe -> currentRecipe.name == name }
         if (index >= 0) {
-            _recipes[index] = recipe
+            _localRecipes[index] = recipe
         }
     }
 

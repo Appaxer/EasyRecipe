@@ -33,6 +33,7 @@ import org.easyrecipe.common.usecases.UseCaseResult
 import org.easyrecipe.features.recipedetail.navigation.RecipeDetailNavigation
 import org.easyrecipe.model.LocalRecipe
 import org.easyrecipe.model.RecipeType
+import org.easyrecipe.model.RemoteRecipe
 import org.easyrecipe.model.User
 import org.easyrecipe.usecases.deleterecipe.DeleteRecipe
 import org.easyrecipe.usecases.favoritelocalrecipe.FavoriteLocalRecipe
@@ -69,6 +70,17 @@ class RecipeDetailViewModelTest {
 
     private val screenTitle: String
         get() = "Editing $recipeName"
+
+    private val remoteRecipe = RemoteRecipe(
+        name = recipeName,
+        type = listOf(RecipeType.Hot, RecipeType.Fish),
+        ingredients = emptyList(),
+        time = 10,
+        image = "",
+        recipeId = remoteRecipeId,
+        source = "",
+        url = ""
+    )
 
     @MockK
     private lateinit var navManager: NavManager
@@ -151,7 +163,7 @@ class RecipeDetailViewModelTest {
 
         viewModel.onDeleteRecipe(recipeId)
 
-        await(10)
+        await(15)
         verify {
             navManager.navigateUp(any())
         }
@@ -173,7 +185,7 @@ class RecipeDetailViewModelTest {
             favoriteRemoteRecipe.execute(any())
         } returns UseCaseResult.Error(CommonException.OtherError("Other error"))
 
-        viewModel.onFavoriteRemoteRecipe(user, remoteRecipeId, isFavorite)
+        viewModel.onFavoriteRemoteRecipe(user, remoteRecipe) {}
 
         assertThat(
             viewModel.displayCommonError.getOrAwaitValue(),
@@ -187,7 +199,7 @@ class RecipeDetailViewModelTest {
             favoriteRemoteRecipe.execute(any())
         } returns UseCaseResult.Success(FavoriteRemoteRecipe.Response())
 
-        viewModel.onFavoriteRemoteRecipe(user, remoteRecipeId, isFavorite)
+        viewModel.onFavoriteRemoteRecipe(user, remoteRecipe) {}
     }
 
     @Test

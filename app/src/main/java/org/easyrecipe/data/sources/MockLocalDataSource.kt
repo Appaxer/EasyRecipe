@@ -168,20 +168,24 @@ class MockLocalDataSource : LocalDataSource {
         return favoriteRemoteRecipes
     }
 
-    override suspend fun addFavoriteRemoteRecipe(recipeId: String) {
+    override suspend fun addFavoriteRemoteRecipe(recipeId: String, uid: String, lastUpdate: Long) {
         favoriteRemoteRecipes.add(recipeId)
     }
 
-    override suspend fun removeFavoriteRemoteRecipe(recipeId: String) {
+    override suspend fun removeFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ) {
         favoriteRemoteRecipes.remove(recipeId)
     }
 
-    override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String) {
-        recipesData.find { it.recipeId == recipeId }?.toggleFavorite()
+    override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String, lastUpdate: Long) {
+        recipesData.find { recipe -> recipe.recipeId == recipeId }?.toggleFavorite()
     }
 
-    override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String) {
-        recipesData.find { it.recipeId == recipeId }?.toggleFavorite()
+    override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String, lastUpdate: Long) {
+        recipesData.find { recipe -> recipe.recipeId == recipeId }?.toggleFavorite()
     }
 
     override suspend fun getFavoriteRecipes(): List<Recipe> {
@@ -203,5 +207,17 @@ class MockLocalDataSource : LocalDataSource {
 
     override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> {
         return recipesData
+    }
+
+    override suspend fun getUserRemoteFavoriteRecipes(uid: String): List<String> {
+        return favoriteRemoteRecipes
+    }
+
+    override suspend fun addFavoriteRemoteRecipesToUser(
+        uid: String,
+        remoteRecipes: List<RemoteRecipe>,
+    ) {
+        val remoteRecipeIds = remoteRecipes.map { remoteRecipe -> remoteRecipe.recipeId }
+        favoriteRemoteRecipes.addAll(remoteRecipeIds)
     }
 }

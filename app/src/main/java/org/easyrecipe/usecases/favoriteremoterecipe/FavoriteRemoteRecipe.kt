@@ -18,12 +18,14 @@
 package org.easyrecipe.usecases.favoriteremoterecipe
 
 import org.easyrecipe.common.usecases.UseCase
+import org.easyrecipe.model.RemoteRecipe
+import org.easyrecipe.model.User
 
 interface FavoriteRemoteRecipe :
     UseCase<FavoriteRemoteRecipe.Request, FavoriteRemoteRecipe.Response> {
     data class Request(
-        val recipeId: String,
-        val isFavorite: Boolean,
+        val user: User,
+        val remoteRecipe: RemoteRecipe,
     ) : UseCase.UseCaseRequest
 
     class Response : UseCase.UseCaseResponse

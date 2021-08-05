@@ -22,4 +22,5 @@ import java.io.Serializable
 data class FirebaseUser(
     var lastUpdate: Long = 0,
     var recipes: MutableList<FirebaseRecipe> = mutableListOf(),
+    var favoriteRemoteRecipes: MutableList<String> = mutableListOf(),
 ) : Serializable

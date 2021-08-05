@@ -153,6 +153,7 @@ class RecipesViewModelTest {
 
         viewModel.onGetAllRecipes()
 
+        await(10)
         assertThat(
             viewModel.recipesDisplayed.getOrAwaitValueExceptDefault(default = emptyList()),
             isEqualTo(recipes)

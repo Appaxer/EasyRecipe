@@ -412,7 +412,7 @@ class CreateRecipeViewModelTest {
 
         viewModel.onCreateRecipe(user)
 
-        await(10)
+        await(15)
         verify {
             navManager.navigateUp(any())
         }

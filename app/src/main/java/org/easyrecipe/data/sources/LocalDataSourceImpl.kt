@@ -117,26 +117,49 @@ class LocalDataSourceImpl @Inject constructor(
         userDao.getAllFavoriteRemoteRecipes().map { it.remoteRecipeId }
     }
 
-    override suspend fun addFavoriteRemoteRecipe(recipeId: String) = runDao {
-        val favoriteRemoteRecipeEntity = FavoriteRemoteRecipeEntity(recipeId)
-        userDao.insertFavoriteRemoteRecipe(favoriteRemoteRecipeEntity)
+    override suspend fun addFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
+        val user = getUser(uid)
+        insertUserFavoriteRemoteRecipe(user.userId, recipeId)
+
+        user.lastUpdate = lastUpdate
+        userDao.updateUser(user)
     }
 
-    override suspend fun removeFavoriteRemoteRecipe(recipeId: String) = runDao {
-        val favoriteRemoteRecipeEntity = FavoriteRemoteRecipeEntity(recipeId)
-        userDao.deleteFavoriteRemoteRecipe(favoriteRemoteRecipeEntity)
+    override suspend fun removeFavoriteRemoteRecipe(
+        recipeId: String,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
+        val user = getUser(uid)
+        val userRemoteRecipeEntity = UserRemoteRecipe(user.userId, recipeId)
+        userDao.deleteUserRemoteRecipe(userRemoteRecipeEntity)
+
+        user.lastUpdate = lastUpdate
+        userDao.updateUser(user)
     }
 
-    override suspend fun addFavoriteLocalRecipe(recipeId: Long, uid: String): Unit = runDao {
-        getUser(uid)?.let { userEntity ->
-            userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 1)
-        } ?: throw Exception("User with uid = $uid not existing")
+    override suspend fun addFavoriteLocalRecipe(
+        recipeId: Long,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
+        val user = getUser(uid)
+        userDao.updateUserFavoriteLocalRecipe(user.userId, recipeId, 1)
+        updateUser(uid, lastUpdate)
     }
 
-    override suspend fun removeFavoriteLocalRecipe(recipeId: Long, uid: String): Unit = runDao {
-        getUser(uid)?.let { userEntity ->
-            userDao.updateUserFavoriteLocalRecipe(userEntity.userId, recipeId, 0)
-        } ?: throw Exception("User with uid = $uid not existing")
+    override suspend fun removeFavoriteLocalRecipe(
+        recipeId: Long,
+        uid: String,
+        lastUpdate: Long,
+    ): Unit = runDao {
+        val user = getUser(uid)
+        userDao.updateUserFavoriteLocalRecipe(user.userId, recipeId, 0)
+        updateUser(uid, lastUpdate)
     }
 
     override suspend fun getFavoriteRecipes(): List<Recipe> = runDao {
@@ -144,7 +167,7 @@ class LocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getOrCreateUser(uid: String): User = runDao {
-        getUser(uid)?.let { user ->
+        getUserOrNull(uid)?.let { user ->
             User.fromEntity(user, uid)
         } ?: createUser(uid)
     }
@@ -154,20 +177,19 @@ class LocalDataSourceImpl @Inject constructor(
         lastUpdate: Long,
         recipes: List<Recipe>,
     ): Unit = runDao {
-        getUser(uid)?.let { user ->
-            user.lastUpdate = lastUpdate
-            userDao.updateUser(user)
+        val user = getUser(uid)
+        user.lastUpdate = lastUpdate
+        userDao.updateUser(user)
 
-            recipes.forEach { recipe ->
-                (recipe as? LocalRecipe)?.let { localRecipe ->
-                    addRecipe(user, localRecipe)
-                }
+        recipes.forEach { recipe ->
+            (recipe as? LocalRecipe)?.let { localRecipe ->
+                addRecipe(user, localRecipe)
             }
         }
     }
 
     override suspend fun getAllRecipesFromUser(uid: String): List<LocalRecipe> = runDao {
-        getUser(uid)?.let { user ->
+        getUserOrNull(uid)?.let { user ->
             val userRecipes = recipeDao.getAllRecipesFromUser(user.userId)
             val recipes = userRecipes.map { userRecipe ->
                 recipeDao.getRecipe(userRecipe.recipeId)
@@ -182,12 +204,26 @@ class LocalDataSourceImpl @Inject constructor(
         } ?: emptyList()
     }
 
-    private suspend fun updateUser(uid: String, lastUpdate: Long): UserEntity? = runDao {
-        getUser(uid)?.let { currentUser ->
-            currentUser.lastUpdate = lastUpdate
-            userDao.updateUser(currentUser)
-            currentUser
+    override suspend fun getUserRemoteFavoriteRecipes(uid: String): List<String> = runDao {
+        val user = getUser(uid)
+        userDao.getUserFavoriteRemoteRecipes(user.userId)
+    }
+
+    override suspend fun addFavoriteRemoteRecipesToUser(
+        uid: String,
+        remoteRecipes: List<RemoteRecipe>,
+    ) {
+        val user = getUser(uid)
+        remoteRecipes.forEach { remoteRecipe ->
+            insertUserFavoriteRemoteRecipe(user.userId, remoteRecipe.recipeId)
         }
+    }
+
+    private suspend fun updateUser(uid: String, lastUpdate: Long): UserEntity = runDao {
+        val currentUser = getUser(uid)
+        currentUser.lastUpdate = lastUpdate
+        userDao.updateUser(currentUser)
+        currentUser
     }
 
     private suspend fun parseLocalRecipeList(
@@ -273,7 +309,22 @@ class LocalDataSourceImpl @Inject constructor(
         userDao.insertUserRecipe(userRecipe)
     }
 
+    private suspend fun insertUserFavoriteRemoteRecipe(userId: Long, remoteRecipeId: String) =
+        runDao {
+            val favoriteRemoteRecipe = FavoriteRemoteRecipeEntity(remoteRecipeId)
+            userDao.insertFavoriteRemoteRecipe(favoriteRemoteRecipe)
+
+            val userRemoteRecipe = UserRemoteRecipe(userId, remoteRecipeId)
+            userDao.insertUserRemoteRecipe(userRemoteRecipe)
+        }
+
     private suspend fun getUser(uid: String) = runDao {
+        uid.toUid()?.let { currentUid ->
+            userDao.getUserByUid(currentUid)
+        } ?: throw Exception("User with uid = $uid not existing")
+    }
+
+    private suspend fun getUserOrNull(uid: String) = runDao {
         uid.toUid()?.let { currentUid ->
             userDao.getUserByUid(currentUid)
         }

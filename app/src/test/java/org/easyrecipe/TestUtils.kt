@@ -50,10 +50,11 @@ fun await(countDown: Int = 2) {
     val observer = object : Observer<Unit> {
         override fun onChanged(o: Unit?) {
             latch.countDown()
-            liveData.removeObserver(this)
+            if (latch.count == 0L) {
+                liveData.removeObserver(this)
+            }
         }
     }
 
     liveData.observeForever(observer)
-    liveData.removeObserver(observer)
 }

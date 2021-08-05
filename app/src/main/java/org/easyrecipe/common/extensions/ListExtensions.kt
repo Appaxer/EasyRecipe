@@ -15,23 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.easyrecipe.usecases.favoriteremoterecipe
+package org.easyrecipe.common.extensions
 
-import org.easyrecipe.common.usecases.runUseCase
-import org.easyrecipe.data.repositories.recipe.RecipeRepository
-import javax.inject.Inject
-
-class FavoriteRemoteRecipeImpl @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-) : FavoriteRemoteRecipe {
-    override suspend fun execute(request: FavoriteRemoteRecipe.Request) = runUseCase {
-        recipeRepository.favoriteRemoteRecipe(
-            request.remoteRecipe,
-            request.user.uid
-        )
-
-        request.remoteRecipe.toggleFavorite()
-        request.user.addRecipe(request.remoteRecipe)
-        FavoriteRemoteRecipe.Response()
-    }
-}
+/**
+ * Makes the union of two lists and returns the result as a list.
+ *
+ * @param T The type of the list
+ * @param other The other list
+ * @return The union of both lists
+ */
+fun <T> List<T>.unionList(other: List<T>): List<T> = union(other).toList()
